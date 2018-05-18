@@ -7,7 +7,7 @@ import android.os.PowerManager;
 import android.os.Vibrator;
 import android.widget.Toast;
 
-public class Alarm extends BroadcastReceiver {
+public class AlarmReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		
@@ -23,10 +23,12 @@ public class Alarm extends BroadcastReceiver {
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TRAININGCOUNTDOWN");
 		wl.acquire();
-		Intent i = new Intent(context, MainActivity.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-		//		context.startActivity(i);
+		
 		Toast.makeText(context, "Wake up", Toast.LENGTH_LONG).show();
+		
+		Intent i = new Intent(context, AwakenActivity.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		context.startActivity(i);
 		
 		wl.release();
 	}

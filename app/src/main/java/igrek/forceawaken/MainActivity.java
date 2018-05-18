@@ -22,11 +22,12 @@ public class MainActivity extends AppCompatActivity {
 		
 		btnSet.setOnClickListener(v -> {
 			int time = Integer.parseInt(etVal.getText().toString());
-			Intent intent = new Intent(MainActivity.this, Alarm.class);
+			Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
 			PendingIntent p1 = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 			AlarmManager a = (AlarmManager) getSystemService(ALARM_SERVICE);
-			a.set(AlarmManager.RTC, System.currentTimeMillis() + time * 1000, p1);
-			Toast.makeText(getApplicationContext(), "Alarm set in " + time + " seconds", Toast.LENGTH_LONG)
+			a.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + time * 1000, p1);
+			//			alarm.setExact(AlarmManager.RTC_WAKEUP,10000,pintent);
+			Toast.makeText(getApplicationContext(), "AlarmReceiver set in " + time + " seconds", Toast.LENGTH_LONG)
 					.show();
 			
 		});
