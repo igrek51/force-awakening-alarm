@@ -12,10 +12,14 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
+import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
+
 public class MainActivity extends AppCompatActivity {
 	Button btnSet;
 	EditText alarmSeconds;
 	EditText alarmTime;
+	Logger logger = LoggerFactory.getLogger();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 			Toast.makeText(getApplicationContext(), "AlarmReceiver set at " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"), Toast.LENGTH_LONG)
 					.show();
 		});
+		
+		logger.debug("Application has been started");
 	}
 	
 	private DateTime getTriggerTime() {

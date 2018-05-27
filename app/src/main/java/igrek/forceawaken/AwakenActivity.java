@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,13 +14,21 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 
 public class AwakenActivity extends AppCompatActivity {
 	
 	Ringtone ringtone;
 	MediaPlayer mMediaPlayer;
+	Random random = new Random();
+	Logger logger = LoggerFactory.getLogger();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +45,14 @@ public class AwakenActivity extends AppCompatActivity {
 		win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		
-		TextView unrealTime = (TextView) findViewById(R.id.unrealTime);
+		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
 		
 		unrealTime.setText(getFakeCurrentTime());
 	}
 	
 	private String getFakeCurrentTime() {
-		Random random = new Random();
-		// 3 hours forward
-		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(3 * 60));
+		// 2 hours forward
+		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(2 * 60));
 		return fakeTime.toString("HH:mm");
 	}
 	
@@ -56,11 +64,18 @@ public class AwakenActivity extends AppCompatActivity {
 		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		try {
-			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sweetwater);
+			
+			File ringtone = randomRingtone();
+			logger.debug("Ringtone: " + ringtone.getName().replaceAll("\\.mp3$", ""));
+			
+			Uri ringUri = Uri.fromFile(ringtone);
+			
+			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sweetwater);
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setDataSource(getApplicationContext(), ringUri);
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
 			mMediaPlayer.setVolume(1, 1);
+			mMediaPlayer.setLooping(true);
 			mMediaPlayer.prepare();
 			mMediaPlayer.start();
 		} catch (IOException e) {
@@ -86,4 +101,27 @@ public class AwakenActivity extends AppCompatActivity {
 			am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 	}
 	
+	private String getExternalStorageDirectory() {
+		String mExternalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+		// fucking samsung workaround
+		if (android.os.Build.DEVICE.contains("samsung") || android.os.Build.MANUFACTURER.contains("samsung")) {
+			File f = new File("/storage/extSdCard");
+			if (f.exists() && f.isDirectory()) {
+				mExternalDirectory = "/storage/extSdCard";
+			} else {
+				f = new File("/storage/external_sd");
+				if (f.exists() && f.isDirectory()) {
+					mExternalDirectory = "/storage/external_sd";
+				}
+			}
+		}
+		return mExternalDirectory;
+	}
+	
+	private File randomRingtone() {
+		String ringtonesPath = getExternalStorageDirectory() + "/Android/data/igrek.forceawaken/ringtones";
+		File ringtonesDir = new File(ringtonesPath);
+		List<File> ringtones = Arrays.asList(ringtonesDir.listFiles());
+		return ringtones.get(random.nextInt(ringtones.size()));
+	}
 }
