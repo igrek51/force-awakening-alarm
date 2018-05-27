@@ -16,4 +16,14 @@
         android:text="RISE AND SHINE, MOTHERFUCKER!!!"
         android:id="@+id/textView"/>
 
+    <TextView
+        android:id="@+id/unrealTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="147dp"
+        android:text="15:30"
+        android:textSize="48sp"/>
+
 </RelativeLayout>
