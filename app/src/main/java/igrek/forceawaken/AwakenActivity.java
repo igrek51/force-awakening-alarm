@@ -3,20 +3,26 @@ package igrek.forceawaken;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -25,10 +31,11 @@ import igrek.forceawaken.logger.LoggerFactory;
 
 public class AwakenActivity extends AppCompatActivity {
 	
-	Ringtone ringtone;
-	MediaPlayer mMediaPlayer;
-	Random random = new Random();
-	Logger logger = LoggerFactory.getLogger();
+	private MediaPlayer mMediaPlayer;
+	private Random random = new Random();
+	private Logger logger = LoggerFactory.getLogger();
+	private File currentRingtone;
+	private ArrayAdapter<String> listAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,27 +55,16 @@ public class AwakenActivity extends AppCompatActivity {
 		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
 		
 		unrealTime.setText(getFakeCurrentTime());
-	}
-	
-	private String getFakeCurrentTime() {
-		// 2 hours forward
-		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(2 * 60));
-		return fakeTime.toString("HH:mm");
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
+		
 		
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		try {
+			currentRingtone = randomRingtone();
+			logger.debug("Current Ringtone: " + getRingtoneName(currentRingtone));
 			
-			File ringtone = randomRingtone();
-			logger.debug("Ringtone: " + ringtone.getName().replaceAll("\\.mp3$", ""));
-			
-			Uri ringUri = Uri.fromFile(ringtone);
+			Uri ringUri = Uri.fromFile(currentRingtone);
 			
 			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sweetwater);
 			mMediaPlayer = new MediaPlayer();
@@ -81,15 +77,75 @@ public class AwakenActivity extends AppCompatActivity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		List<String> ringtoneNames = new ArrayList<>();
+		for (File ringtone : getAllRingtones()) {
+			ringtoneNames.add(getRingtoneName(ringtone));
+		}
+		Collections.shuffle(ringtoneNames); // that's the evilest thing i can imagine
+		
+		listAdapter = new ArrayAdapter<>(this, R.layout.list_item, ringtoneNames);
+		
+		ListView listView = (ListView) findViewById(R.id.ringtones_answer_list);
+		listView.setAdapter(listAdapter);
+		
+		listView.setOnItemClickListener((adapter1, v, position, id) -> {
+			String selected = (String) adapter1.getItemAtPosition(position);
+			if (selected.equals(getRingtoneName(currentRingtone))) {
+				stopRingtone();
+				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up", Toast.LENGTH_LONG)
+						.show();
+			} else {
+				wrongAnswer();
+			}
+		});
+	}
+	
+	private void wrongAnswer() {
+		Toast.makeText(getApplicationContext(), "Wrong answer, you morron!", Toast.LENGTH_LONG)
+				.show();
+		Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		v.vibrate(1000);
+		listAdapter.clear();
+		List<String> ringtoneNames = new ArrayList<>();
+		for (File ringtone : getAllRingtones()) {
+			ringtoneNames.add(getRingtoneName(ringtone));
+		}
+		Collections.shuffle(ringtoneNames);
+		listAdapter.addAll(ringtoneNames);
+		listAdapter.notifyDataSetChanged();
+	}
+	
+	private String getFakeCurrentTime() {
+		// 2 hours forward
+		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(2 * 60));
+		return fakeTime.toString("HH:mm");
+	}
+	
+	private String getRingtoneName(File ringtone) {
+		return ringtone.getName().replaceAll("\\.mp3$", "");
 	}
 	
 	@Override
-	protected void onStop() {
+	protected void onDestroy() {
 		//FIXME turning screen of stops the alarm
-		super.onStop();
-		if (ringtone != null) {
-			ringtone.stop();
+		super.onDestroy();
+		stopRingtone();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// disable back key
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_MENU) {
+			return true;
 		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	
+	private void stopRingtone() {
 		if (mMediaPlayer != null) {
 			mMediaPlayer.stop();
 		}
@@ -119,9 +175,15 @@ public class AwakenActivity extends AppCompatActivity {
 	}
 	
 	private File randomRingtone() {
-		String ringtonesPath = getExternalStorageDirectory() + "/Android/data/igrek.forceawaken/ringtones";
-		File ringtonesDir = new File(ringtonesPath);
-		List<File> ringtones = Arrays.asList(ringtonesDir.listFiles());
+		List<File> ringtones = getAllRingtones();
 		return ringtones.get(random.nextInt(ringtones.size()));
 	}
+	
+	private List<File> getAllRingtones() {
+		String ringtonesPath = getExternalStorageDirectory() + "/Android/data/igrek.forceawaken/ringtones";
+		File ringtonesDir = new File(ringtonesPath);
+		return Arrays.asList(ringtonesDir.listFiles());
+	}
+	
+	
 }

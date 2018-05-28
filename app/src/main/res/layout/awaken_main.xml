@@ -10,20 +10,41 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context="igrek.forceawaken.AwakenActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="RISE AND SHINE, MOTHERFUCKER!!!"
-        android:id="@+id/textView"/>
-
-    <TextView
-        android:id="@+id/fakeTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="147dp"
-        android:text="15:30"
-        android:textSize="64sp"/>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_gravity="start"
+            android:gravity="start"
+            android:text="RISE AND SHINE, MOTHERFUCKER!!!"/>
+
+        <TextView
+            android:id="@+id/fakeTime"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="start"
+            android:layout_marginTop="45dp"
+            android:gravity="start"
+            android:text="15:30"
+            android:textAlignment="center"
+            android:textSize="64sp"/>
+
+        <ListView
+            android:id="@+id/ringtones_answer_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/fakeTime"
+            android:layout_marginTop="12dp">
+        </ListView>
+    </RelativeLayout>
 
 </RelativeLayout>
