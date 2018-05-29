@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 			if (earlyMarginInput.length() > 0) {
 				int earlyMarginMin = Integer.parseInt(earlyMarginInput.getText().toString());
 				if (earlyMarginMin > 0) {
-					DateTime newTriggerTime = triggerTime.minusMinutes(random.nextInt(earlyMarginMin));
+					DateTime newTriggerTime = triggerTime.minusMinutes(random.nextInt(earlyMarginMin + 1));
 					if (newTriggerTime.isAfterNow()) { // check validity
 						triggerTime = newTriggerTime;
 					}
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private DateTime getTriggerTime() {
-		String timeRegex = "([01][0-9]|2[0-3]):([0-5][0-9])";
+		String timeRegex = "([01]?[0-9]|2[0-3]):([0-5][0-9])";
 		Pattern pattern = Pattern.compile(timeRegex);
 		Matcher matcher = pattern.matcher(alarmTimeInput.getText().toString());
 		if (!matcher.matches()) {
