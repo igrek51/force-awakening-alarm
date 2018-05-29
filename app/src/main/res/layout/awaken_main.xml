@@ -17,7 +17,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/wakeUpLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"

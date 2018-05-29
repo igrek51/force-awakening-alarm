@@ -53,9 +53,11 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		
 		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
-		
 		unrealTime.setText(getFakeCurrentTime());
 		
+		String[] wakeUpInfos = {"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!",};
+		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
+		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
@@ -67,10 +69,11 @@ public class AwakenActivity extends AppCompatActivity {
 			Uri ringUri = Uri.fromFile(currentRingtone);
 			
 			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sweetwater);
+			final float volume = 0.5f;
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setDataSource(getApplicationContext(), ringUri);
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-			mMediaPlayer.setVolume(1, 1);
+			mMediaPlayer.setVolume(volume, volume);
 			mMediaPlayer.setLooping(true);
 			mMediaPlayer.prepare();
 			mMediaPlayer.start();
@@ -93,7 +96,7 @@ public class AwakenActivity extends AppCompatActivity {
 			String selected = (String) adapter1.getItemAtPosition(position);
 			if (selected.equals(getRingtoneName(currentRingtone))) {
 				stopRingtone();
-				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up", Toast.LENGTH_LONG)
+				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up.", Toast.LENGTH_LONG)
 						.show();
 			} else {
 				wrongAnswer();
@@ -136,10 +139,12 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// disable back key
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return true;
-		} else if (keyCode == KeyEvent.KEYCODE_MENU) {
-			return true;
+		if (mMediaPlayer.isPlaying()) {
+			if (keyCode == KeyEvent.KEYCODE_BACK) {
+				return true;
+			} else if (keyCode == KeyEvent.KEYCODE_MENU) {
+				return true;
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
