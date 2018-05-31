@@ -1,12 +1,15 @@
 package igrek.forceawaken;
 
 import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -37,6 +40,7 @@ public class AwakenActivity extends AppCompatActivity {
 	private File currentRingtone;
 	private ArrayAdapter<String> listAdapter;
 	
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,21 +64,28 @@ public class AwakenActivity extends AppCompatActivity {
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
+		//		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		try {
 			currentRingtone = randomRingtone();
 			logger.debug("Current Ringtone: " + getRingtoneName(currentRingtone));
 			
 			Uri ringUri = Uri.fromFile(currentRingtone);
+			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
 			
-			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sweetwater);
-			final float volume = 0.5f;
+			final float volume = 0.3f;
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setDataSource(getApplicationContext(), ringUri);
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
 			mMediaPlayer.setVolume(volume, volume);
 			mMediaPlayer.setLooping(true);
+			
+			AudioAttributes aa = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
+					.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+					//					.setFlags(FLAG_AUDIBILITY_ENFORCED)
+					.build();
+			mMediaPlayer.setAudioAttributes(aa);
+			
 			mMediaPlayer.prepare();
 			mMediaPlayer.start();
 		} catch (IOException e) {
@@ -131,7 +142,6 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@Override
 	protected void onDestroy() {
-		//FIXME turning screen of stops the alarm
 		super.onDestroy();
 		stopRingtone();
 	}

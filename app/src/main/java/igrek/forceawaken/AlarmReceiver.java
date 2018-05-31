@@ -21,7 +21,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 		
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TRAININGCOUNTDOWN");
-		// FIXME asynchronous ???
 		wl.acquire();
 		
 		Toast.makeText(context, "Wake up", Toast.LENGTH_LONG).show();
