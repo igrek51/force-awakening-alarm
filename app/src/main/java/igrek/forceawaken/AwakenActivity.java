@@ -4,10 +4,12 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -34,11 +36,12 @@ import igrek.forceawaken.logger.LoggerFactory;
 
 public class AwakenActivity extends AppCompatActivity {
 	
-	private MediaPlayer mMediaPlayer;
-	private Random random = new Random();
 	private Logger logger = LoggerFactory.getLogger();
+	private Random random = new Random();
 	private File currentRingtone;
 	private ArrayAdapter<String> listAdapter;
+	private MediaPlayer mediaPlayer;
+	private MediaRecorder mediaRecorder;
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
@@ -63,8 +66,40 @@ public class AwakenActivity extends AppCompatActivity {
 		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
+		// measure surrounding loudness level
+		logger.debug("Measuring surrounding noise level...");
+		try {
+			mediaRecorder = new MediaRecorder();
+			mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+			mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+			mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+			mediaRecorder.setOutputFile("/dev/null");
+			mediaRecorder.prepare();
+			mediaRecorder.start();
+			mediaRecorder.getMaxAmplitude(); // initialize measurement
+		} catch (IOException e) {
+			logger.error(e);
+		}
+		
+		
+		new Handler().postDelayed(() -> {
+			
+			int amplitude = mediaRecorder.getMaxAmplitude();
+			double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
+			logger.info("Surrounding noise amplitude: " + amplitudeDb + " dB");
+			mediaRecorder.stop();
+			mediaRecorder.release();
+			
+			startAlarm(amplitudeDb);
+			
+		}, 1000);
+		
+	}
+	
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+	private void startAlarm(double noiseLevel) {
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		//		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
+		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		try {
 			currentRingtone = randomRingtone();
@@ -73,23 +108,24 @@ public class AwakenActivity extends AppCompatActivity {
 			Uri ringUri = Uri.fromFile(currentRingtone);
 			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
 			
-			final float volume = 0.3f;
-			mMediaPlayer = new MediaPlayer();
-			mMediaPlayer.setDataSource(getApplicationContext(), ringUri);
-			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-			mMediaPlayer.setVolume(volume, volume);
-			mMediaPlayer.setLooping(true);
+			final float volume = (float) calculateAlarmVolume(noiseLevel);
+			logger.debug("Alarm volume level: " + volume);
+			mediaPlayer = new MediaPlayer();
+			mediaPlayer.setDataSource(getApplicationContext(), ringUri);
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+			mediaPlayer.setVolume(volume, volume);
+			mediaPlayer.setLooping(true);
 			
 			AudioAttributes aa = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
 					.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
 					//					.setFlags(FLAG_AUDIBILITY_ENFORCED)
 					.build();
-			mMediaPlayer.setAudioAttributes(aa);
+			mediaPlayer.setAudioAttributes(aa);
 			
-			mMediaPlayer.prepare();
-			mMediaPlayer.start();
+			mediaPlayer.prepare();
+			mediaPlayer.start();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		
 		List<String> ringtoneNames = new ArrayList<>();
@@ -106,7 +142,7 @@ public class AwakenActivity extends AppCompatActivity {
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
 			String selected = (String) adapter1.getItemAtPosition(position);
 			if (selected.equals(getRingtoneName(currentRingtone))) {
-				stopRingtone();
+				stopAlarm();
 				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up.", Toast.LENGTH_LONG)
 						.show();
 			} else {
@@ -114,6 +150,20 @@ public class AwakenActivity extends AppCompatActivity {
 			}
 		});
 	}
+	
+	private double calculateAlarmVolume(double noiseLevel) {
+		final double[] transformFactors = new double[]{ // noise dB -> alarm volume
+				35.0, 0.2, // low limit
+				80.0, 1.0, // high limit
+		};
+		if (noiseLevel <= transformFactors[0])
+			return transformFactors[1];
+		if (noiseLevel >= transformFactors[2])
+			return transformFactors[3];
+		double fraction = (noiseLevel - transformFactors[0]) / (transformFactors[2] - transformFactors[0]);
+		return transformFactors[1] + fraction * (transformFactors[3] - transformFactors[1]);
+	}
+	
 	
 	private void wrongAnswer() {
 		Toast.makeText(getApplicationContext(), "Wrong answer, you morron!", Toast.LENGTH_LONG)
@@ -143,13 +193,13 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		stopRingtone();
+		stopAlarm();
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// disable back key
-		if (mMediaPlayer.isPlaying()) {
+		if (mediaPlayer.isPlaying()) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				return true;
 			} else if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -160,9 +210,9 @@ public class AwakenActivity extends AppCompatActivity {
 	}
 	
 	
-	private void stopRingtone() {
-		if (mMediaPlayer != null) {
-			mMediaPlayer.stop();
+	private void stopAlarm() {
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
 		}
 	}
 	
