@@ -19,12 +19,16 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
+import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
-import igrek.forceawaken.logger.LoggerFactory;
 
 public class MainActivity extends AppCompatActivity {
 	
-	Logger logger = LoggerFactory.getLogger();
+	@Inject
+	Logger logger;
+	
 	Button btnSet, btnTestAlarm;
 	EditText alarmTimeInput;
 	EditText earlyMarginInput;
@@ -33,6 +37,20 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Dagger Container init
+		DaggerIOC.init(this);
+		// inject to this
+		DaggerIOC.getAppComponent().inject(this);
+		
+		// catch all uncaught exceptions
+		Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
+			logger.errorUncaught(th);
+			//pass further to OS
+			defaultUEH.uncaughtException(thread, th);
+		});
+		
 		setContentView(R.layout.activity_main);
 		btnSet = (Button) findViewById(R.id.btnSetAlarm);
 		btnTestAlarm = (Button) findViewById(R.id.btnTestAlarm);
@@ -84,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 		
 		alarmTimeInput.requestFocus();
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-		
 	}
 	
 	private void validateAlarmTime() {

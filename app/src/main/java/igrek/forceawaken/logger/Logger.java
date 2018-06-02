@@ -6,8 +6,7 @@ import android.util.Log;
 
 public class Logger {
 	
-	// package-private constructor
-	Logger() {
+	protected Logger() {
 	}
 	
 	public void error(String message) {
@@ -65,7 +64,7 @@ public class Logger {
 		log("Quick Trace: " + System.currentTimeMillis(), LogLevel.DEBUG, "[trace] ");
 	}
 	
-	private void log(String message, LogLevel level, String logPrefix) {
+	protected void log(String message, LogLevel level, String logPrefix) {
 		if (level.moreOrEqualImportantThan(LoggerFactory.CONSOLE_LEVEL)) {
 			
 			String consoleMessage;
@@ -97,11 +96,11 @@ public class Logger {
 		}
 	}
 	
-	private void printInfo(String msg) {
+	protected void printInfo(String msg) {
 		Log.i(LoggerFactory.LOG_TAG, msg);
 	}
 	
-	private void printError(String msg) {
+	protected void printError(String msg) {
 		Log.e(LoggerFactory.LOG_TAG, msg);
 	}
 	
