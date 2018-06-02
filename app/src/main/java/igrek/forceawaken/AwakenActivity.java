@@ -101,6 +101,30 @@ public class AwakenActivity extends AppCompatActivity {
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
+		new Handler().postDelayed(() -> {
+			if (mediaPlayer.isPlaying()) {
+				float volume = 1.0f;
+				mediaPlayer.setVolume(volume, volume);
+				logger.debug("Alarm is still playing - volume level boosted");
+			}
+		}, 45000);
+		
+		Runnable vibrationsBooster = new Runnable() {
+			@Override
+			public void run() {
+				if (mediaPlayer.isPlaying()) {
+					logger.debug("Alarm is still playing - turning on vibrations");
+					
+					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+					v.vibrate(500);
+					
+					new Handler().postDelayed(this, 1000);
+					
+				}
+			}
+		};
+		new Handler().postDelayed(vibrationsBooster, 90000);
+		
 		try {
 			currentRingtone = randomRingtone();
 			logger.debug("Current Ringtone: " + getRingtoneName(currentRingtone));
@@ -153,7 +177,7 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	private double calculateAlarmVolume(double noiseLevel) {
 		final double[] transformFactors = new double[]{ // noise dB -> alarm volume
-				35.0, 0.2, // low limit
+				35.0, 0.3, // low limit
 				80.0, 1.0, // high limit
 		};
 		if (noiseLevel <= transformFactors[0])
