@@ -19,20 +19,17 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 
 public class MainActivity extends AppCompatActivity {
 	
-	@Inject
-	Logger logger;
-	
+	Logger logger = LoggerFactory.getLogger();
+	private Random random = new Random();
 	Button btnSet, btnTestAlarm;
 	EditText alarmTimeInput;
 	EditText earlyMarginInput;
-	private Random random = new Random();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
 		Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
 		PendingIntent p1 = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 		AlarmManager a = (AlarmManager) getSystemService(ALARM_SERVICE);
-		// FIXME one alarm only can be set at a time
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			a.setExact(AlarmManager.RTC_WAKEUP, triggerTime.getMillis(), p1);
 		} else {

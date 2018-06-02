@@ -9,6 +9,7 @@ import dagger.Provides;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.info.UserInfoService;
+import igrek.forceawaken.service.noise.NoiseDetectorService;
 
 /**
  * Module with providers. These classes can be injected
@@ -38,6 +39,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected UserInfoService provideUserInfoService() {
 		return new UserInfoService();
+	}
+	
+	@Provides
+	@Singleton
+	protected NoiseDetectorService provideNoiseDetectorService() {
+		return new NoiseDetectorService();
 	}
 	
 }

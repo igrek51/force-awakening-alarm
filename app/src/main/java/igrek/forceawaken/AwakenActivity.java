@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,8 +30,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
+
+import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
+import igrek.forceawaken.service.noise.NoiseDetectorService;
 
 public class AwakenActivity extends AppCompatActivity {
 	
@@ -41,12 +44,20 @@ public class AwakenActivity extends AppCompatActivity {
 	private File currentRingtone;
 	private ArrayAdapter<String> listAdapter;
 	private MediaPlayer mediaPlayer;
-	private MediaRecorder mediaRecorder;
+	
+	@Inject
+	NoiseDetectorService noiseDetectorService;
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Dagger Container init
+		DaggerIOC.init(this);
+		// inject to this
+		DaggerIOC.getAppComponent().inject(this);
+		
 		setContentView(R.layout.awaken_main);
 		
 		final Window win = getWindow();
@@ -62,37 +73,17 @@ public class AwakenActivity extends AppCompatActivity {
 		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
 		unrealTime.setText(getFakeCurrentTime());
 		
-		String[] wakeUpInfos = {"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!",};
+		String[] wakeUpInfos = {
+				"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!",
+				"Wstawaj, Nie Pierdol!",
+		};
 		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
 		// measure surrounding loudness level
-		logger.debug("Measuring surrounding noise level...");
-		try {
-			mediaRecorder = new MediaRecorder();
-			mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-			mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-			mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-			mediaRecorder.setOutputFile("/dev/null");
-			mediaRecorder.prepare();
-			mediaRecorder.start();
-			mediaRecorder.getMaxAmplitude(); // initialize measurement
-		} catch (IOException e) {
-			logger.error(e);
-		}
-		
-		
-		new Handler().postDelayed(() -> {
-			
-			int amplitude = mediaRecorder.getMaxAmplitude();
-			double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
-			logger.info("Surrounding noise amplitude: " + amplitudeDb + " dB");
-			mediaRecorder.stop();
-			mediaRecorder.release();
-			
+		noiseDetectorService.measureNoiseLevel(1000, (amplitudeDb) -> {
 			startAlarm(amplitudeDb);
-			
-		}, 1000);
+		});
 		
 	}
 	

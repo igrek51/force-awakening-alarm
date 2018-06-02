@@ -3,8 +3,10 @@ package igrek.forceawaken.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import igrek.forceawaken.AwakenActivity;
 import igrek.forceawaken.MainActivity;
 import igrek.forceawaken.service.info.UserInfoService;
+import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.ui.errorcheck.UIErrorHandler;
 
 /**
@@ -16,8 +18,12 @@ public interface AppFactoryComponent {
 	
 	void inject(MainActivity there);
 	
+	void inject(AwakenActivity there);
+	
 	void inject(UIErrorHandler there);
 	
 	void inject(UserInfoService there);
+	
+	void inject(NoiseDetectorService there);
 	
 }
