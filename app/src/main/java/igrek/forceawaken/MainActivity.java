@@ -136,11 +136,16 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	private DateTime getTriggerTime() {
+		String alarmTime = alarmTimeInput.getText().toString();
+		if (!alarmTime.contains(":"))
+			alarmTime = alarmTime.substring(0, alarmTime.length() - 2) + ":" + alarmTime.substring(alarmTime
+					.length() - 2);
+			
 		String timeRegex = "([01]?[0-9]|2[0-3]):([0-5][0-9])";
 		Pattern pattern = Pattern.compile(timeRegex);
-		Matcher matcher = pattern.matcher(alarmTimeInput.getText().toString());
+		Matcher matcher = pattern.matcher(alarmTime);
 		if (!matcher.matches()) {
-			throw new NumberFormatException("Invalid time: " + alarmTimeInput.getText().toString());
+			throw new NumberFormatException("Invalid time: " + alarmTime);
 		}
 		int hours = Integer.parseInt(matcher.group(1));
 		int mins = Integer.parseInt(matcher.group(2));

@@ -54,8 +54,7 @@ public class AwakenActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		
 		// Dagger Container init
-		DaggerIOC.init(this);
-		// inject to this
+		DaggerIOC.init(this); // reinitialize with different activity
 		DaggerIOC.getAppComponent().inject(this);
 		
 		setContentView(R.layout.awaken_main);
@@ -65,7 +64,6 @@ public class AwakenActivity extends AppCompatActivity {
 		// Turn on the screen unless we are being launched from the AlarmAlert
 		// subclass.
 		win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-		
 		// hide status bar
 		win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
