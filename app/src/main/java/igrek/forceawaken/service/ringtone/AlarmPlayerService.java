@@ -1,4 +1,4 @@
-package igrek.forceawaken.service.player;
+package igrek.forceawaken.service.ringtone;
 
 import android.app.Activity;
 import android.content.Context;

@@ -10,8 +10,9 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
-import igrek.forceawaken.service.player.AlarmPlayerService;
+import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
+import igrek.forceawaken.service.ringtone.VibratorService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 /**
@@ -68,6 +69,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected RingtoneManagerService provideRingtoneManagerService() {
 		return new RingtoneManagerService();
+	}
+	
+	@Provides
+	@Singleton
+	protected VibratorService provideVibratorService() {
+		return new VibratorService();
 	}
 	
 }

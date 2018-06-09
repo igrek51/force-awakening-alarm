@@ -1,10 +1,8 @@
 package igrek.forceawaken;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -27,8 +25,9 @@ import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
-import igrek.forceawaken.service.player.AlarmPlayerService;
+import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
+import igrek.forceawaken.service.ringtone.VibratorService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 public class AwakenActivity extends AppCompatActivity {
@@ -49,6 +48,9 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@Inject
 	RingtoneManagerService ringtoneManager;
+	
+	@Inject
+	VibratorService vibratorService;
 	
 	private final String[] wakeUpInfos = new String[]{
 			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
@@ -96,8 +98,7 @@ public class AwakenActivity extends AppCompatActivity {
 				if (alarmPlayer.isPlaying()) {
 					logger.debug("Alarm is still playing - turning on vibrations");
 					
-					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-					v.vibrate(500);
+					vibratorService.vibrate(500);
 					
 					new Handler().postDelayed(this, 1000);
 					
@@ -142,8 +143,7 @@ public class AwakenActivity extends AppCompatActivity {
 		Toast.makeText(getApplicationContext(), "Wrong answer, you morron!", Toast.LENGTH_LONG)
 				.show();
 		
-		Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-		v.vibrate(1000);
+		vibratorService.vibrate(1000);
 		
 		ringtoneListAdapter.clear();
 		
@@ -178,8 +178,6 @@ public class AwakenActivity extends AppCompatActivity {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
-	
 	
 	
 }
