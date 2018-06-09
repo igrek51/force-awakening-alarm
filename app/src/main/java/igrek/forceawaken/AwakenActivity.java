@@ -1,9 +1,6 @@
 package igrek.forceawaken;
 
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +31,7 @@ import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
+import igrek.forceawaken.service.player.AlarmPlayerService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 public class AwakenActivity extends AppCompatActivity {
@@ -42,13 +40,19 @@ public class AwakenActivity extends AppCompatActivity {
 	private Random random = new Random();
 	private File currentRingtone;
 	private ArrayAdapter<String> listAdapter;
-	private MediaPlayer mediaPlayer;
 	
 	@Inject
 	NoiseDetectorService noiseDetectorService;
 	
 	@Inject
 	WindowManagerService windowManagerService;
+	
+	@Inject
+	AlarmPlayerService alarmPlayerService;
+	
+	private final String[] wakeUpInfos = new String[]{
+			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
+	};
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
@@ -63,13 +67,9 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		windowManagerService.setFullscreen();
 		
-		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
-		unrealTime.setText(getFakeCurrentTime());
+		TextView fakeTime = (TextView) findViewById(R.id.fakeTime);
+		fakeTime.setText(getFakeCurrentTime());
 		
-		String[] wakeUpInfos = {
-				"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!",
-				"Wstawaj, Nie Pierdol!",
-		};
 		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
@@ -82,13 +82,10 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private void startAlarm(double noiseLevel) {
-		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		new Handler().postDelayed(() -> {
-			if (mediaPlayer.isPlaying()) {
-				float volume = 1.0f;
-				mediaPlayer.setVolume(volume, volume);
+			if (alarmPlayerService.isPlaying()) {
+				alarmPlayerService.setVolume(1.0);
 				logger.debug("Alarm is still playing - volume level boosted");
 			}
 		}, 90000);
@@ -96,7 +93,7 @@ public class AwakenActivity extends AppCompatActivity {
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
 			public void run() {
-				if (mediaPlayer.isPlaying()) {
+				if (alarmPlayerService.isPlaying()) {
 					logger.debug("Alarm is still playing - turning on vibrations");
 					
 					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -116,22 +113,10 @@ public class AwakenActivity extends AppCompatActivity {
 			Uri ringUri = Uri.fromFile(currentRingtone);
 			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
 			
-			final float volume = (float) calculateAlarmVolume(noiseLevel);
+			final double volume = calculateAlarmVolume(noiseLevel);
 			logger.debug("Alarm volume level: " + volume);
-			mediaPlayer = new MediaPlayer();
-			mediaPlayer.setDataSource(getApplicationContext(), ringUri);
-			mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-			mediaPlayer.setVolume(volume, volume);
-			mediaPlayer.setLooping(true);
 			
-			AudioAttributes aa = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM)
-					.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-					//					.setFlags(FLAG_AUDIBILITY_ENFORCED)
-					.build();
-			mediaPlayer.setAudioAttributes(aa);
-			
-			mediaPlayer.prepare();
-			mediaPlayer.start();
+			alarmPlayerService.playAlarm(ringUri, volume);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -150,7 +135,7 @@ public class AwakenActivity extends AppCompatActivity {
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
 			String selected = (String) adapter1.getItemAtPosition(position);
 			if (selected.equals(getRingtoneName(currentRingtone))) {
-				stopAlarm();
+				alarmPlayerService.stopAlarm();
 				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up.", Toast.LENGTH_LONG)
 						.show();
 			} else {
@@ -201,13 +186,13 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		stopAlarm();
+		alarmPlayerService.stopAlarm();
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// disable back key
-		if (mediaPlayer.isPlaying()) {
+		if (alarmPlayerService.isPlaying()) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				return true;
 			} else if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -215,19 +200,6 @@ public class AwakenActivity extends AppCompatActivity {
 			}
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-	
-	
-	private void stopAlarm() {
-		if (mediaPlayer != null) {
-			mediaPlayer.stop();
-		}
-	}
-	
-	private void ensureSoundIsOn() {
-		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		if (am.getRingerMode() != AudioManager.RINGER_MODE_NORMAL)
-			am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 	}
 	
 	private String getExternalStorageDirectory() {

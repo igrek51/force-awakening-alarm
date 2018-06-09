@@ -10,6 +10,7 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
+import igrek.forceawaken.service.player.AlarmPlayerService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 /**
@@ -52,6 +53,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected WindowManagerService provideWindowManagerService() {
 		return new WindowManagerService();
+	}
+	
+	@Provides
+	@Singleton
+	protected AlarmPlayerService provideAlarmPlayerService() {
+		return new AlarmPlayerService();
 	}
 	
 }
