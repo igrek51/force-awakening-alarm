@@ -96,7 +96,7 @@ public class AwakenActivity extends AppCompatActivity {
 				mediaPlayer.setVolume(volume, volume);
 				logger.debug("Alarm is still playing - volume level boosted");
 			}
-		}, 45000);
+		}, 90000);
 		
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
@@ -112,7 +112,7 @@ public class AwakenActivity extends AppCompatActivity {
 				}
 			}
 		};
-		new Handler().postDelayed(vibrationsBooster, 90000);
+		new Handler().postDelayed(vibrationsBooster, 180000);
 		
 		try {
 			currentRingtone = randomRingtone();
@@ -167,7 +167,7 @@ public class AwakenActivity extends AppCompatActivity {
 	private double calculateAlarmVolume(double noiseLevel) {
 		final double[] transformFactors = new double[]{ // noise dB -> alarm volume
 				35.0, 0.3, // low limit
-				80.0, 1.0, // high limit
+				70.0, 1.0, // high limit
 		};
 		if (noiseLevel <= transformFactors[0])
 			return transformFactors[1];
