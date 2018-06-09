@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +20,7 @@ import java.util.regex.Pattern;
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
+import igrek.forceawaken.ui.input.TextAddedListener;
 
 public class MainActivity extends AppCompatActivity {
 	
@@ -74,26 +73,12 @@ public class MainActivity extends AppCompatActivity {
 			setAlarmOnTime(triggerTime);
 		});
 		
-		alarmTimeInput.addTextChangedListener(new TextWatcher() {
-			int beforeLength;
-			
+		alarmTimeInput.addTextChangedListener(new TextAddedListener() {
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				beforeLength = s.length();
-			}
-			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-			}
-			
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (s.length() > beforeLength) {
-					validateAlarmTime();
-				}
+			protected void onTextAdded(String newValue) {
+				validateAlarmTime();
 			}
 		});
-		
 		
 		logger.debug("Application has been started");
 		
