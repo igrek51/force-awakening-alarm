@@ -47,9 +47,8 @@ android {
 
 dependencies {
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.0'
-    annotationProcessor 'org.projectlombok:lombok:1.18.0'
-
+//    compileOnly 'org.projectlombok:lombok:1.18.0'
+//    annotationProcessor 'org.projectlombok:lombok:1.18.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:25.0.0'
     implementation 'com.android.support:design:25.0.0'
@@ -65,5 +64,5 @@ dependencies {
     // Joda Time
     implementation 'joda-time:joda-time:2.9.9'
     // AssertJ
-//    testImplementation 'org.assertj:assertj-core:3.10.0'
+    testImplementation 'org.assertj:assertj-core:2.9.1'
 }
