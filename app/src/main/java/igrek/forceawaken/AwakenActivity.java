@@ -52,6 +52,9 @@ public class AwakenActivity extends AppCompatActivity {
 	@Inject
 	VibratorService vibratorService;
 	
+	private final long ALARM_VIBRATION_PERIOD = 1000;
+	private final double ALARM_VIBRATION_PWM = 0.5;
+	
 	private final String[] wakeUpInfos = new String[]{
 			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
 	};
@@ -97,11 +100,8 @@ public class AwakenActivity extends AppCompatActivity {
 			public void run() {
 				if (alarmPlayer.isPlaying()) {
 					logger.debug("Alarm is still playing - turning on vibrations");
-					
-					vibratorService.vibrate(500);
-					
-					new Handler().postDelayed(this, 1000);
-					
+					vibratorService.vibrate((long) (ALARM_VIBRATION_PWM * ALARM_VIBRATION_PERIOD));
+					new Handler().postDelayed(this, ALARM_VIBRATION_PERIOD);
 				}
 			}
 		};
@@ -158,7 +158,6 @@ public class AwakenActivity extends AppCompatActivity {
 		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(2 * 60));
 		return fakeTime.toString("HH:mm");
 	}
-	
 	
 	@Override
 	protected void onDestroy() {
