@@ -11,6 +11,7 @@ import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.player.AlarmPlayerService;
+import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 /**
@@ -37,6 +38,8 @@ public class AppFactoryModule {
 		return LoggerFactory.getLogger();
 	}
 	
+	/* Services */
+	
 	@Provides
 	@Singleton
 	protected UserInfoService provideUserInfoService() {
@@ -59,6 +62,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected AlarmPlayerService provideAlarmPlayerService() {
 		return new AlarmPlayerService();
+	}
+	
+	@Provides
+	@Singleton
+	protected RingtoneManagerService provideRingtoneManagerService() {
+		return new RingtoneManagerService();
 	}
 	
 }

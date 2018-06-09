@@ -17,6 +17,11 @@ public class NoiseDetectorService {
 	
 	private MediaRecorder mediaRecorder;
 	
+	final double[] noiseVolTransform = new double[]{ // noise dB -> alarm volume
+			35.0, 0.3, // low limit
+			70.0, 1.0, // high limit
+	};
+	
 	public NoiseDetectorService() {
 		DaggerIOC.getAppComponent().inject(this);
 	}
@@ -52,5 +57,14 @@ public class NoiseDetectorService {
 	
 	public interface NoiseLevelMeasureCallback {
 		void onComplete(double amplitudeDb);
+	}
+	
+	public double calculateAlarmVolume(double noiseLevel) {
+		if (noiseLevel <= noiseVolTransform[0])
+			return noiseVolTransform[1];
+		if (noiseLevel >= noiseVolTransform[2])
+			return noiseVolTransform[3];
+		double fraction = (noiseLevel - noiseVolTransform[0]) / (noiseVolTransform[2] - noiseVolTransform[0]);
+		return noiseVolTransform[1] + fraction * (noiseVolTransform[3] - noiseVolTransform[1]);
 	}
 }

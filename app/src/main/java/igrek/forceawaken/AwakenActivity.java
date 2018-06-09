@@ -1,10 +1,8 @@
 package igrek.forceawaken;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
@@ -17,10 +15,7 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -28,18 +23,20 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.DaggerIOC;
+import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.player.AlarmPlayerService;
+import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 
 public class AwakenActivity extends AppCompatActivity {
 	
 	private Logger logger = LoggerFactory.getLogger();
 	private Random random = new Random();
-	private File currentRingtone;
-	private ArrayAdapter<String> listAdapter;
+	private Ringtone currentRingtone;
+	private ArrayAdapter<Ringtone> ringtoneListAdapter;
 	
 	@Inject
 	NoiseDetectorService noiseDetectorService;
@@ -48,7 +45,10 @@ public class AwakenActivity extends AppCompatActivity {
 	WindowManagerService windowManagerService;
 	
 	@Inject
-	AlarmPlayerService alarmPlayerService;
+	AlarmPlayerService alarmPlayer;
+	
+	@Inject
+	RingtoneManagerService ringtoneManager;
 	
 	private final String[] wakeUpInfos = new String[]{
 			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
@@ -84,8 +84,8 @@ public class AwakenActivity extends AppCompatActivity {
 	private void startAlarm(double noiseLevel) {
 		
 		new Handler().postDelayed(() -> {
-			if (alarmPlayerService.isPlaying()) {
-				alarmPlayerService.setVolume(1.0);
+			if (alarmPlayer.isPlaying()) {
+				alarmPlayer.setVolume(1.0);
 				logger.debug("Alarm is still playing - volume level boosted");
 			}
 		}, 90000);
@@ -93,7 +93,7 @@ public class AwakenActivity extends AppCompatActivity {
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
 			public void run() {
-				if (alarmPlayerService.isPlaying()) {
+				if (alarmPlayer.isPlaying()) {
 					logger.debug("Alarm is still playing - turning on vibrations");
 					
 					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -107,35 +107,29 @@ public class AwakenActivity extends AppCompatActivity {
 		new Handler().postDelayed(vibrationsBooster, 180000);
 		
 		try {
-			currentRingtone = randomRingtone();
-			logger.debug("Current Ringtone: " + getRingtoneName(currentRingtone));
+			currentRingtone = ringtoneManager.getRandomRingtone();
+			logger.debug("Current Ringtone: " + currentRingtone.getName());
 			
-			Uri ringUri = Uri.fromFile(currentRingtone);
-			//			Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
-			
-			final double volume = calculateAlarmVolume(noiseLevel);
+			double volume = noiseDetectorService.calculateAlarmVolume(noiseLevel);
 			logger.debug("Alarm volume level: " + volume);
 			
-			alarmPlayerService.playAlarm(ringUri, volume);
+			//Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
+			alarmPlayer.playAlarm(currentRingtone.getUri(), volume);
 		} catch (IOException e) {
 			logger.error(e);
 		}
 		
-		List<String> ringtoneNames = new ArrayList<>();
-		for (File ringtone : getAllRingtones()) {
-			ringtoneNames.add(getRingtoneName(ringtone));
-		}
-		Collections.shuffle(ringtoneNames); // that's the evilest thing i can imagine
+		List<Ringtone> ringtones = ringtoneManager.getAllRingtones();
+		Collections.shuffle(ringtones); // that's the evilest thing i can imagine
 		
-		listAdapter = new ArrayAdapter<>(this, R.layout.list_item, ringtoneNames);
-		
+		ringtoneListAdapter = new ArrayAdapter<>(this, R.layout.list_item, ringtones);
 		ListView listView = (ListView) findViewById(R.id.ringtones_answer_list);
-		listView.setAdapter(listAdapter);
+		listView.setAdapter(ringtoneListAdapter);
 		
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
-			String selected = (String) adapter1.getItemAtPosition(position);
-			if (selected.equals(getRingtoneName(currentRingtone))) {
-				alarmPlayerService.stopAlarm();
+			Ringtone selected = (Ringtone) adapter1.getItemAtPosition(position);
+			if (selected.getName().equals(currentRingtone.getName())) {
+				alarmPlayer.stopAlarm();
 				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up.", Toast.LENGTH_LONG)
 						.show();
 			} else {
@@ -144,33 +138,19 @@ public class AwakenActivity extends AppCompatActivity {
 		});
 	}
 	
-	private double calculateAlarmVolume(double noiseLevel) {
-		final double[] transformFactors = new double[]{ // noise dB -> alarm volume
-				35.0, 0.3, // low limit
-				70.0, 1.0, // high limit
-		};
-		if (noiseLevel <= transformFactors[0])
-			return transformFactors[1];
-		if (noiseLevel >= transformFactors[2])
-			return transformFactors[3];
-		double fraction = (noiseLevel - transformFactors[0]) / (transformFactors[2] - transformFactors[0]);
-		return transformFactors[1] + fraction * (transformFactors[3] - transformFactors[1]);
-	}
-	
-	
 	private void wrongAnswer() {
 		Toast.makeText(getApplicationContext(), "Wrong answer, you morron!", Toast.LENGTH_LONG)
 				.show();
+		
 		Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 		v.vibrate(1000);
-		listAdapter.clear();
-		List<String> ringtoneNames = new ArrayList<>();
-		for (File ringtone : getAllRingtones()) {
-			ringtoneNames.add(getRingtoneName(ringtone));
-		}
-		Collections.shuffle(ringtoneNames);
-		listAdapter.addAll(ringtoneNames);
-		listAdapter.notifyDataSetChanged();
+		
+		ringtoneListAdapter.clear();
+		
+		List<Ringtone> ringtones = ringtoneManager.getAllRingtones();
+		Collections.shuffle(ringtones); // that's the evilest thing i can imagine
+		ringtoneListAdapter.addAll(ringtones);
+		ringtoneListAdapter.notifyDataSetChanged();
 	}
 	
 	private String getFakeCurrentTime() {
@@ -179,20 +159,17 @@ public class AwakenActivity extends AppCompatActivity {
 		return fakeTime.toString("HH:mm");
 	}
 	
-	private String getRingtoneName(File ringtone) {
-		return ringtone.getName().replaceAll("\\.mp3$", "");
-	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		alarmPlayerService.stopAlarm();
+		alarmPlayer.stopAlarm();
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// disable back key
-		if (alarmPlayerService.isPlaying()) {
+		if (alarmPlayer.isPlaying()) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				return true;
 			} else if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -202,33 +179,7 @@ public class AwakenActivity extends AppCompatActivity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
-	private String getExternalStorageDirectory() {
-		String mExternalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-		// fucking samsung workaround
-		if (android.os.Build.DEVICE.contains("samsung") || android.os.Build.MANUFACTURER.contains("samsung")) {
-			File f = new File("/storage/extSdCard");
-			if (f.exists() && f.isDirectory()) {
-				mExternalDirectory = "/storage/extSdCard";
-			} else {
-				f = new File("/storage/external_sd");
-				if (f.exists() && f.isDirectory()) {
-					mExternalDirectory = "/storage/external_sd";
-				}
-			}
-		}
-		return mExternalDirectory;
-	}
 	
-	private File randomRingtone() {
-		List<File> ringtones = getAllRingtones();
-		return ringtones.get(random.nextInt(ringtones.size()));
-	}
-	
-	private List<File> getAllRingtones() {
-		String ringtonesPath = getExternalStorageDirectory() + "/Android/data/igrek.forceawaken/ringtones";
-		File ringtonesDir = new File(ringtonesPath);
-		return Arrays.asList(ringtonesDir.listFiles());
-	}
 	
 	
 }

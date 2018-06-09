@@ -8,6 +8,7 @@ import igrek.forceawaken.MainActivity;
 import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.player.AlarmPlayerService;
+import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.ui.errorcheck.UIErrorHandler;
 
@@ -24,6 +25,8 @@ public interface AppFactoryComponent {
 	
 	void inject(UIErrorHandler there);
 	
+	/* Services */
+	
 	void inject(UserInfoService there);
 	
 	void inject(NoiseDetectorService there);
@@ -31,5 +34,7 @@ public interface AppFactoryComponent {
 	void inject(WindowManagerService there);
 	
 	void inject(AlarmPlayerService there);
+	
+	void inject(RingtoneManagerService there);
 	
 }
