@@ -13,8 +13,6 @@ import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,6 +34,7 @@ import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
+import igrek.forceawaken.service.ui.WindowManagerService;
 
 public class AwakenActivity extends AppCompatActivity {
 	
@@ -48,6 +47,9 @@ public class AwakenActivity extends AppCompatActivity {
 	@Inject
 	NoiseDetectorService noiseDetectorService;
 	
+	@Inject
+	WindowManagerService windowManagerService;
+	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +61,7 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		setContentView(R.layout.awaken_main);
 		
-		final Window win = getWindow();
-		win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		// Turn on the screen unless we are being launched from the AlarmAlert
-		// subclass.
-		win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-		// hide status bar
-		win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
+		windowManagerService.setFullscreen();
 		
 		TextView unrealTime = (TextView) findViewById(R.id.fakeTime);
 		unrealTime.setText(getFakeCurrentTime());

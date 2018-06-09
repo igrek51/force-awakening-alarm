@@ -10,6 +10,7 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
+import igrek.forceawaken.service.ui.WindowManagerService;
 
 /**
  * Module with providers. These classes can be injected
@@ -45,6 +46,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected NoiseDetectorService provideNoiseDetectorService() {
 		return new NoiseDetectorService();
+	}
+	
+	@Provides
+	@Singleton
+	protected WindowManagerService provideWindowManagerService() {
+		return new WindowManagerService();
 	}
 	
 }
