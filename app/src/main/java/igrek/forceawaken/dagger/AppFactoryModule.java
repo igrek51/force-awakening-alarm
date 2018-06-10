@@ -8,12 +8,13 @@ import dagger.Module;
 import dagger.Provides;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
-import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ringtone.VibratorService;
+import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
+import igrek.forceawaken.service.ui.info.UserInfoService;
 
 /**
  * Module with providers. These classes can be injected
@@ -75,6 +76,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected VibratorService provideVibratorService() {
 		return new VibratorService();
+	}
+	
+	@Provides
+	@Singleton
+	protected AlarmTimeService provideAlarmTimeService() {
+		return new AlarmTimeService();
 	}
 	
 }

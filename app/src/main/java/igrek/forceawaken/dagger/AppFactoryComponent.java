@@ -5,12 +5,13 @@ import javax.inject.Singleton;
 import dagger.Component;
 import igrek.forceawaken.AwakenActivity;
 import igrek.forceawaken.MainActivity;
-import igrek.forceawaken.service.info.UserInfoService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ringtone.VibratorService;
+import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
+import igrek.forceawaken.service.ui.info.UserInfoService;
 import igrek.forceawaken.ui.errorcheck.UIErrorHandler;
 
 /**
@@ -39,5 +40,7 @@ public interface AppFactoryComponent {
 	void inject(RingtoneManagerService there);
 	
 	void inject(VibratorService there);
+	
+	void inject(AlarmTimeService there);
 	
 }

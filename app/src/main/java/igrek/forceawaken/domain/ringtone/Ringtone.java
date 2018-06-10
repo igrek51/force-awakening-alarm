@@ -30,4 +30,9 @@ public class Ringtone {
 	public String toString() {
 		return name;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj != null) && (obj instanceof Ringtone) && file.equals(((Ringtone) obj).file);
+	}
 }

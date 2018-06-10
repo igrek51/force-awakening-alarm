@@ -9,9 +9,6 @@ import android.view.KeyEvent;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,7 +25,9 @@ import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.ringtone.VibratorService;
+import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
+import igrek.forceawaken.service.ui.info.UserInfoService;
 
 public class AwakenActivity extends AppCompatActivity {
 	
@@ -52,6 +51,12 @@ public class AwakenActivity extends AppCompatActivity {
 	@Inject
 	VibratorService vibratorService;
 	
+	@Inject
+	AlarmTimeService alarmTimeService;
+	
+	@Inject
+	UserInfoService userInfoService;
+	
 	private final long ALARM_VIBRATION_PERIOD = 1000;
 	private final double ALARM_VIBRATION_PWM = 0.5;
 	
@@ -68,14 +73,15 @@ public class AwakenActivity extends AppCompatActivity {
 		DaggerIOC.init(this); // reinitialize with different activity
 		DaggerIOC.getAppComponent().inject(this);
 		
-		setContentView(R.layout.awaken_main);
-		
 		windowManagerService.setFullscreen();
 		
+		setContentView(R.layout.awaken_main);
 		TextView fakeTime = (TextView) findViewById(R.id.fakeTime);
-		fakeTime.setText(getFakeCurrentTime());
-		
 		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
+		
+		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");
+		fakeTime.setText(fakeTimeStr);
+		
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		
 		// measure surrounding loudness level
@@ -129,19 +135,25 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
 			Ringtone selected = (Ringtone) adapter1.getItemAtPosition(position);
-			if (selected.getName().equals(currentRingtone.getName())) {
-				alarmPlayer.stopAlarm();
-				Toast.makeText(getApplicationContext(), "Congratulations! You have woken up.", Toast.LENGTH_LONG)
-						.show();
-			} else {
-				wrongAnswer();
-			}
+			onRingtoneAnswer(selected);
 		});
 	}
 	
+	private void onRingtoneAnswer(Ringtone selected) {
+		if (selected.equals(currentRingtone)) {
+			correctAnswer();
+		} else {
+			wrongAnswer();
+		}
+	}
+	
+	private void correctAnswer() {
+		alarmPlayer.stopAlarm();
+		userInfoService.showToast("Congratulations! You have woken up.");
+	}
+	
 	private void wrongAnswer() {
-		Toast.makeText(getApplicationContext(), "Wrong answer, you morron!", Toast.LENGTH_LONG)
-				.show();
+		userInfoService.showToast("Wrong answer, you morron!");
 		
 		vibratorService.vibrate(1000);
 		
@@ -153,12 +165,6 @@ public class AwakenActivity extends AppCompatActivity {
 		ringtoneListAdapter.notifyDataSetChanged();
 	}
 	
-	private String getFakeCurrentTime() {
-		// 2 hours forward
-		DateTime fakeTime = DateTime.now().plusMinutes(random.nextInt(2 * 60));
-		return fakeTime.toString("HH:mm");
-	}
-	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -167,8 +173,8 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// disable back key
 		if (alarmPlayer.isPlaying()) {
+			// disable back key
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				return true;
 			} else if (keyCode == KeyEvent.KEYCODE_MENU) {

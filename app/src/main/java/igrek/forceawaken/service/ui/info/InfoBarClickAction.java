@@ -1,4 +1,4 @@
-package igrek.forceawaken.service.info;
+package igrek.forceawaken.service.ui.info;
 
 public interface InfoBarClickAction {
 	

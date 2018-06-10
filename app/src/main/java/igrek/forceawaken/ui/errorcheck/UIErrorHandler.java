@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
-import igrek.forceawaken.service.info.UserInfoService;
+import igrek.forceawaken.service.ui.info.UserInfoService;
 
 public class UIErrorHandler {
 	

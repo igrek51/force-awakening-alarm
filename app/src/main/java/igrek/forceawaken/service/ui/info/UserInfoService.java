@@ -1,10 +1,11 @@
-package igrek.forceawaken.service.info;
+package igrek.forceawaken.service.ui.info;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -70,5 +71,9 @@ public class UserInfoService {
 	
 	public void showInfoCancellable(String info, InfoBarClickAction cancelCallback) {
 		showActionInfo(info, "Undo", cancelCallback, ContextCompat.getColor(activity, R.color.colorPrimary));
+	}
+	
+	public void showToast(String message) {
+		Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_LONG).show();
 	}
 }
