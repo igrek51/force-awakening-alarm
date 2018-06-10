@@ -8,10 +8,11 @@ import dagger.Module;
 import dagger.Provides;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
+import igrek.forceawaken.service.alarm.AlarmManagerService;
+import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
-import igrek.forceawaken.service.ringtone.VibratorService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
@@ -82,6 +83,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected AlarmTimeService provideAlarmTimeService() {
 		return new AlarmTimeService();
+	}
+	
+	@Provides
+	@Singleton
+	protected AlarmManagerService provideAlarmManagerService() {
+		return new AlarmManagerService();
 	}
 	
 }

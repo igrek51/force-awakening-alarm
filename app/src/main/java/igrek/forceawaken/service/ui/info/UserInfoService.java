@@ -65,11 +65,11 @@ public class UserInfoService {
 	}
 	
 	
-	public void showInfo(String info) {
+	public void showInfoBar(String info) {
 		showActionInfo(info, "OK", null, null);
 	}
 	
-	public void showInfoCancellable(String info, InfoBarClickAction cancelCallback) {
+	public void showInfoBarCancellable(String info, InfoBarClickAction cancelCallback) {
 		showActionInfo(info, "Undo", cancelCallback, ContextCompat.getColor(activity, R.color.colorPrimary));
 	}
 	

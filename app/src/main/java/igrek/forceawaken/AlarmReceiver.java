@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
-import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver {
 	
@@ -15,11 +14,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "FORCEAWEKENINGALARM");
 		wl.acquire();
 		
-		Toast.makeText(context, "Wake up", Toast.LENGTH_LONG).show();
-		
-		Intent i = new Intent(context, AwakenActivity.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-		context.startActivity(i);
+		Intent intent2 = new Intent(context, AwakenActivity.class);
+		intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		context.startActivity(intent2);
 		
 		wl.release();
 	}

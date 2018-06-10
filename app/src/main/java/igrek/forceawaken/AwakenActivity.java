@@ -21,10 +21,10 @@ import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
+import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
-import igrek.forceawaken.service.ringtone.VibratorService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
@@ -132,7 +132,6 @@ public class AwakenActivity extends AppCompatActivity {
 		ringtoneListAdapter = new ArrayAdapter<>(this, R.layout.list_item, ringtones);
 		ListView listView = (ListView) findViewById(R.id.ringtones_answer_list);
 		listView.setAdapter(ringtoneListAdapter);
-		
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
 			Ringtone selected = (Ringtone) adapter1.getItemAtPosition(position);
 			onRingtoneAnswer(selected);
@@ -157,10 +156,9 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		vibratorService.vibrate(1000);
 		
-		ringtoneListAdapter.clear();
-		
 		List<Ringtone> ringtones = ringtoneManager.getAllRingtones();
-		Collections.shuffle(ringtones); // that's the evilest thing i can imagine
+		Collections.shuffle(ringtones);
+		ringtoneListAdapter.clear();
 		ringtoneListAdapter.addAll(ringtones);
 		ringtoneListAdapter.notifyDataSetChanged();
 	}

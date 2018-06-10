@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.util.Log;
 
+import com.google.common.base.Joiner;
+
 public class Logger {
 	
 	protected Logger() {
@@ -56,6 +58,15 @@ public class Logger {
 		log(message, LogLevel.DEBUG, "[debug] ");
 	}
 	
+	public void debug(Object... objs) {
+		String message = Joiner.on("").join(objs);
+		log(message, LogLevel.DEBUG, "[debug] ", 5);
+	}
+	
+	public void debug(Object obj) {
+		log(obj.toString(), LogLevel.DEBUG, "[debug] ", 5);
+	}
+	
 	public void trace(String message) {
 		log(message, LogLevel.TRACE, "[trace] ");
 	}
@@ -64,13 +75,16 @@ public class Logger {
 		log("Quick Trace: " + System.currentTimeMillis(), LogLevel.DEBUG, "[trace] ");
 	}
 	
-	protected void log(String message, LogLevel level, String logPrefix) {
+	private void log(String message, LogLevel level, String logPrefix) {
+		log(message, level, logPrefix, 4);
+	}
+	
+	protected void log(String message, LogLevel level, String logPrefix, int stackTraceIndex) {
 		if (level.moreOrEqualImportantThan(LoggerFactory.CONSOLE_LEVEL)) {
 			
 			String consoleMessage;
 			if (level.lessOrEqualImportantThan(LoggerFactory.SHOW_TRACE_DETAILS_LEVEL)) {
-				final int stackTraceIndex = 4; // depends on nested methods count
-				
+				// depends on nested methods count
 				StackTraceElement ste = Thread.currentThread().getStackTrace()[stackTraceIndex];
 				
 				String methodName = ste.getMethodName();

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:text="Time to force you to awake:"/>
 
-        <EditText
+        <igrek.forceawaken.ui.components.TriggerTimeInput
             android:id="@+id/alarmTimeInput"
             android:layout_width="300dp"
             android:layout_height="67dp"

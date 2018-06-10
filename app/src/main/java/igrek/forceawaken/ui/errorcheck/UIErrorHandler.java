@@ -17,7 +17,7 @@ public class UIErrorHandler {
 	private void _handleError(Throwable t) {
 		DaggerIOC.getAppComponent().inject(this);
 		logger.error(t);
-		userInfoService.showInfo("Error occurred: " + t.getMessage());
+		userInfoService.showToast("Error occurred: " + t.getMessage());
 	}
 	
 	public static void showError(Throwable t) {
