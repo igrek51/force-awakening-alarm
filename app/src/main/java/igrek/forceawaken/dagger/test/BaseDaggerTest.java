@@ -5,6 +5,7 @@ import android.app.Activity;
 import javax.inject.Inject;
 
 import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.service.volume.VolumeCalculatorService;
 
 public class BaseDaggerTest {
 	
@@ -13,5 +14,9 @@ public class BaseDaggerTest {
 	
 	@Inject
 	protected Logger logger;
+	
+	// FIXME dagger in tests
+	@Inject
+	protected VolumeCalculatorService volumeCalculatorService;
 	
 }

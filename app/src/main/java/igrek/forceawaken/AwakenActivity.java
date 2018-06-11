@@ -22,12 +22,13 @@ import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.VibratorService;
-import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
+import igrek.forceawaken.service.volume.NoiseDetectorService;
+import igrek.forceawaken.service.volume.VolumeCalculatorService;
 
 public class AwakenActivity extends AppCompatActivity {
 	
@@ -38,24 +39,20 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@Inject
 	NoiseDetectorService noiseDetectorService;
-	
 	@Inject
 	WindowManagerService windowManagerService;
-	
 	@Inject
 	AlarmPlayerService alarmPlayer;
-	
 	@Inject
 	RingtoneManagerService ringtoneManager;
-	
 	@Inject
 	VibratorService vibratorService;
-	
 	@Inject
 	AlarmTimeService alarmTimeService;
-	
 	@Inject
 	UserInfoService userInfoService;
+	@Inject
+	VolumeCalculatorService volumeCalculatorService;
 	
 	private final long ALARM_VIBRATION_PERIOD = 1000;
 	private final double ALARM_VIBRATION_PWM = 0.5;
@@ -117,7 +114,7 @@ public class AwakenActivity extends AppCompatActivity {
 			currentRingtone = ringtoneManager.getRandomRingtone();
 			logger.debug("Current Ringtone: " + currentRingtone.getName());
 			
-			double volume = noiseDetectorService.calculateAlarmVolume(noiseLevel);
+			double volume = volumeCalculatorService.calcFinalVolume(noiseLevel);
 			logger.debug("Alarm volume level: " + volume);
 			
 			//Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);

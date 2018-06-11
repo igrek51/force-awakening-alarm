@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 	private void setAlarmOnTime(DateTime triggerTime) {
 		alarmManagerService.setAlarmOnTime(triggerTime, this);
 		userInfoService.showToast("Alarm set on " + triggerTime.toString("yyyy-MM-dd"));
-		logger.debug("Alarm set at ", triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
+		logger.debug("Alarm set at " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
 	}
 	
 	

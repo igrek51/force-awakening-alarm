@@ -10,12 +10,14 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
-import igrek.forceawaken.service.noise.NoiseDetectorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
+import igrek.forceawaken.service.sensors.AccelerometerService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
+import igrek.forceawaken.service.volume.NoiseDetectorService;
+import igrek.forceawaken.service.volume.VolumeCalculatorService;
 
 /**
  * Module with providers. These classes can be injected
@@ -89,6 +91,18 @@ public class AppFactoryModule {
 	@Singleton
 	protected AlarmManagerService provideAlarmManagerService() {
 		return new AlarmManagerService();
+	}
+	
+	@Provides
+	@Singleton
+	protected AccelerometerService provideAccelerometerService() {
+		return new AccelerometerService();
+	}
+	
+	@Provides
+	@Singleton
+	protected VolumeCalculatorService provideVolumeCalculatorService(AccelerometerService accelerometerService) {
+		return new VolumeCalculatorService(accelerometerService);
 	}
 	
 }
