@@ -13,6 +13,7 @@ import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.sensors.AccelerometerService;
+import igrek.forceawaken.service.task.AwakeTaskService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
@@ -103,6 +104,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected VolumeCalculatorService provideVolumeCalculatorService(AccelerometerService accelerometerService) {
 		return new VolumeCalculatorService(accelerometerService);
+	}
+	
+	@Provides
+	@Singleton
+	protected AwakeTaskService provideAwakeTaskService() {
+		return new AwakeTaskService();
 	}
 	
 }

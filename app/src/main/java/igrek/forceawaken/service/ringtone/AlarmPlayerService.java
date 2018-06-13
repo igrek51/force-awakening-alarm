@@ -58,8 +58,10 @@ public class AlarmPlayerService {
 	}
 	
 	public void stopAlarm() {
-		if (mediaPlayer.isPlaying())
+		if (mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
+			mediaPlayer = new MediaPlayer();
+		}
 	}
 	
 	public void ensureSoundIsOn() {

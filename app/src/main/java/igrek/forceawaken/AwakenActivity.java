@@ -19,11 +19,13 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.ringtone.Ringtone;
+import igrek.forceawaken.domain.task.AwakeTask;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
+import igrek.forceawaken.service.task.AwakeTaskService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
@@ -36,6 +38,7 @@ public class AwakenActivity extends AppCompatActivity {
 	private Random random = new Random();
 	private Ringtone currentRingtone;
 	private ArrayAdapter<Ringtone> ringtoneListAdapter;
+	private AwakeTask awakeTask;
 	
 	@Inject
 	NoiseDetectorService noiseDetectorService;
@@ -53,6 +56,8 @@ public class AwakenActivity extends AppCompatActivity {
 	UserInfoService userInfoService;
 	@Inject
 	VolumeCalculatorService volumeCalculatorService;
+	@Inject
+	AwakeTaskService awakeTaskService;
 	
 	private final long ALARM_VIBRATION_PERIOD = 1000;
 	private final double ALARM_VIBRATION_PWM = 0.5;
@@ -65,6 +70,8 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		logger.debug("onCreate AwakenActivity");
 		
 		// Dagger Container init
 		DaggerIOC.init(this); // reinitialize with different activity
@@ -89,7 +96,7 @@ public class AwakenActivity extends AppCompatActivity {
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	private void startAlarm(double noiseLevel) {
+	public void startAlarm(double noiseLevel) {
 		
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying()) {
@@ -146,6 +153,12 @@ public class AwakenActivity extends AppCompatActivity {
 	private void correctAnswer() {
 		alarmPlayer.stopAlarm();
 		userInfoService.showToast("Congratulations! You have woken up.");
+		
+		if (awakeTask == null) { // only once
+			awakeTask = awakeTaskService.getRandomTask();
+			logger.debug("Random task: " + awakeTask.getClass().getSimpleName());
+			awakeTask.run(this);
+		}
 	}
 	
 	private void wrongAnswer() {

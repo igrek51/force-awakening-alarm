@@ -25,7 +25,6 @@ public class AccelerometerService implements SensorEventListener {
 	
 	public AccelerometerService() {
 		DaggerIOC.getAppComponent().inject(this);
-		logger.info("acxc stgatrted");
 		SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 		if (sensorManager == null)
 			logger.warn("no sensor manager found");

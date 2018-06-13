@@ -5,11 +5,14 @@ import javax.inject.Singleton;
 import dagger.Component;
 import igrek.forceawaken.AwakenActivity;
 import igrek.forceawaken.MainActivity;
+import igrek.forceawaken.domain.task.AnswerAgainTask;
+import igrek.forceawaken.domain.task.LuckyTask;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.sensors.AccelerometerService;
+import igrek.forceawaken.service.task.AwakeTaskService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
@@ -51,5 +54,13 @@ public interface AppFactoryComponent {
 	void inject(AccelerometerService there);
 	
 	void inject(VolumeCalculatorService there);
+	
+	void inject(AwakeTaskService there);
+	
+	/* Tasks */
+	
+	void inject(LuckyTask there);
+	
+	void inject(AnswerAgainTask there);
 	
 }
