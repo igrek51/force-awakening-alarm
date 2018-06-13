@@ -27,9 +27,10 @@ public class AlarmManagerService {
 	
 	public void setAlarmOnTime(DateTime triggerTime, Context context) {
 		Intent intent = new Intent(context, AlarmReceiver.class);
-		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), 0, intent, 0);
-		AlarmManager a = (AlarmManager) activity.getSystemService(ALARM_SERVICE);
 		long millis = triggerTime.getMillis();
+		int id = (int) millis; // unique to enable multiple alarms
+		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
+		AlarmManager a = (AlarmManager) activity.getSystemService(ALARM_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			a.setExact(AlarmManager.RTC_WAKEUP, millis, p1);
 		} else {

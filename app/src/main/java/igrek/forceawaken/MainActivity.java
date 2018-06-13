@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 	private Button btnSet, btnTestAlarm;
 	private TriggerTimeInput alarmTimeInput;
 	private EditText earlyMarginInput;
+	private EditText alarmRepeatsInput;
 	
 	@Inject
 	AlarmManagerService alarmManagerService;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 		btnTestAlarm = (Button) findViewById(R.id.btnTestAlarm);
 		alarmTimeInput = (TriggerTimeInput) findViewById(R.id.alarmTimeInput);
 		earlyMarginInput = (EditText) findViewById(R.id.earlyMarginInput);
+		alarmRepeatsInput = (EditText) findViewById(R.id.alarmRepeatsInput);
 		
 		btnSet.setOnClickListener(v -> {
 			try {
@@ -96,10 +98,23 @@ public class MainActivity extends AppCompatActivity {
 		return triggerTime;
 	}
 	
+	private int getAlarmRepeatsCount() {
+		String input = alarmRepeatsInput.getText().toString();
+		if (input.isEmpty())
+			return 1;
+		return Integer.parseInt(input);
+	}
+	
 	private void setAlarmOnTime(DateTime triggerTime) {
-		alarmManagerService.setAlarmOnTime(triggerTime, this);
-		userInfoService.showToast("Alarm set on " + triggerTime.toString("yyyy-MM-dd"));
-		logger.debug("Alarm set at " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
+		// multiple alarms at once
+		int repeats = getAlarmRepeatsCount();
+		for (int r = 0; r < repeats; r++) {
+			DateTime triggerTime2 = triggerTime.plusSeconds(r * 40);
+			alarmManagerService.setAlarmOnTime(triggerTime2, this);
+			logger.debug("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
+		}
+		
+		userInfoService.showToast(Integer.toString(repeats) + " Alarm set on " + triggerTime.toString("yyyy-MM-dd"));
 	}
 	
 	

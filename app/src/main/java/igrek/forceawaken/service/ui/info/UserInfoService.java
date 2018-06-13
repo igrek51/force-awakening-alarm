@@ -36,7 +36,7 @@ public class UserInfoService {
 		
 		Snackbar snackbar = infobars.get(view);
 		if (snackbar == null || !snackbar.isShown()) { // new info bar
-			snackbar = Snackbar.make(view, info, Snackbar.LENGTH_SHORT);
+			snackbar = Snackbar.make(view, info, Snackbar.LENGTH_LONG);
 			snackbar.setActionTextColor(Color.WHITE);
 		} else { // visible - used once again
 			snackbar.setText(info);

@@ -24,13 +24,13 @@ public class AnswerAgainTask implements AwakeTask {
 	
 	@Override
 	public double getProbabilityWeight() {
-		return 5;
+		return 0; // TODO turn it on
 	}
 	
 	@SuppressLint("NewApi")
 	@Override
 	public void run(AwakenActivity activity) {
-		userInfoService.showInfoBar("Once again.");
-		activity.startAlarm(0);
+		userInfoService.showInfoBar("Once again quest.");
+		activity.startAlarmPlaying(0);
 	}
 }

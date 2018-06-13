@@ -1,5 +1,7 @@
 package igrek.forceawaken;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,6 +68,9 @@ public class AwakenActivity extends AppCompatActivity {
 			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
 	};
 	
+	private TextView fakeTimeLabel;
+	private TextView wakeUpLabel;
+	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,23 +85,41 @@ public class AwakenActivity extends AppCompatActivity {
 		windowManagerService.setFullscreen();
 		
 		setContentView(R.layout.awaken_main);
-		TextView fakeTime = (TextView) findViewById(R.id.fakeTime);
-		TextView wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
+		fakeTimeLabel = (TextView) findViewById(R.id.fakeTime);
+		wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
 		
-		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");
-		fakeTime.setText(fakeTimeStr);
-		
-		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
-		
-		// measure surrounding loudness level
-		noiseDetectorService.measureNoiseLevel(1000, (amplitudeDb) -> {
-			startAlarm(amplitudeDb);
-		});
-		
+		bootstrapAlarm();
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	public void startAlarm(double noiseLevel) {
+	private void bootstrapAlarm() {
+		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");
+		fakeTimeLabel.setText(fakeTimeStr);
+		
+		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
+		// measure surrounding loudness level
+		noiseDetectorService.measureNoiseLevel(1000, (amplitudeDb) -> {
+			startAlarmPlaying(amplitudeDb);
+		});
+	}
+	
+	@SuppressLint("NewApi")
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		logger.debug("AwakenActivity.onNewIntent");
+		if (alarmPlayer.isPlaying()) {
+			logger.debug("Alarm already playing - cancelling the new one");
+		} else {
+			bootstrapAlarm();
+		}
+	}
+	
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+	public void startAlarmPlaying(double noiseLevel) {
+		
+		// stop the previous alarm
+		alarmPlayer.stopAlarm();
 		
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying()) {

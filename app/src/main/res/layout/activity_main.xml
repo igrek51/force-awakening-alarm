@@ -28,7 +28,7 @@
             android:layout_height="67dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:ems="10"
             android:hint="HH:MM"
             android:inputType="time"
@@ -41,20 +41,33 @@
             android:layout_height="60dp"
             android:layout_below="@+id/alarmTimeInput"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:ems="10"
             android:hint="early wakeup [min]"
             android:inputType="time"
             android:text=""
             android:textAlignment="center"/>
 
+        <EditText
+            android:id="@+id/alarmRepeatsInput"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/earlyMarginInput"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:hint="alarm repeats"
+            android:inputType="number"
+            android:text="5"
+            android:textAlignment="center"/>
+
         <Button
             android:id="@+id/btnSetAlarm"
             android:layout_width="157dp"
             android:layout_height="68dp"
-            android:layout_below="@+id/earlyMarginInput"
+            android:layout_below="@+id/alarmRepeatsInput"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:text="Set Alarm"/>
 
         <Button
