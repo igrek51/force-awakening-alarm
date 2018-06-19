@@ -16,7 +16,10 @@ public class VolumeCalculatorService {
 			70.0, 1.0, // high limit
 	};
 	
-	final double deviceUpCompensation = 1.3;
+	final double speakerDownCompensation = 1.3;
+	
+	final double globalVolume = 0.5;
+	
 	private AccelerometerService accelerometerService;
 	
 	public VolumeCalculatorService(AccelerometerService accelerometerService) {
@@ -36,12 +39,12 @@ public class VolumeCalculatorService {
 	public double calcFinalVolume(double noiseLevel) {
 		double vol1 = calcVolumeByNoise(noiseLevel);
 		boolean deviceUp = accelerometerService.isDeviceRotatedUp();
-		if (deviceUp) { // device rotated up - increase volume
-			logger.debug("Device is rotated up - boosting volume level");
-			vol1 *= deviceUpCompensation;
+		if (deviceUp) { // speaker rotated down - increase volume
+			logger.debug("Speaker is rotated down - boosting volume level");
+			vol1 *= speakerDownCompensation;
 			if (vol1 > 1.0) // cut off
 				vol1 = 1.0;
 		}
-		return vol1;
+		return vol1 * globalVolume;
 	}
 }
