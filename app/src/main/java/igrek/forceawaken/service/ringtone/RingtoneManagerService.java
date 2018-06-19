@@ -1,7 +1,6 @@
 package igrek.forceawaken.service.ringtone;
 
 import android.app.Activity;
-import android.os.Environment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,33 +11,20 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.ringtone.Ringtone;
+import igrek.forceawaken.service.filesystem.ExternalCardService;
 
 public class RingtoneManagerService {
 	
 	@Inject
 	Activity activity;
 	
+	@Inject
+	ExternalCardService externalCardService;
+	
 	private Random random = new Random();
 	
 	public RingtoneManagerService() {
 		DaggerIOC.getAppComponent().inject(this);
-	}
-	
-	private String getExternalStorageDirectory() {
-		String mExternalDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-		// WTF samsung workaround
-		if (android.os.Build.DEVICE.contains("samsung") || android.os.Build.MANUFACTURER.contains("samsung")) {
-			File f = new File("/storage/extSdCard");
-			if (f.exists() && f.isDirectory()) {
-				mExternalDirectory = "/storage/extSdCard";
-			} else {
-				f = new File("/storage/external_sd");
-				if (f.exists() && f.isDirectory()) {
-					mExternalDirectory = "/storage/external_sd";
-				}
-			}
-		}
-		return mExternalDirectory;
 	}
 	
 	public Ringtone getRandomRingtone() {
@@ -55,6 +41,10 @@ public class RingtoneManagerService {
 			ringtones.add(new Ringtone(file, name));
 		}
 		return ringtones;
+	}
+	
+	private String getExternalStorageDirectory() {
+		return externalCardService.getExternalSDPath();
 	}
 	
 	private String getRingtoneName(File ringtone) {

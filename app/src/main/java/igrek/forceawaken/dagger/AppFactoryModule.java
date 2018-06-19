@@ -10,6 +10,7 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
+import igrek.forceawaken.service.filesystem.ExternalCardService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.sensors.AccelerometerService;
@@ -110,6 +111,12 @@ public class AppFactoryModule {
 	@Singleton
 	protected AwakeTaskService provideAwakeTaskService() {
 		return new AwakeTaskService();
+	}
+	
+	@Provides
+	@Singleton
+	protected ExternalCardService provideExternalCardService() {
+		return new ExternalCardService();
 	}
 	
 }

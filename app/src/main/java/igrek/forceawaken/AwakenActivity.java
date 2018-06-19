@@ -76,7 +76,7 @@ public class AwakenActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		logger.debug("onCreate AwakenActivity");
+		logger.debug("AwakenActivity.onCreate");
 		
 		// Dagger Container init
 		DaggerIOC.init(this); // reinitialize with different activity
@@ -117,7 +117,6 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public void startAlarmPlaying(double noiseLevel) {
-		
 		// stop the previous alarm
 		alarmPlayer.stopAlarm();
 		
