@@ -9,25 +9,20 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
-import javax.inject.Inject;
-
 import igrek.forceawaken.R;
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.ui.errorcheck.SafeClickListener;
 
 public class UserInfoService {
 	
-	@Inject
-	Logger logger;
-	
-	@Inject
-	Activity activity;
+	private Logger logger;
+	private Activity activity;
 	
 	private HashMap<View, Snackbar> infobars = new HashMap<>();
 	
-	public UserInfoService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public UserInfoService(Logger logger, Activity activity) {
+		this.logger = logger;
+		this.activity = activity;
 	}
 	
 	private void showActionInfo(String info, String actionName, InfoBarClickAction action, Integer color) {

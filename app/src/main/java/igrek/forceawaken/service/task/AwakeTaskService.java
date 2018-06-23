@@ -5,9 +5,6 @@ import android.app.Activity;
 import java.util.LinkedList;
 import java.util.Random;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.task.AnswerAgainTask;
 import igrek.forceawaken.domain.task.AwakeTask;
 import igrek.forceawaken.domain.task.LuckyTask;
@@ -15,15 +12,12 @@ import igrek.forceawaken.domain.task.MathTask;
 
 public class AwakeTaskService {
 	
-	@Inject
-	Activity activity;
-	
+	private Activity activity;
 	private LinkedList<AwakeTask> registeredTasks = new LinkedList<>();
-	
 	private Random random = new Random();
 	
-	public AwakeTaskService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public AwakeTaskService(Activity activity) {
+		this.activity = activity;
 		enableTasks();
 	}
 	

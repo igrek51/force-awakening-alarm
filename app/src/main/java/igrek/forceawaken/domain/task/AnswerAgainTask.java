@@ -14,7 +14,7 @@ public class AnswerAgainTask implements AwakeTask {
 	UserInfoService userInfoService;
 	
 	public AnswerAgainTask() {
-		DaggerIOC.getAppComponent().inject(this);
+		DaggerIOC.getFactoryComponent().inject(this);
 	}
 	
 	@Override

@@ -51,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// Dagger Container init
-		DaggerIOC.init(this); // reinitialize with different activity
-		DaggerIOC.getAppComponent().inject(this); // inject to this
+		DaggerIOC.getFactoryComponent().inject(this); // inject to this
 		
 		// catch all uncaught exceptions
 		// TODO catch also in another activities

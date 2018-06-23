@@ -1,11 +1,14 @@
 package igrek.forceawaken.dagger;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import igrek.forceawaken.MainApplication;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
@@ -27,22 +30,30 @@ import igrek.forceawaken.service.volume.VolumeCalculatorService;
  * Module with providers. These classes can be injected
  */
 @Module
-public class AppFactoryModule {
+public class FactoryModule {
 	
-	protected Activity activity;
+	private MainApplication application;
 	
-	public AppFactoryModule(Activity activity) {
-		this.activity = activity;
+	public FactoryModule(MainApplication application) {
+		this.application = application;
 	}
 	
 	@Provides
-	@Singleton
+	protected Application provideApplication() {
+		return application;
+	}
+	
+	@Provides
+	protected Context provideContext() {
+		return application.getApplicationContext();
+	}
+	
+	@Provides
 	protected Activity provideActivity() {
-		return activity;
+		return application.getCurrentActivity();
 	}
 	
 	@Provides
-	@Singleton
 	protected Logger provideLogger() {
 		return LoggerFactory.getLogger();
 	}
@@ -51,38 +62,38 @@ public class AppFactoryModule {
 	
 	@Provides
 	@Singleton
-	protected UserInfoService provideUserInfoService() {
-		return new UserInfoService();
+	protected UserInfoService provideUserInfoService(Logger logger, Activity activity) {
+		return new UserInfoService(logger, activity);
 	}
 	
 	@Provides
 	@Singleton
-	protected NoiseDetectorService provideNoiseDetectorService() {
-		return new NoiseDetectorService();
+	protected NoiseDetectorService provideNoiseDetectorService(Logger logger) {
+		return new NoiseDetectorService(logger);
 	}
 	
 	@Provides
 	@Singleton
-	protected WindowManagerService provideWindowManagerService() {
-		return new WindowManagerService();
+	protected WindowManagerService provideWindowManagerService(Activity activity) {
+		return new WindowManagerService(activity);
 	}
 	
 	@Provides
 	@Singleton
-	protected AlarmPlayerService provideAlarmPlayerService() {
-		return new AlarmPlayerService();
+	protected AlarmPlayerService provideAlarmPlayerService(Activity activity) {
+		return new AlarmPlayerService(activity);
 	}
 	
 	@Provides
 	@Singleton
-	protected RingtoneManagerService provideRingtoneManagerService() {
-		return new RingtoneManagerService();
+	protected RingtoneManagerService provideRingtoneManagerService(Activity activity, ExternalCardService externalCardService) {
+		return new RingtoneManagerService(activity, externalCardService);
 	}
 	
 	@Provides
 	@Singleton
-	protected VibratorService provideVibratorService() {
-		return new VibratorService();
+	protected VibratorService provideVibratorService(Activity activity) {
+		return new VibratorService(activity);
 	}
 	
 	@Provides
@@ -93,14 +104,14 @@ public class AppFactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AlarmManagerService provideAlarmManagerService() {
-		return new AlarmManagerService();
+	protected AlarmManagerService provideAlarmManagerService(Activity activity) {
+		return new AlarmManagerService(activity);
 	}
 	
 	@Provides
 	@Singleton
-	protected AccelerometerService provideAccelerometerService() {
-		return new AccelerometerService();
+	protected AccelerometerService provideAccelerometerService(Activity activity) {
+		return new AccelerometerService(activity);
 	}
 	
 	@Provides
@@ -111,8 +122,8 @@ public class AppFactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AwakeTaskService provideAwakeTaskService() {
-		return new AwakeTaskService();
+	protected AwakeTaskService provideAwakeTaskService(Activity activity) {
+		return new AwakeTaskService(activity);
 	}
 	
 	@Provides
@@ -129,8 +140,8 @@ public class AppFactoryModule {
 	
 	@Provides
 	@Singleton
-	protected InternalDataService provideInternalDataService(Activity activity) {
-		return new InternalDataService(activity);
+	protected InternalDataService provideInternalDataService(Context context) {
+		return new InternalDataService(context);
 	}
 	
 }

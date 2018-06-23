@@ -11,19 +11,13 @@ import android.support.annotation.RequiresApi;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
-
 public class AlarmPlayerService {
 	
-	@Inject
-	Activity activity;
-	
+	private Activity activity;
 	private MediaPlayer mediaPlayer;
 	
-	public AlarmPlayerService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public AlarmPlayerService(Activity activity) {
+		this.activity = activity;
 		mediaPlayer = new MediaPlayer();
 	}
 	

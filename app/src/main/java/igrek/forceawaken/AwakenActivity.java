@@ -78,9 +78,7 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		logger.debug("AwakenActivity.onCreate");
 		
-		// Dagger Container init
-		DaggerIOC.init(this); // reinitialize with different activity
-		DaggerIOC.getAppComponent().inject(this);
+		DaggerIOC.getFactoryComponent().inject(this);
 		
 		windowManagerService.setFullscreen();
 		

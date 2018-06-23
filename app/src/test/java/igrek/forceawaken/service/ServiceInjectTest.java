@@ -1,4 +1,4 @@
-package igrek.forceawaken.service.task;
+package igrek.forceawaken.service;
 
 import org.junit.Test;
 
@@ -6,11 +6,12 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.base.BaseDaggerTest;
 import igrek.forceawaken.dagger.base.TestComponent;
+import igrek.forceawaken.service.volume.VolumeCalculatorService;
 
-public class AwakeTaskServiceTest extends BaseDaggerTest {
+public class ServiceInjectTest extends BaseDaggerTest {
 	
 	@Inject
-	AwakeTaskService awakeTaskService;
+	VolumeCalculatorService service;
 	
 	@Override
 	protected void daggerInject(TestComponent component) {
@@ -19,10 +20,6 @@ public class AwakeTaskServiceTest extends BaseDaggerTest {
 	
 	@Test
 	public void test_getRandomTask() {
-		//FIXME null
-		logger.info("awakeTaskService: " + awakeTaskService);
-		//		for (int i = 0; i < 10; i++) {
-		//			logger.debug(awakeTaskService.getRandomTask());
-		//		}
+		logger.info("VolumeCalculatorService: " + service);
 	}
 }

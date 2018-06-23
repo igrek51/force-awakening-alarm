@@ -5,20 +5,15 @@ import android.os.Handler;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 
 public class NoiseDetectorService {
 	
-	@Inject
-	Logger logger;
-	
+	private Logger logger;
 	private MediaRecorder mediaRecorder;
 	
-	public NoiseDetectorService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public NoiseDetectorService(Logger logger) {
+		this.logger = logger;
 	}
 	
 	public void measureNoiseLevel(long millis, NoiseLevelMeasureCallback completeCallback) {

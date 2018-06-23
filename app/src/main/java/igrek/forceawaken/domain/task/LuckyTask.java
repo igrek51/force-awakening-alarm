@@ -12,7 +12,7 @@ public class LuckyTask implements AwakeTask {
 	UserInfoService userInfoService;
 	
 	public LuckyTask() {
-		DaggerIOC.getAppComponent().inject(this);
+		DaggerIOC.getFactoryComponent().inject(this);
 	}
 	
 	@Override

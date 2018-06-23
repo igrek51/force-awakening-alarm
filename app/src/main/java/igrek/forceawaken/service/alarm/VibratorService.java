@@ -4,19 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Vibrator;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
-
 public class VibratorService {
 	
-	@Inject
-	Activity activity;
+	private Activity activity;
 	
 	private Vibrator vibrator;
 	
-	public VibratorService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public VibratorService(Activity activity) {
+		this.activity = activity;
 		vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 	

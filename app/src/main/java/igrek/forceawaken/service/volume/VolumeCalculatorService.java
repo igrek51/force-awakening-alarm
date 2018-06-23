@@ -1,15 +1,12 @@
 package igrek.forceawaken.service.volume;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.sensors.AccelerometerService;
 
 public class VolumeCalculatorService {
 	
-	@Inject
-	Logger logger;
+	Logger logger = LoggerFactory.getLogger();
 	
 	final double[] noiseVolTransform = new double[]{ // noise dB -> alarm volume
 			35.0, 0.3, // low limit
@@ -24,7 +21,6 @@ public class VolumeCalculatorService {
 	
 	public VolumeCalculatorService(AccelerometerService accelerometerService) {
 		this.accelerometerService = accelerometerService;
-		DaggerIOC.getAppComponent().inject(this);
 	}
 	
 	public double calcVolumeByNoise(double noiseLevel) {

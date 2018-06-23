@@ -9,20 +9,16 @@ import android.os.Build;
 
 import org.joda.time.DateTime;
 
-import javax.inject.Inject;
-
 import igrek.forceawaken.AlarmReceiver;
-import igrek.forceawaken.dagger.DaggerIOC;
 
 import static android.content.Context.ALARM_SERVICE;
 
 public class AlarmManagerService {
 	
-	@Inject
-	Activity activity;
+	private Activity activity;
 	
-	public AlarmManagerService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public AlarmManagerService(Activity activity) {
+		this.activity = activity;
 	}
 	
 	public void setAlarmOnTime(DateTime triggerTime, Context context) {

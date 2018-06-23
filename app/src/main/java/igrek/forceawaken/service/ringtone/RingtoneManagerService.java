@@ -7,24 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.service.filesystem.ExternalCardService;
 
 public class RingtoneManagerService {
 	
-	@Inject
-	Activity activity;
-	
-	@Inject
-	ExternalCardService externalCardService;
+	private Activity activity;
+	private ExternalCardService externalCardService;
 	
 	private Random random = new Random();
 	
-	public RingtoneManagerService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public RingtoneManagerService(Activity activity, ExternalCardService externalCardService) {
+		this.activity = activity;
+		this.externalCardService = externalCardService;
 	}
 	
 	public Ringtone getRandomRingtone() {

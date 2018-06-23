@@ -7,24 +7,20 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 
 public class AccelerometerService implements SensorEventListener {
 	
-	@Inject
-	Activity activity;
+	private Activity activity;
 	
 	private float xValue, yValue, zValue;
 	private Sensor accelerometer;
 	
-	@Inject
-	Logger logger;
+	Logger logger = LoggerFactory.getLogger();
 	
-	public AccelerometerService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public AccelerometerService(Activity activity) {
+		this.activity = activity;
 		SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 		if (sensorManager == null)
 			logger.warn("no sensor manager found");

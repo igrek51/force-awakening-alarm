@@ -4,17 +4,12 @@ import android.app.Activity;
 import android.view.Window;
 import android.view.WindowManager;
 
-import javax.inject.Inject;
-
-import igrek.forceawaken.dagger.DaggerIOC;
-
 public class WindowManagerService {
 	
-	@Inject
-	Activity activity;
+	private Activity activity;
 	
-	public WindowManagerService() {
-		DaggerIOC.getAppComponent().inject(this);
+	public WindowManagerService(Activity activity) {
+		this.activity = activity;
 	}
 	
 	public void setFullscreen() {
