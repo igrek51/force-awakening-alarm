@@ -11,6 +11,8 @@ import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.filesystem.ExternalCardService;
+import igrek.forceawaken.service.filesystem.InternalDataService;
+import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.sensors.AccelerometerService;
@@ -117,6 +119,18 @@ public class AppFactoryModule {
 	@Singleton
 	protected ExternalCardService provideExternalCardService() {
 		return new ExternalCardService();
+	}
+	
+	@Provides
+	@Singleton
+	protected AlarmsPersistenceService provideAlarmsPersistenceService(InternalDataService internalDataService) {
+		return new AlarmsPersistenceService(internalDataService);
+	}
+	
+	@Provides
+	@Singleton
+	protected InternalDataService provideInternalDataService(Activity activity) {
+		return new InternalDataService(activity);
 	}
 	
 }

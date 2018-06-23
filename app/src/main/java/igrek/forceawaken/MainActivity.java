@@ -6,6 +6,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.common.base.Joiner;
+
 import org.joda.time.DateTime;
 
 import java.util.Random;
@@ -13,9 +15,12 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import igrek.forceawaken.dagger.DaggerIOC;
+import igrek.forceawaken.domain.alarm.AlarmTrigger;
+import igrek.forceawaken.domain.alarm.AlarmsConfig;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
+import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
 import igrek.forceawaken.ui.components.TriggerTimeInput;
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 	
 	@Inject
 	AlarmTimeService alarmTimeService;
+	
+	@Inject
+	AlarmsPersistenceService alarmsPersistenceService;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +84,19 @@ public class MainActivity extends AppCompatActivity {
 			setAlarmOnTime(DateTime.now().plusSeconds(3));
 		});
 		
+		// TODO alarms set list
+		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
+		if (alarmsConfig != null) {
+			logger.debug(Joiner.on(", ").join(alarmsConfig.getAlarmTriggers()));
+		}
+		alarmsConfig.getAlarmTriggers().add(new AlarmTrigger(DateTime.now()));
+		alarmsPersistenceService.writeAlarmsConfig(alarmsConfig);
+		
 		alarmTimeInput.requestFocus();
 		// show keyboard
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		
-		logger.debug("Application has been started");
+		logger.debug(this.getClass().getSimpleName() + " has been created");
 	}
 	
 	private DateTime buildFinalTriggerTime() {

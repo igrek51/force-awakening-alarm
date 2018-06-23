@@ -2,7 +2,9 @@ package igrek.forceawaken.domain.alarm;
 
 import org.joda.time.DateTime;
 
-public class AlarmTrigger {
+import java.io.Serializable;
+
+public class AlarmTrigger implements Serializable {
 	
 	private DateTime triggerTime;
 	
