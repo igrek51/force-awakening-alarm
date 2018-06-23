@@ -32,6 +32,8 @@ public class SimpleDaggerInjectionTest {
 				.factoryModule(new TestModule(application))
 				.build();
 		
+		DaggerIOC.setFactoryComponent(component);
+		
 		component.inject(this);
 	}
 	

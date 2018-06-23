@@ -75,6 +75,13 @@ public class Logger {
 		log("Quick Trace: " + System.currentTimeMillis(), LogLevel.DEBUG, "[trace] ");
 	}
 	
+	/**
+	 * Super debug
+	 */
+	public void dupa() {
+		log("dupa", LogLevel.DEBUG, "[debug] ");
+	}
+	
 	private void log(String message, LogLevel level, String logPrefix) {
 		log(message, level, logPrefix, 4);
 	}

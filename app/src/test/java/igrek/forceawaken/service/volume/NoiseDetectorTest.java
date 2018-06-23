@@ -15,13 +15,12 @@ public class NoiseDetectorTest extends BaseDaggerTest {
 	VolumeCalculatorService vc;
 	
 	@Override
-	protected void daggerInject(TestComponent component) {
+	protected void injectThis(TestComponent component) {
 		component.inject(this);
 	}
 	
 	@Test
 	public void testCalculateAlarmVolume() {
-		//		VolumeCalculatorService vc = new VolumeCalculatorService();
 		assertThat(vc.calcVolumeByNoise(0.0)).isEqualTo(vc.noiseVolTransform[1]);
 		assertThat(vc.calcVolumeByNoise(vc.noiseVolTransform[0])).isEqualTo(vc.noiseVolTransform[1]);
 		assertThat(vc.calcVolumeByNoise(vc.noiseVolTransform[2])).isEqualTo(vc.noiseVolTransform[3]);

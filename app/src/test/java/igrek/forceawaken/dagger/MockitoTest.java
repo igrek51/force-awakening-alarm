@@ -2,11 +2,11 @@ package igrek.forceawaken.dagger;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import igrek.forceawaken.MainApplication;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MockitoTest {
@@ -15,7 +15,7 @@ public class MockitoTest {
 	
 	@Before
 	public void setUp() {
-		application = mock(MainApplication.class);
+		application = Mockito.mock(MainApplication.class);
 		
 		when(application.toString()).thenReturn("dupa");
 	}

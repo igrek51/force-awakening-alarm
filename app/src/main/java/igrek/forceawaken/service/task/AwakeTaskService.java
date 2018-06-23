@@ -9,15 +9,19 @@ import igrek.forceawaken.domain.task.AnswerAgainTask;
 import igrek.forceawaken.domain.task.AwakeTask;
 import igrek.forceawaken.domain.task.LuckyTask;
 import igrek.forceawaken.domain.task.MathTask;
+import igrek.forceawaken.logger.Logger;
 
 public class AwakeTaskService {
 	
 	private Activity activity;
+	private Logger logger;
 	private LinkedList<AwakeTask> registeredTasks = new LinkedList<>();
 	private Random random = new Random();
 	
-	public AwakeTaskService(Activity activity) {
+	public AwakeTaskService(Activity activity, Logger logger) {
 		this.activity = activity;
+		this.logger = logger;
+		logger.dupa();
 		enableTasks();
 	}
 	

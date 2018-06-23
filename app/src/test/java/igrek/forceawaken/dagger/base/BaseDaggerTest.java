@@ -5,7 +5,7 @@ import android.app.Application;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -13,10 +13,11 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.BuildConfig;
 import igrek.forceawaken.MainApplication;
+import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, application = MainApplication.class)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, application = MainApplication.class, manifest = "src/main/AndroidManifest.xml", packageName = "igrek.forceawaken")
 public abstract class BaseDaggerTest {
 	
 	@Inject
@@ -37,10 +38,12 @@ public abstract class BaseDaggerTest {
 				.factoryModule(new TestModule(application))
 				.build();
 		
-		daggerInject(component);
+		DaggerIOC.setFactoryComponent(component);
+		
+		injectThis(component);
 	}
 	
-	protected void daggerInject(TestComponent component) {
+	protected void injectThis(TestComponent component) {
 		component.inject(this);
 	}
 }

@@ -110,8 +110,8 @@ public class FactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AccelerometerService provideAccelerometerService(Activity activity) {
-		return new AccelerometerService(activity);
+	protected AccelerometerService provideAccelerometerService(Activity activity, Logger logger) {
+		return new AccelerometerService(activity, logger);
 	}
 	
 	@Provides
@@ -122,8 +122,8 @@ public class FactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AwakeTaskService provideAwakeTaskService(Activity activity) {
-		return new AwakeTaskService(activity);
+	protected AwakeTaskService provideAwakeTaskService(Activity activity, Logger logger) {
+		return new AwakeTaskService(activity, logger);
 	}
 	
 	@Provides

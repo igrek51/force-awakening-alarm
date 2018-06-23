@@ -14,7 +14,7 @@ public class ServiceInjectTest extends BaseDaggerTest {
 	VolumeCalculatorService service;
 	
 	@Override
-	protected void daggerInject(TestComponent component) {
+	protected void injectThis(TestComponent component) {
 		component.inject(this);
 	}
 	

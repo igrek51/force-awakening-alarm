@@ -13,16 +13,15 @@ public class AwakeTaskServiceTest extends BaseDaggerTest {
 	AwakeTaskService awakeTaskService;
 	
 	@Override
-	protected void daggerInject(TestComponent component) {
+	protected void injectThis(TestComponent component) {
 		component.inject(this);
 	}
 	
 	@Test
 	public void test_getRandomTask() {
-		//FIXME null
 		logger.info("awakeTaskService: " + awakeTaskService);
-		//		for (int i = 0; i < 10; i++) {
-		//			logger.debug(awakeTaskService.getRandomTask());
-		//		}
+		for (int i = 0; i < 10; i++) {
+			logger.debug(awakeTaskService.getRandomTask());
+		}
 	}
 }
