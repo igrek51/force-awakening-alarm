@@ -60,11 +60,18 @@ public class Logger {
 	
 	public void debug(Object... objs) {
 		String message = Joiner.on(", ").join(objs);
-		log(message, LogLevel.DEBUG, "[debug] ", 5);
+		log(message, LogLevel.DEBUG, "[debug] ", 6);
 	}
 	
 	public void debug(Object obj) {
-		log(obj.toString(), LogLevel.DEBUG, "[debug] ", 5);
+		log(obj.toString(), LogLevel.DEBUG, "[debug] ", 6);
+	}
+	
+	/**
+	 * Super debug
+	 */
+	public void dupa() {
+		log("dupa", LogLevel.DEBUG, "[debug] ");
 	}
 	
 	public void trace(String message) {
@@ -75,15 +82,8 @@ public class Logger {
 		log("Quick Trace: " + System.currentTimeMillis(), LogLevel.DEBUG, "[trace] ");
 	}
 	
-	/**
-	 * Super debug
-	 */
-	public void dupa() {
-		log("dupa", LogLevel.DEBUG, "[debug] ");
-	}
-	
 	private void log(String message, LogLevel level, String logPrefix) {
-		log(message, level, logPrefix, 4);
+		log(message, level, logPrefix, 5);
 	}
 	
 	protected void log(String message, LogLevel level, String logPrefix, int stackTraceIndex) {

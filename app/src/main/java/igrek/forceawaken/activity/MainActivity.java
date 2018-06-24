@@ -1,14 +1,14 @@
 package igrek.forceawaken.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import com.google.common.base.Joiner;
+import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 	private Random random = new Random();
 	private Button btnSet, btnTestAlarm;
 	private TriggerTimeInput alarmTimeInput;
+	private TextView nowDateTime;
 	private EditText earlyMarginInput;
 	private EditText alarmRepeatsInput;
 	private ListView alramTriggerList;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 		alarmTimeInput = findViewById(R.id.alarmTimeInput);
 		earlyMarginInput = findViewById(R.id.earlyMarginInput);
 		alarmRepeatsInput = findViewById(R.id.alarmRepeatsInput);
+		nowDateTime = findViewById(R.id.nowDateTime);
 		
 		btnSet.setOnClickListener(v -> {
 			try {
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
 		// TODO refactor
 		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
 		if (alarmsConfig != null) {
-			
 			alramTriggerListAdapter = new ArrayAdapter<>(this, R.layout.list_item, alarmsConfig.getAlarmTriggers());
 			ListView listView = findViewById(R.id.alramTriggerList);
 			listView.setAdapter(alramTriggerListAdapter);
@@ -102,9 +103,18 @@ public class MainActivity extends AppCompatActivity {
 				alramTriggerListAdapter.addAll(alarmsConfig2.getAlarmTriggers());
 				alramTriggerListAdapter.notifyDataSetChanged();
 			});
-			
-			logger.debug(Joiner.on(", ").join(alarmsConfig.getAlarmTriggers()));
 		}
+		
+		// refreshing current time
+		Handler someHandler = new Handler(getMainLooper());
+		someHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				nowDateTime.setText(DateTime.now().toString("HH:mm:ss, yyyy-MM-dd"));
+				someHandler.postDelayed(this, 1000);
+			}
+		}, 10);
+		// TODO keep a reference to the handler and the runnable to cancel this when the Activity goes to pause and resume when it resumes.
 		
 		alarmTimeInput.requestFocus();
 		// show keyboard
