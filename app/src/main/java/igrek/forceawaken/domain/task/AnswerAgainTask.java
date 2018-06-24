@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 
 import javax.inject.Inject;
 
-import igrek.forceawaken.AwakenActivity;
+import igrek.forceawaken.activity.AwakenActivity;
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.service.ui.info.UserInfoService;
 

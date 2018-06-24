@@ -3,8 +3,8 @@ package igrek.forceawaken.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import igrek.forceawaken.AwakenActivity;
-import igrek.forceawaken.MainActivity;
+import igrek.forceawaken.activity.AwakenActivity;
+import igrek.forceawaken.activity.MainActivity;
 import igrek.forceawaken.domain.task.AnswerAgainTask;
 import igrek.forceawaken.domain.task.LuckyTask;
 import igrek.forceawaken.ui.errorcheck.UIErrorHandler;

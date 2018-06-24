@@ -1,6 +1,6 @@
 package igrek.forceawaken.domain.task;
 
-import igrek.forceawaken.AwakenActivity;
+import igrek.forceawaken.activity.AwakenActivity;
 
 /**
  * Task to do by an user after waking up

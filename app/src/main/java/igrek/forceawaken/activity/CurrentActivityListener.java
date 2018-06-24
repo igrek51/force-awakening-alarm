@@ -1,4 +1,4 @@
-package igrek.forceawaken;
+package igrek.forceawaken.activity;
 
 import android.app.Activity;
 import android.app.Application;

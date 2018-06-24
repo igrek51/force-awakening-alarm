@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import igrek.forceawaken.domain.alarm.AlarmTrigger;
 import igrek.forceawaken.domain.alarm.AlarmsConfig;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
@@ -55,5 +56,22 @@ public class AlarmsPersistenceService {
 	private File getAlarmsConfigFile() {
 		File internalDataDir = internalDataService.getInternalDataDir();
 		return new File(internalDataDir, "alarmsConfig");
+	}
+	
+	public AlarmsConfig addAlarmTrigger(AlarmTrigger alarmTrigger) {
+		AlarmsConfig alarmsConfig = readAlarmsConfig();
+		alarmsConfig.getAlarmTriggers().add(alarmTrigger);
+		writeAlarmsConfig(alarmsConfig);
+		logger.info("Alarm trigger has been added: " + alarmTrigger);
+		return alarmsConfig;
+	}
+	
+	public AlarmsConfig removeAlarmTrigger(AlarmTrigger alarmTrigger) {
+		AlarmsConfig alarmsConfig = readAlarmsConfig();
+		if (alarmsConfig.getAlarmTriggers().remove(alarmTrigger)) {
+			writeAlarmsConfig(alarmsConfig);
+			logger.info("Alarm trigger has been removed: " + alarmTrigger);
+		}
+		return alarmsConfig;
 	}
 }

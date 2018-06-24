@@ -1,4 +1,4 @@
-package igrek.forceawaken;
+package igrek.forceawaken.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

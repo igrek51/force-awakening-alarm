@@ -104,8 +104,8 @@ public class FactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AlarmManagerService provideAlarmManagerService(Activity activity) {
-		return new AlarmManagerService(activity);
+	protected AlarmManagerService provideAlarmManagerService(Activity activity, AlarmsPersistenceService alarmsPersistenceService) {
+		return new AlarmManagerService(activity, alarmsPersistenceService);
 	}
 	
 	@Provides

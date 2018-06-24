@@ -8,7 +8,7 @@
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="igrek.forceawaken.MainActivity">
+                tools:context="igrek.forceawaken.activity.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -56,9 +56,9 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
             android:ems="10"
-            android:hint="alarm repeats"
+            android:hint="alarms count"
             android:inputType="number"
-            android:text="5"
+            android:text="3"
             android:textAlignment="center"/>
 
         <Button
@@ -70,13 +70,21 @@
             android:layout_marginTop="40dp"
             android:text="Set Alarm"/>
 
+        <ListView
+            android:id="@+id/alramTriggerList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnSetAlarm"
+            android:layout_marginTop="20dp">
+        </ListView>
+
         <Button
             android:id="@+id/btnTestAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/alramTriggerList"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="83dp"
+            android:layout_marginTop="20dp"
             android:text="Test (3s)"/>
 
     </RelativeLayout>

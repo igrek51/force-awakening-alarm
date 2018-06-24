@@ -1,4 +1,4 @@
-package igrek.forceawaken;
+package igrek.forceawaken.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import igrek.forceawaken.R;
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.domain.task.AwakeTask;
@@ -154,7 +155,7 @@ public class AwakenActivity extends AppCompatActivity {
 		Collections.shuffle(ringtones); // that's the evilest thing i can imagine
 		
 		ringtoneListAdapter = new ArrayAdapter<>(this, R.layout.list_item, ringtones);
-		ListView listView = (ListView) findViewById(R.id.ringtones_answer_list);
+		ListView listView = findViewById(R.id.ringtones_answer_list);
 		listView.setAdapter(ringtoneListAdapter);
 		listView.setOnItemClickListener((adapter1, v, position, id) -> {
 			Ringtone selected = (Ringtone) adapter1.getItemAtPosition(position);

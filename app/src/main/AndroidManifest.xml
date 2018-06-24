@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AwakenActivity"
+            android:name=".activity.AwakenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop"
@@ -36,7 +36,7 @@
             android:theme="@style/AppTheme">
         </activity>
 
-        <receiver android:name=".AlarmReceiver">
+        <receiver android:name=".activity.AlarmReceiver">
         </receiver>
     </application>
 

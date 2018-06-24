@@ -3,6 +3,7 @@ package igrek.forceawaken;
 import android.app.Activity;
 import android.app.Application;
 
+import igrek.forceawaken.activity.CurrentActivityListener;
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;

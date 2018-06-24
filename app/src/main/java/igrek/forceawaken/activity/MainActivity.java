@@ -1,10 +1,12 @@
-package igrek.forceawaken;
+package igrek.forceawaken.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.common.base.Joiner;
 
@@ -14,6 +16,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import igrek.forceawaken.R;
 import igrek.forceawaken.dagger.DaggerIOC;
 import igrek.forceawaken.domain.alarm.AlarmTrigger;
 import igrek.forceawaken.domain.alarm.AlarmsConfig;
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 	private TriggerTimeInput alarmTimeInput;
 	private EditText earlyMarginInput;
 	private EditText alarmRepeatsInput;
+	private ListView alramTriggerList;
+	private ArrayAdapter<AlarmTrigger> alramTriggerListAdapter;
 	
 	@Inject
 	AlarmManagerService alarmManagerService;
@@ -63,11 +68,11 @@ public class MainActivity extends AppCompatActivity {
 		});
 		
 		setContentView(R.layout.activity_main);
-		btnSet = (Button) findViewById(R.id.btnSetAlarm);
-		btnTestAlarm = (Button) findViewById(R.id.btnTestAlarm);
-		alarmTimeInput = (TriggerTimeInput) findViewById(R.id.alarmTimeInput);
-		earlyMarginInput = (EditText) findViewById(R.id.earlyMarginInput);
-		alarmRepeatsInput = (EditText) findViewById(R.id.alarmRepeatsInput);
+		btnSet = findViewById(R.id.btnSetAlarm);
+		btnTestAlarm = findViewById(R.id.btnTestAlarm);
+		alarmTimeInput = findViewById(R.id.alarmTimeInput);
+		earlyMarginInput = findViewById(R.id.earlyMarginInput);
+		alarmRepeatsInput = findViewById(R.id.alarmRepeatsInput);
 		
 		btnSet.setOnClickListener(v -> {
 			try {
@@ -82,13 +87,24 @@ public class MainActivity extends AppCompatActivity {
 			setAlarmOnTime(DateTime.now().plusSeconds(3));
 		});
 		
-		// TODO alarms set list
+		// TODO refactor
 		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
 		if (alarmsConfig != null) {
+			
+			alramTriggerListAdapter = new ArrayAdapter<>(this, R.layout.list_item, alarmsConfig.getAlarmTriggers());
+			ListView listView = findViewById(R.id.alramTriggerList);
+			listView.setAdapter(alramTriggerListAdapter);
+			listView.setOnItemClickListener((adapter1, v, position, id) -> {
+				AlarmTrigger selected = (AlarmTrigger) adapter1.getItemAtPosition(position);
+				alarmManagerService.cancelAlarm(selected.getTriggerTime(), this);
+				AlarmsConfig alarmsConfig2 = alarmsPersistenceService.removeAlarmTrigger(selected);
+				alramTriggerListAdapter.clear();
+				alramTriggerListAdapter.addAll(alarmsConfig2.getAlarmTriggers());
+				alramTriggerListAdapter.notifyDataSetChanged();
+			});
+			
 			logger.debug(Joiner.on(", ").join(alarmsConfig.getAlarmTriggers()));
 		}
-		alarmsConfig.getAlarmTriggers().add(new AlarmTrigger(DateTime.now()));
-		alarmsPersistenceService.writeAlarmsConfig(alarmsConfig);
 		
 		alarmTimeInput.requestFocus();
 		// show keyboard
