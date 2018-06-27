@@ -86,8 +86,8 @@ public class FactoryModule {
 	
 	@Provides
 	@Singleton
-	protected RingtoneManagerService provideRingtoneManagerService(Activity activity, ExternalCardService externalCardService) {
-		return new RingtoneManagerService(activity, externalCardService);
+	protected RingtoneManagerService provideRingtoneManagerService(ExternalCardService externalCardService) {
+		return new RingtoneManagerService(externalCardService);
 	}
 	
 	@Provides
@@ -110,8 +110,8 @@ public class FactoryModule {
 	
 	@Provides
 	@Singleton
-	protected AccelerometerService provideAccelerometerService(Activity activity, Logger logger) {
-		return new AccelerometerService(activity, logger);
+	protected AccelerometerService provideAccelerometerService(Activity activity) {
+		return new AccelerometerService(activity);
 	}
 	
 	@Provides

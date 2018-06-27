@@ -8,18 +8,18 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 
 public class AccelerometerService implements SensorEventListener {
 	
 	private Activity activity;
-	private Logger logger;
+	private Logger logger = LoggerFactory.getLogger();
 	
 	private float xValue, yValue, zValue;
 	private Sensor accelerometer;
 	
-	public AccelerometerService(Activity activity, Logger logger) {
+	public AccelerometerService(Activity activity) {
 		this.activity = activity;
-		this.logger = logger;
 		SensorManager sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 		if (sensorManager == null)
 			logger.warn("no sensor manager found");

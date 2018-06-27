@@ -57,16 +57,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		DaggerIOC.getFactoryComponent().inject(this); // inject to this
-		
-		// catch all uncaught exceptions
-		// TODO catch also in another activities
-		Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
-			logger.errorUncaught(th);
-			//pass further to OS
-			defaultUEH.uncaughtException(thread, th);
-		});
+		DaggerIOC.getFactoryComponent().inject(this);
 		
 		setContentView(R.layout.activity_main);
 		btnSet = findViewById(R.id.btnSetAlarm);
@@ -85,17 +76,15 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		
-		btnTestAlarm.setOnClickListener(v -> {
-			setAlarmOnTime(DateTime.now().plusSeconds(3));
-		});
+		btnTestAlarm.setOnClickListener(v -> setAlarmOnTime(DateTime.now().plusSeconds(3)));
 		
 		// TODO refactor
 		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
 		if (alarmsConfig != null) {
 			alramTriggerListAdapter = new ArrayAdapter<>(this, R.layout.list_item, alarmsConfig.getAlarmTriggers());
-			ListView listView = findViewById(R.id.alramTriggerList);
-			listView.setAdapter(alramTriggerListAdapter);
-			listView.setOnItemClickListener((adapter1, v, position, id) -> {
+			alramTriggerList = findViewById(R.id.alramTriggerList);
+			alramTriggerList.setAdapter(alramTriggerListAdapter);
+			alramTriggerList.setOnItemClickListener((adapter1, v, position, id) -> {
 				AlarmTrigger selected = (AlarmTrigger) adapter1.getItemAtPosition(position);
 				alarmManagerService.cancelAlarm(selected.getTriggerTime(), this);
 				AlarmsConfig alarmsConfig2 = alarmsPersistenceService.removeAlarmTrigger(selected);

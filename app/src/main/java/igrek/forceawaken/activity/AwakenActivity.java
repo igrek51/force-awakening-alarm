@@ -76,16 +76,14 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		logger.debug("AwakenActivity.onCreate");
+		logger.debug("creating " + this.getClass().getSimpleName());
 		
 		DaggerIOC.getFactoryComponent().inject(this);
 		
 		windowManagerService.setFullscreen();
-		
 		setContentView(R.layout.awaken_main);
-		fakeTimeLabel = (TextView) findViewById(R.id.fakeTime);
-		wakeUpLabel = (TextView) findViewById(R.id.wakeUpLabel);
+		fakeTimeLabel = findViewById(R.id.fakeTime);
+		wakeUpLabel = findViewById(R.id.wakeUpLabel);
 		
 		bootstrapAlarm();
 	}
@@ -184,7 +182,6 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	private void wrongAnswer() {
 		userInfoService.showToast("Wrong answer, you morron!");
-		
 		vibratorService.vibrate(1000);
 		
 		List<Ringtone> ringtones = ringtoneManager.getAllRingtones();
@@ -212,6 +209,5 @@ public class AwakenActivity extends AppCompatActivity {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
 	
 }

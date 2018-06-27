@@ -13,6 +13,6 @@ public abstract class SafeClickListener implements View.OnClickListener {
 		}
 	}
 	
-	public abstract void onClick() throws Throwable;
+	protected abstract void onClick() throws Throwable;
 	
 }

@@ -81,8 +81,7 @@ public class TriggerTimeInput extends android.support.v7.widget.AppCompatEditTex
 				.withMinuteOfHour(mins)
 				.withSecondOfMinute(0);
 		DateTime tomorrowTriggerTime = todayTriggerTime.plusDays(1);
-		DateTime triggerTime = now.isBefore(todayTriggerTime) ? todayTriggerTime : tomorrowTriggerTime;
-		return triggerTime;
+		return now.isBefore(todayTriggerTime) ? todayTriggerTime : tomorrowTriggerTime;
 	}
 	
 }

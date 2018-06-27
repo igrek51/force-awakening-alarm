@@ -22,7 +22,6 @@ public class DaggerIOC {
 	
 	/**
 	 * only for testing purposes
-	 * @param component
 	 */
 	public static void setFactoryComponent(FactoryComponent component) {
 		appComponent = component;

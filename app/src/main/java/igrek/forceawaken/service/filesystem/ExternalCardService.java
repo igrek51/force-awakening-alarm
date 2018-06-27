@@ -31,7 +31,7 @@ public class ExternalCardService {
 		return externalSDPath;
 	}
 	
-	protected String findExternalSDPath() {
+	private String findExternalSDPath() {
 		return new FirstFinder<String>().addRule(this::isSamsung, () -> checkDirExists("/storage/extSdCard"))
 				.addRule(() -> getExternalMount())
 				.addRule(() -> checkDirExists("/storage/extSdCard"))
@@ -72,7 +72,7 @@ public class ExternalCardService {
 	private HashSet<String> getExternalMounts() {
 		final HashSet<String> out = new HashSet<>();
 		String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		try {
 			final Process process = new ProcessBuilder().command("mount")
 					.redirectErrorStream(true)
@@ -81,7 +81,7 @@ public class ExternalCardService {
 			final InputStream is = process.getInputStream();
 			final byte[] buffer = new byte[1024];
 			while (is.read(buffer) != -1) {
-				s = s + new String(buffer);
+				s.append(new String(buffer));
 			}
 			is.close();
 		} catch (final Exception e) {
@@ -89,7 +89,7 @@ public class ExternalCardService {
 		}
 		
 		// parse output
-		final String[] lines = s.split("\n");
+		final String[] lines = s.toString().split("\n");
 		for (String line : lines) {
 			if (!line.toLowerCase(Locale.US).contains("asec")) {
 				if (line.matches(reg)) {

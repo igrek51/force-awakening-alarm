@@ -25,9 +25,6 @@ public class AlarmTrigger implements Serializable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof AlarmTrigger) {
-			return triggerTime.equals(((AlarmTrigger) obj).triggerTime);
-		}
-		return false;
+		return obj instanceof AlarmTrigger && triggerTime.equals(((AlarmTrigger) obj).triggerTime);
 	}
 }

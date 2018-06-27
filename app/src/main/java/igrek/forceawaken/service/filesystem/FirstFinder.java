@@ -3,6 +3,10 @@ package igrek.forceawaken.service.filesystem;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * finding first object matching criteria rules
+ * @param <T>
+ */
 public class FirstFinder<T> {
 	
 	// remembers inserting order
@@ -48,7 +52,7 @@ public class FirstFinder<T> {
 		BooleanCondition when;
 		Provider<T> then;
 		
-		public Rule(BooleanCondition when, Provider<T> then) {
+		Rule(BooleanCondition when, Provider<T> then) {
 			this.when = when;
 			this.then = then;
 		}

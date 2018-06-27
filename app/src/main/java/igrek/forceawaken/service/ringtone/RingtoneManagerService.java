@@ -1,7 +1,5 @@
 package igrek.forceawaken.service.ringtone;
 
-import android.app.Activity;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +10,11 @@ import igrek.forceawaken.service.filesystem.ExternalCardService;
 
 public class RingtoneManagerService {
 	
-	private Activity activity;
 	private ExternalCardService externalCardService;
 	
 	private Random random = new Random();
 	
-	public RingtoneManagerService(Activity activity, ExternalCardService externalCardService) {
-		this.activity = activity;
+	public RingtoneManagerService(ExternalCardService externalCardService) {
 		this.externalCardService = externalCardService;
 	}
 	

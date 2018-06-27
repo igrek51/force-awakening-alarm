@@ -15,9 +15,11 @@ public class AlarmPlayerService {
 	
 	private Activity activity;
 	private MediaPlayer mediaPlayer;
+	private AudioManager audioManager;
 	
 	public AlarmPlayerService(Activity activity) {
 		this.activity = activity;
+		audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
 		mediaPlayer = new MediaPlayer();
 	}
 	
@@ -32,8 +34,7 @@ public class AlarmPlayerService {
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public void playAlarm(Uri ringtoneUri, double volume) throws IOException {
 		// set global alarm volume level to max
-		AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-		am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
+		audioManager.setStreamVolume(AudioManager.STREAM_ALARM, audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
 		
 		setVolume(volume);
 		
@@ -59,8 +60,7 @@ public class AlarmPlayerService {
 	}
 	
 	public void ensureSoundIsOn() {
-		AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-		if (am.getRingerMode() != AudioManager.RINGER_MODE_NORMAL)
-			am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+		if (audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL)
+			audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 	}
 }

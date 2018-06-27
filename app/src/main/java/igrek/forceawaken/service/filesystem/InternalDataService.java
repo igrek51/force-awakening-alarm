@@ -6,7 +6,7 @@ import java.io.File;
 
 public class InternalDataService {
 	
-	Context context;
+	private Context context;
 	
 	public InternalDataService(Context context) {
 		this.context = context;
