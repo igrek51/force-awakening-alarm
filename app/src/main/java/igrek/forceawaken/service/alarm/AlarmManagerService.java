@@ -11,6 +11,8 @@ import org.joda.time.DateTime;
 
 import igrek.forceawaken.activity.AlarmReceiver;
 import igrek.forceawaken.domain.alarm.AlarmTrigger;
+import igrek.forceawaken.logger.Logger;
+import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
 
 public class AlarmManagerService {
@@ -18,6 +20,7 @@ public class AlarmManagerService {
 	private Activity activity;
 	private AlarmsPersistenceService alarmsPersistenceService;
 	private AlarmManager alarmManager;
+	private Logger logger = LoggerFactory.getLogger();
 	
 	public AlarmManagerService(Activity activity, AlarmsPersistenceService alarmsPersistenceService) {
 		this.activity = activity;
@@ -41,11 +44,11 @@ public class AlarmManagerService {
 	}
 	
 	public void cancelAlarm(DateTime triggerTime, Context context) {
-		// FIXME not working
+		logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
 		Intent intent = new Intent(context, AlarmReceiver.class);
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
 		alarmManager.cancel(pendingIntent);
 	}
 }

@@ -13,7 +13,7 @@ public class VolumeCalculatorService {
 			70.0, 1.0, // high limit
 	};
 	
-	final double speakerDownCompensation = 1.3;
+	final double speakerDownCompensation = 1.2;
 	
 	final double globalVolume = 0.2;
 	
@@ -34,8 +34,8 @@ public class VolumeCalculatorService {
 	
 	public double calcFinalVolume(double noiseLevel) {
 		double vol1 = calcVolumeByNoise(noiseLevel);
-		boolean deviceUp = accelerometerService.isDeviceRotatedUp();
-		if (deviceUp) { // speaker rotated down - increase volume
+		boolean speakerDown = accelerometerService.isSpeakerRotatedDown();
+		if (speakerDown) { // speaker rotated down - increase volume
 			logger.debug("Speaker is rotated down - boosting volume level");
 			vol1 *= speakerDownCompensation;
 			if (vol1 > 1.0) // cut off

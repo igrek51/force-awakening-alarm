@@ -46,7 +46,7 @@ public class AccelerometerService implements SensorEventListener {
 	
 	}
 	
-	public Boolean isDeviceRotatedUp() {
+	public Boolean isSpeakerRotatedDown() {
 		if (accelerometer == null)
 			return null;
 		return zValue > 0;

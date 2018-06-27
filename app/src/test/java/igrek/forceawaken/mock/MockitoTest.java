@@ -1,4 +1,4 @@
-package igrek.forceawaken.dagger;
+package igrek.forceawaken.mock;
 
 import org.junit.Before;
 import org.junit.Test;
