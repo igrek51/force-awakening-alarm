@@ -76,7 +76,7 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		logger.debug("creating " + this.getClass().getSimpleName());
+		logger.info("creating " + this.getClass().getSimpleName());
 		
 		DaggerIOC.getFactoryComponent().inject(this);
 		
@@ -106,7 +106,7 @@ public class AwakenActivity extends AppCompatActivity {
 		super.onNewIntent(intent);
 		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
-			logger.debug("Alarm already playing - cancelling the new one");
+			logger.info("Alarm already playing - cancelling the new one");
 		} else {
 			bootstrapAlarm();
 		}
@@ -120,7 +120,7 @@ public class AwakenActivity extends AppCompatActivity {
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying()) {
 				alarmPlayer.setVolume(1.0);
-				logger.debug("Alarm is still playing - volume level boosted");
+				logger.info("Alarm is still playing - volume level boosted");
 			}
 		}, 90000);
 		
@@ -128,7 +128,7 @@ public class AwakenActivity extends AppCompatActivity {
 			@Override
 			public void run() {
 				if (alarmPlayer.isPlaying()) {
-					logger.debug("Alarm is still playing - turning on vibrations");
+					logger.info("Alarm is still playing - turning on vibrations");
 					vibratorService.vibrate((long) (ALARM_VIBRATION_PWM * ALARM_VIBRATION_PERIOD));
 					new Handler().postDelayed(this, ALARM_VIBRATION_PERIOD);
 				}
@@ -138,10 +138,10 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		try {
 			currentRingtone = ringtoneManager.getRandomRingtone();
-			logger.debug("Current Ringtone: " + currentRingtone.getName());
+			logger.info("Current Ringtone: " + currentRingtone.getName());
 			
 			double volume = volumeCalculatorService.calcFinalVolume(noiseLevel);
-			logger.debug("Alarm volume level: " + volume);
+			logger.info("Alarm volume level: " + volume);
 			
 			//Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
 			alarmPlayer.playAlarm(currentRingtone.getUri(), volume);

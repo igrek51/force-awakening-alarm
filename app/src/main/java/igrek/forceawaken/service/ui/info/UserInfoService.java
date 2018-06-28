@@ -70,5 +70,6 @@ public class UserInfoService {
 	
 	public void showToast(String message) {
 		Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+		logger.info("TOAST: " + message);
 	}
 }

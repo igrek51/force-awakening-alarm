@@ -98,15 +98,19 @@ public class Logger {
 				String fileName = ste.getFileName();
 				int lineNumber = ste.getLineNumber();
 				
-				consoleMessage = logPrefix + methodName + "(" + fileName + ":" + lineNumber + "): " + message;
+				consoleMessage = logPrefix + "(" + fileName + ":" + lineNumber + "): " + message;
 			} else {
 				consoleMessage = logPrefix + message;
 			}
 			
 			if (level.moreOrEqualImportantThan(LogLevel.ERROR)) {
 				printError(consoleMessage);
-			} else {
+			} else if (level.moreOrEqualImportantThan(LogLevel.WARN)) {
+				printWarn(consoleMessage);
+			} else if (level.moreOrEqualImportantThan(LogLevel.INFO)) {
 				printInfo(consoleMessage);
+			} else {
+				printDebug(consoleMessage);
 			}
 		}
 	}
@@ -117,8 +121,16 @@ public class Logger {
 		}
 	}
 	
+	protected void printDebug(String msg) {
+		Log.d(LoggerFactory.LOG_TAG, msg);
+	}
+	
 	protected void printInfo(String msg) {
 		Log.i(LoggerFactory.LOG_TAG, msg);
+	}
+	
+	protected void printWarn(String msg) {
+		Log.w(LoggerFactory.LOG_TAG, msg);
 	}
 	
 	protected void printError(String msg) {

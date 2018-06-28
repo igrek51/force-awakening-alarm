@@ -18,7 +18,6 @@ public class NoiseDetectorService {
 	
 	public void measureNoiseLevel(long millis, NoiseLevelMeasureCallback completeCallback) {
 		// measure surrounding loudness level
-		logger.debug("Measuring surrounding noise level...");
 		try {
 			mediaRecorder = new MediaRecorder();
 			mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -36,7 +35,7 @@ public class NoiseDetectorService {
 			
 			int amplitude = mediaRecorder.getMaxAmplitude();
 			double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
-			logger.debug("Surrounding noise amplitude: " + amplitudeDb + " dB");
+			logger.info("Surrounding noise amplitude: " + amplitudeDb + " dB");
 			mediaRecorder.stop();
 			mediaRecorder.release();
 			

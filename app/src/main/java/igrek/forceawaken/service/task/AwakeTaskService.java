@@ -21,7 +21,6 @@ public class AwakeTaskService {
 	public AwakeTaskService(Activity activity, Logger logger) {
 		this.activity = activity;
 		this.logger = logger;
-		logger.dupa();
 		enableTasks();
 	}
 	

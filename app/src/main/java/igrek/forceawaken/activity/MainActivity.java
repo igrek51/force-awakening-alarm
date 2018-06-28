@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 		// show keyboard
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		
-		logger.debug(this.getClass().getSimpleName() + " has been created");
+		logger.info(this.getClass().getSimpleName() + " has been created");
 	}
 	
 	private DateTime buildFinalTriggerTime() {
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 		for (int r = 0; r < repeats; r++) {
 			DateTime triggerTime2 = triggerTime.plusSeconds(r * 40);
 			alarmManagerService.setAlarmOnTime(triggerTime2, this);
-			logger.debug("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
+			logger.info("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
 		}
 		
 		userInfoService.showToast(Integer.toString(repeats) + " Alarm set on " + triggerTime.toString("yyyy-MM-dd"));

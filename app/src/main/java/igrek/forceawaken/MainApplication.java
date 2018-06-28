@@ -30,7 +30,7 @@ public class MainApplication extends Application {
 			defaultUEH.uncaughtException(thread, th);
 		});
 		
-		logger.debug("Application has been started");
+		logger.info("Application has been started");
 	}
 	
 	@Override
