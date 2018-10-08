@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 			// check alarm triggers are still valid
 			List<AlarmTrigger> inactive = alarmTriggers.stream().filter(a -> {
 				// inactive or from the past
-				return !alarmManagerService.isAlarmActive(a.getTriggerTime(), MainActivity.this) || a
+				return !alarmManagerService.isAlarmActive(a.getTriggerTime()) || a
 						.getTriggerTime()
 						.isBefore(DateTime.now());
 			}).collect(Collectors.toList());
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 			alramTriggerList.setOnItemClickListener((adapter1, v, position, id) -> {
 				AlarmTrigger selected = (AlarmTrigger) adapter1.getItemAtPosition(position);
 				selected.setActive(false);
-				alarmManagerService.cancelAlarm(selected.getTriggerTime(), this);
+				alarmManagerService.cancelAlarm(selected.getTriggerTime());
 				AlarmsConfig alarmsConfig2 = alarmsPersistenceService.removeAlarmTrigger(selected);
 				alramTriggerListAdapter.clear();
 				alramTriggerListAdapter.addAll(alarmsConfig2.getAlarmTriggers());
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 		int repeats = getAlarmRepeatsCount();
 		for (int r = 0; r < repeats; r++) {
 			DateTime triggerTime2 = triggerTime.plusSeconds(r * 40);
-			alarmManagerService.setAlarmOnTime(triggerTime2, this);
+			alarmManagerService.setAlarmOnTime(triggerTime2);
 			logger.info("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
 		}
 		

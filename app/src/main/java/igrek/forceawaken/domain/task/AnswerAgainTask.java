@@ -31,6 +31,6 @@ public class AnswerAgainTask implements AwakeTask {
 	@Override
 	public void run(AwakenActivity activity) {
 		userInfoService.showInfoBar("Once again quest.");
-		activity.startAlarmPlaying(0);
+		activity.startAlarmPlaying(0, System.currentTimeMillis());
 	}
 }

@@ -17,6 +17,7 @@ public class AlarmPlayerService {
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
 	private double volume;
+	private long alarmId = 0;
 	
 	public AlarmPlayerService(Activity activity) {
 		this.activity = activity;
@@ -70,5 +71,13 @@ public class AlarmPlayerService {
 	public void ensureSoundIsOn() {
 		if (audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL)
 			audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+	}
+	
+	public long getAlarmId() {
+		return alarmId;
+	}
+	
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
 	}
 }

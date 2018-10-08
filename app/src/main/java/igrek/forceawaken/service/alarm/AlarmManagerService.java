@@ -28,7 +28,7 @@ public class AlarmManagerService {
 		alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 	}
 	
-	public void setAlarmOnTime(DateTime triggerTime, Context context) {
+	public void setAlarmOnTime(DateTime triggerTime) {
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");
 		long millis = triggerTime.getMillis();
@@ -45,7 +45,7 @@ public class AlarmManagerService {
 		alarmsPersistenceService.addAlarmTrigger(new AlarmTrigger(triggerTime, true));
 	}
 	
-	public void cancelAlarm(DateTime triggerTime, Context context) {
+	public void cancelAlarm(DateTime triggerTime) {
 		logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");
@@ -55,7 +55,7 @@ public class AlarmManagerService {
 		alarmManager.cancel(pendingIntent);
 	}
 	
-	public boolean isAlarmActive(DateTime triggerTime, Context context) {
+	public boolean isAlarmActive(DateTime triggerTime) {
 		// WTF? returning true even after cancelling
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");

@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +27,7 @@ import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.domain.task.AwakeTask;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
+import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
@@ -61,6 +64,8 @@ public class AwakenActivity extends AppCompatActivity {
 	VolumeCalculatorService volumeCalculatorService;
 	@Inject
 	AwakeTaskService awakeTaskService;
+	@Inject
+	AlarmManagerService alarmManagerService;
 	
 	private final long ALARM_VIBRATION_PERIOD = 1000;
 	private final double ALARM_VIBRATION_PWM = 0.5;
@@ -93,10 +98,12 @@ public class AwakenActivity extends AppCompatActivity {
 		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");
 		fakeTimeLabel.setText(fakeTimeStr);
 		
+		final long alarmId = System.currentTimeMillis();
+		
 		wakeUpLabel.setText(wakeUpInfos[random.nextInt(wakeUpInfos.length)]);
 		// measure surrounding loudness level
 		noiseDetectorService.measureNoiseLevel(1000, (amplitudeDb) -> {
-			startAlarmPlaying(amplitudeDb);
+			startAlarmPlaying(amplitudeDb, alarmId);
 		});
 	}
 	
@@ -106,20 +113,23 @@ public class AwakenActivity extends AppCompatActivity {
 		super.onNewIntent(intent);
 		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
-			logger.info("Alarm already playing - cancelling the new one");
-			// TODO postpone alarm
+			logger.info("Alarm already playing - postponing by 30 s");
+			// postpone alarm - create new
+			DateTime triggerTime2 = DateTime.now().plusSeconds(30);
+			alarmManagerService.setAlarmOnTime(triggerTime2);
+			
 		} else {
 			bootstrapAlarm();
 		}
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	public void startAlarmPlaying(double noiseLevel) {
+	public void startAlarmPlaying(double noiseLevel, final long alarmId) {
 		// stop the previous alarm
 		alarmPlayer.stopAlarm();
 		
 		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying()) {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 				double newVol = alarmPlayer.getVolume() * 2;
 				alarmPlayer.setVolume(newVol);
 				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
@@ -127,7 +137,7 @@ public class AwakenActivity extends AppCompatActivity {
 		}, 90 * 1000);
 		
 		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying()) {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 				double newVol = alarmPlayer.getVolume() * 2;
 				alarmPlayer.setVolume(newVol);
 				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
@@ -135,7 +145,7 @@ public class AwakenActivity extends AppCompatActivity {
 		}, 100 * 1000);
 		
 		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying()) {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 				double newVol = alarmPlayer.getVolume() * 2;
 				alarmPlayer.setVolume(newVol);
 				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
@@ -143,7 +153,7 @@ public class AwakenActivity extends AppCompatActivity {
 		}, 110 * 1000);
 		
 		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying()) {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 				alarmPlayer.setVolume(1.0);
 				logger.info("Alarm is still playing - volume level boosted to " + 1.0);
 			}
@@ -152,7 +162,7 @@ public class AwakenActivity extends AppCompatActivity {
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
 			public void run() {
-				if (alarmPlayer.isPlaying()) {
+				if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 					logger.info("Alarm is still playing - turning on vibrations");
 					vibratorService.vibrate((long) (ALARM_VIBRATION_PWM * ALARM_VIBRATION_PERIOD));
 					new Handler().postDelayed(this, ALARM_VIBRATION_PERIOD);
@@ -170,6 +180,7 @@ public class AwakenActivity extends AppCompatActivity {
 			
 			//Uri ringUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.hopes_quiet);
 			alarmPlayer.playAlarm(currentRingtone.getUri(), volume);
+			alarmPlayer.setAlarmId(alarmId);
 		} catch (IOException e) {
 			logger.error(e);
 		}
