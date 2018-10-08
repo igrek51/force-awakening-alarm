@@ -9,13 +9,23 @@ public class AlarmTrigger implements Serializable {
 	static final long serialVersionUID = 2;
 	
 	private DateTime triggerTime;
+	private boolean active;
 	
-	public AlarmTrigger(DateTime triggerTime) {
+	public AlarmTrigger(DateTime triggerTime, boolean active) {
 		this.triggerTime = triggerTime;
+		this.active = active;
 	}
 	
 	public DateTime getTriggerTime() {
 		return triggerTime;
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 	@Override

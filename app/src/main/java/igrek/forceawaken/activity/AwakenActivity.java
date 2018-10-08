@@ -107,6 +107,7 @@ public class AwakenActivity extends AppCompatActivity {
 		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
 			logger.info("Alarm already playing - cancelling the new one");
+			// TODO postpone alarm
 		} else {
 			bootstrapAlarm();
 		}
@@ -119,10 +120,34 @@ public class AwakenActivity extends AppCompatActivity {
 		
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying()) {
-				alarmPlayer.setVolume(1.0);
-				logger.info("Alarm is still playing - volume level boosted");
+				double newVol = alarmPlayer.getVolume() * 2;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
 			}
-		}, 90000);
+		}, 90 * 1000);
+		
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying()) {
+				double newVol = alarmPlayer.getVolume() * 2;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
+			}
+		}, 100 * 1000);
+		
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying()) {
+				double newVol = alarmPlayer.getVolume() * 2;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
+			}
+		}, 110 * 1000);
+		
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying()) {
+				alarmPlayer.setVolume(1.0);
+				logger.info("Alarm is still playing - volume level boosted to " + 1.0);
+			}
+		}, 120 * 1000);
 		
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
@@ -134,7 +159,7 @@ public class AwakenActivity extends AppCompatActivity {
 				}
 			}
 		};
-		new Handler().postDelayed(vibrationsBooster, 180000);
+		new Handler().postDelayed(vibrationsBooster, 150 * 1000);
 		
 		try {
 			currentRingtone = ringtoneManager.getRandomRingtone();

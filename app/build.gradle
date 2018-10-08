@@ -24,7 +24,7 @@ android {
             versionCode vCode
             versionName vName
             applicationId "igrek.forceawaken"
-            minSdkVersion 19
+            minSdkVersion 26
             targetSdkVersion 27
         }
     } else {

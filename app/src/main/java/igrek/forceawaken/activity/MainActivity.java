@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -81,11 +84,27 @@ public class MainActivity extends AppCompatActivity {
 		// TODO refactor
 		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
 		if (alarmsConfig != null) {
-			alramTriggerListAdapter = new ArrayAdapter<>(this, R.layout.list_item, alarmsConfig.getAlarmTriggers());
+			ArrayList<AlarmTrigger> alarmTriggers = alarmsConfig.getAlarmTriggers();
+			
+			// check alarm triggers are still valid
+			List<AlarmTrigger> inactive = alarmTriggers.stream().filter(a -> {
+				// inactive or from the past
+				return !alarmManagerService.isAlarmActive(a.getTriggerTime(), MainActivity.this) || a
+						.getTriggerTime()
+						.isBefore(DateTime.now());
+			}).collect(Collectors.toList());
+			for (AlarmTrigger inactiveAlarmTrigger : inactive) {
+				alarmsConfig = alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger);
+			}
+			
+			alarmTriggers = alarmsConfig.getAlarmTriggers();
+			
+			alramTriggerListAdapter = new ArrayAdapter<>(this, R.layout.list_item, alarmTriggers);
 			alramTriggerList = findViewById(R.id.alramTriggerList);
 			alramTriggerList.setAdapter(alramTriggerListAdapter);
 			alramTriggerList.setOnItemClickListener((adapter1, v, position, id) -> {
 				AlarmTrigger selected = (AlarmTrigger) adapter1.getItemAtPosition(position);
+				selected.setActive(false);
 				alarmManagerService.cancelAlarm(selected.getTriggerTime(), this);
 				AlarmsConfig alarmsConfig2 = alarmsPersistenceService.removeAlarmTrigger(selected);
 				alramTriggerListAdapter.clear();

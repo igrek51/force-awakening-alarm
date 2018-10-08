@@ -1,5 +1,6 @@
 package igrek.forceawaken.service.filesystem;
 
+
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -22,17 +23,17 @@ public class ExternalCardService {
 	
 	public ExternalCardService() {
 		externalSDPath = findExternalSDPath();
-		logger.debug("External SD Card path: " + externalSDPath);
-		//		logger.debug("DEVICE = " + android.os.Build.DEVICE);
-		//		logger.debug("MANUFACTURER = " + android.os.Build.MANUFACTURER);
+		logger.debug("External SD Card path detected: " + externalSDPath);
+		//logger.debug("DEVICE = " + android.os.Build.DEVICE);
+		//logger.debug("MANUFACTURER = " + android.os.Build.MANUFACTURER);
 	}
 	
 	public String getExternalSDPath() {
 		return externalSDPath;
 	}
 	
-	private String findExternalSDPath() {
-		return new FirstFinder<String>().addRule(this::isSamsung, () -> checkDirExists("/storage/extSdCard"))
+	protected String findExternalSDPath() {
+		return new FirstRuleChecker<String>().addRule(this::isSamsung, () -> checkDirExists("/storage/extSdCard"))
 				.addRule(() -> getExternalMount())
 				.addRule(() -> checkDirExists("/storage/extSdCard"))
 				.addRule(() -> checkDirExists("/storage/external_sd"))
@@ -72,7 +73,7 @@ public class ExternalCardService {
 	private HashSet<String> getExternalMounts() {
 		final HashSet<String> out = new HashSet<>();
 		String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
-		StringBuilder s = new StringBuilder();
+		String s = "";
 		try {
 			final Process process = new ProcessBuilder().command("mount")
 					.redirectErrorStream(true)
@@ -81,7 +82,7 @@ public class ExternalCardService {
 			final InputStream is = process.getInputStream();
 			final byte[] buffer = new byte[1024];
 			while (is.read(buffer) != -1) {
-				s.append(new String(buffer));
+				s = s + new String(buffer);
 			}
 			is.close();
 		} catch (final Exception e) {
@@ -89,7 +90,7 @@ public class ExternalCardService {
 		}
 		
 		// parse output
-		final String[] lines = s.toString().split("\n");
+		final String[] lines = s.split("\n");
 		for (String line : lines) {
 			if (!line.toLowerCase(Locale.US).contains("asec")) {
 				if (line.matches(reg)) {
@@ -108,4 +109,5 @@ public class ExternalCardService {
 		}
 		return out;
 	}
+	
 }

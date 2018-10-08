@@ -14,11 +14,13 @@ import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
 import igrek.forceawaken.service.filesystem.ExternalCardService;
+import igrek.forceawaken.service.filesystem.FilesystemService;
 import igrek.forceawaken.service.filesystem.InternalDataService;
 import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.sensors.AccelerometerService;
+import igrek.forceawaken.service.system.PermissionService;
 import igrek.forceawaken.service.task.AwakeTaskService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.WindowManagerService;
@@ -142,6 +144,18 @@ public class FactoryModule {
 	@Singleton
 	protected InternalDataService provideInternalDataService(Context context) {
 		return new InternalDataService(context);
+	}
+	
+	@Provides
+	@Singleton
+	protected FilesystemService provideFilesystemService() {
+		return new FilesystemService();
+	}
+	
+	@Provides
+	@Singleton
+	protected PermissionService providePermissionService() {
+		return new PermissionService();
 	}
 	
 }

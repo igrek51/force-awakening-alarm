@@ -1,103 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/activity_main"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="igrek.forceawaken.activity.MainActivity">
 
-    <RelativeLayout
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="igrek.forceawaken.activity.MainActivity">
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/nowDateTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:textAlignment="center"
-            android:text=""/>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_below="@+id/nowDateTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time to force you to awake:"
-            android:layout_marginTop="10dp"/>
-
-        <igrek.forceawaken.ui.components.TriggerTimeInput
-            android:id="@+id/alarmTimeInput"
-            android:layout_width="300dp"
-            android:layout_height="67dp"
-            android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:hint="HH:MM"
-            android:inputType="time"
-            android:text=""
-            android:textAlignment="center"/>
-
-        <EditText
-            android:id="@+id/earlyMarginInput"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/alarmTimeInput"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:ems="10"
-            android:hint="early wakeup [min]"
-            android:inputType="time"
-            android:text=""
-            android:textAlignment="center"/>
-
-        <EditText
-            android:id="@+id/alarmRepeatsInput"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/earlyMarginInput"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="8dp"
-            android:ems="10"
-            android:hint="alarms count"
-            android:inputType="number"
-            android:text="3"
-            android:textAlignment="center"/>
-
-        <Button
-            android:id="@+id/btnSetAlarm"
-            android:layout_width="157dp"
-            android:layout_height="68dp"
-            android:layout_below="@+id/alarmRepeatsInput"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp"
-            android:text="Set Alarm"/>
-
-        <ListView
-            android:id="@+id/alramTriggerList"
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/btnSetAlarm"
-            android:layout_marginTop="20dp">
-        </ListView>
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnTestAlarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/alramTriggerList"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="Test (3s)"/>
+            <TextView
+                android:id="@+id/nowDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:text=""
+                android:textAlignment="center"/>
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/nowDateTime"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="Time to force you to awake:"/>
 
-</RelativeLayout>
+            <igrek.forceawaken.ui.components.TriggerTimeInput
+                android:id="@+id/alarmTimeInput"
+                android:layout_width="300dp"
+                android:layout_height="67dp"
+                android:layout_below="@+id/textView"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:hint="HH:MM"
+                android:inputType="time"
+                android:text=""
+                android:textAlignment="center"/>
+
+            <EditText
+                android:id="@+id/earlyMarginInput"
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/alarmTimeInput"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="early wakeup [min]"
+                android:inputType="time"
+                android:text=""
+                android:textAlignment="center"/>
+
+            <EditText
+                android:id="@+id/alarmRepeatsInput"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/earlyMarginInput"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="alarms count"
+                android:inputType="number"
+                android:text="3"
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/btnSetAlarm"
+                android:layout_width="157dp"
+                android:layout_height="68dp"
+                android:layout_below="@+id/alarmRepeatsInput"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:text="Set Alarm"/>
+
+            <ListView
+                android:id="@+id/alramTriggerList"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/btnSetAlarm"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp">
+            </ListView>
+
+            <Button
+                android:id="@+id/btnTestAlarm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/alramTriggerList"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:text="Test (3s)"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

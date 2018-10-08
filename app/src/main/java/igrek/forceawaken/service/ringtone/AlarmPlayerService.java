@@ -16,6 +16,7 @@ public class AlarmPlayerService {
 	private Activity activity;
 	private MediaPlayer mediaPlayer;
 	private AudioManager audioManager;
+	private double volume;
 	
 	public AlarmPlayerService(Activity activity) {
 		this.activity = activity;
@@ -28,7 +29,14 @@ public class AlarmPlayerService {
 	}
 	
 	public void setVolume(double volume) {
+		if (volume > 1.0)
+			volume = 1.0;
+		this.volume = volume;
 		mediaPlayer.setVolume((float) volume, (float) volume);
+	}
+	
+	public double getVolume() {
+		return isPlaying() ? this.volume : 0;
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

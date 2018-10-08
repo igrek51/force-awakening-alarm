@@ -3,33 +3,29 @@ package igrek.forceawaken.service.filesystem;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * finding first object matching criteria rules
- * @param <T>
- */
-public class FirstFinder<T> {
+class FirstRuleChecker<T> {
 	
 	// remembers inserting order
 	private List<Rule> rules = new LinkedList<>();
 	
-	public FirstFinder() {
+	FirstRuleChecker() {
 	}
 	
-	public FirstFinder<T> addRule(BooleanCondition when, Provider<T> then) {
+	public FirstRuleChecker<T> addRule(BooleanCondition when, Provider<T> then) {
 		rules.add(new Rule(when, then));
 		return this;
 	}
 	
-	public FirstFinder<T> addRule(BooleanCondition when, T then) {
+	public FirstRuleChecker<T> addRule(BooleanCondition when, T then) {
 		rules.add(new Rule(when, () -> then));
 		return this;
 	}
 	
-	public FirstFinder<T> addRule(Provider<T> then) {
+	public FirstRuleChecker<T> addRule(Provider<T> then) {
 		return addRule(() -> true, then);
 	}
 	
-	public FirstFinder<T> addRule(T defaultValue) {
+	public FirstRuleChecker<T> addRule(T defaultValue) {
 		return addRule(() -> true, () -> defaultValue);
 	}
 	
@@ -48,16 +44,6 @@ public class FirstFinder<T> {
 		return null;
 	}
 	
-	private class Rule {
-		BooleanCondition when;
-		Provider<T> then;
-		
-		Rule(BooleanCondition when, Provider<T> then) {
-			this.when = when;
-			this.then = then;
-		}
-	}
-	
 	@FunctionalInterface
 	public interface BooleanCondition {
 		boolean test();
@@ -66,5 +52,14 @@ public class FirstFinder<T> {
 	@FunctionalInterface
 	public interface Provider<T> {
 		T get();
+	}
+	private class Rule {
+		BooleanCondition when;
+		Provider<T> then;
+		
+		Rule(BooleanCondition when, Provider<T> then) {
+			this.when = when;
+			this.then = then;
+		}
 	}
 }

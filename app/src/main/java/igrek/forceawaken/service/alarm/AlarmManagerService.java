@@ -29,10 +29,12 @@ public class AlarmManagerService {
 	}
 	
 	public void setAlarmOnTime(DateTime triggerTime, Context context) {
-		Intent intent = new Intent(context, AlarmReceiver.class);
+		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
+		intent.addCategory("android.intent.category.DEFAULT");
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
-		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
+		
+		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis, p1);
 		} else {
@@ -40,15 +42,25 @@ public class AlarmManagerService {
 		}
 		
 		// save creation information in external place
-		alarmsPersistenceService.addAlarmTrigger(new AlarmTrigger(triggerTime));
+		alarmsPersistenceService.addAlarmTrigger(new AlarmTrigger(triggerTime, true));
 	}
 	
 	public void cancelAlarm(DateTime triggerTime, Context context) {
 		logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
-		Intent intent = new Intent(context, AlarmReceiver.class);
+		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
+		intent.addCategory("android.intent.category.DEFAULT");
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		alarmManager.cancel(pendingIntent);
+	}
+	
+	public boolean isAlarmActive(DateTime triggerTime, Context context) {
+		// WTF? returning true even after cancelling
+		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
+		intent.addCategory("android.intent.category.DEFAULT");
+		long millis = triggerTime.getMillis();
+		int id = (int) millis; // unique to enable multiple alarms
+		return PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_NO_CREATE) != null;
 	}
 }
