@@ -71,7 +71,8 @@ public class AwakenActivity extends AppCompatActivity {
 	private final double ALARM_VIBRATION_PWM = 0.5;
 	
 	private final String[] wakeUpInfos = new String[]{
-			"RISE AND SHINE, MOTHERFUCKER!!!", "Kill Zombie process!!!", "Wstawaj, Nie Pierdol!",
+			"RISE AND SHINE, YOU MOTHERFUCKER!!!", "Kill Zombie process!!!",
+			"Wstawaj, Nie Pierdol!",
 	};
 	
 	private TextView fakeTimeLabel;
