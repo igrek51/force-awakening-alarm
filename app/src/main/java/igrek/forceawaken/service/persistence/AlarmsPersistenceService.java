@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import igrek.forceawaken.domain.alarm.AlarmTrigger;
 import igrek.forceawaken.domain.alarm.AlarmsConfig;
@@ -32,21 +30,29 @@ public class AlarmsPersistenceService {
 			return new AlarmsConfig();
 		}
 		
-		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(alarmsConfigFile))) {
-			return (AlarmsConfig) ois.readObject();
-		} catch (Exception ex) {
-			logger.error(ex);
+		
+		try (FileInputStream fis = new FileInputStream(alarmsConfigFile)) {
+			byte fileContent[] = new byte[(int) alarmsConfigFile.length()];
+			fis.read(fileContent);
+			
+			AlarmsConfig unmarshalled = ParcelableUtil.unmarshall(fileContent, AlarmsConfig.CREATOR);
+			return unmarshalled;
+			
+		} catch (Exception e) {
+			logger.error(e);
 			return null;
 		}
+		
 	}
 	
 	public void writeAlarmsConfig(AlarmsConfig alarmsConfig) {
 		try {
 			File alarmsConfigFile = getAlarmsConfigFile();
-			
 			FileOutputStream fout = new FileOutputStream(alarmsConfigFile);
-			ObjectOutputStream oos = new ObjectOutputStream(fout);
-			oos.writeObject(alarmsConfig);
+			byte[] bytes = ParcelableUtil.marshall(alarmsConfig);
+			fout.write(bytes);
+			fout.flush();
+			fout.close();
 		} catch (IOException e) {
 			logger.error(e);
 		}

@@ -27,6 +27,7 @@ import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
+import igrek.forceawaken.service.system.PermissionService;
 import igrek.forceawaken.service.time.AlarmTimeService;
 import igrek.forceawaken.service.ui.info.UserInfoService;
 import igrek.forceawaken.ui.components.TriggerTimeInput;
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
 	
 	@Inject
 	AlarmsPersistenceService alarmsPersistenceService;
+	
+	@Inject
+	PermissionService permissionService;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
 			// check alarm triggers are still valid
 			List<AlarmTrigger> inactive = alarmTriggers.stream().filter(a -> {
 				// inactive or from the past
-				return !alarmManagerService.isAlarmActive(a.getTriggerTime()) || a
+				//!alarmManagerService.isAlarmActive(a.getTriggerTime()) ||
+				return a
 						.getTriggerTime()
 						.isBefore(DateTime.now());
 			}).collect(Collectors.toList());
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 			alramTriggerList.setOnItemClickListener((adapter1, v, position, id) -> {
 				AlarmTrigger selected = (AlarmTrigger) adapter1.getItemAtPosition(position);
 				selected.setActive(false);
-				alarmManagerService.cancelAlarm(selected.getTriggerTime());
+				alarmManagerService.cancelAlarm(selected.getTriggerTime(), selected.getPendingIntent());
 				AlarmsConfig alarmsConfig2 = alarmsPersistenceService.removeAlarmTrigger(selected);
 				alramTriggerListAdapter.clear();
 				alramTriggerListAdapter.addAll(alarmsConfig2.getAlarmTriggers());
@@ -127,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
 		alarmTimeInput.requestFocus();
 		// show keyboard
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		
+		permissionService.isMicrophonePermissionGranted();
+		permissionService.isStoragePermissionGranted();
 		
 		logger.info(this.getClass().getSimpleName() + " has been created");
 	}

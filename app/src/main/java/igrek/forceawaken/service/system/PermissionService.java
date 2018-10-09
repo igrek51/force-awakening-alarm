@@ -25,15 +25,26 @@ public class PermissionService {
 	}
 	
 	public boolean isStoragePermissionGranted() {
+		return isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	}
+	
+	public boolean isMicrophonePermissionGranted() {
+		return isPermissionGranted(Manifest.permission.RECORD_AUDIO);
+	}
+	
+	private boolean isPermissionGranted(String permission) {
 		if (Build.VERSION.SDK_INT >= 23) {
-			if (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+			if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
 				// Permission is granted
 				return true;
 			} else {
+				int requestCode = (short) permission.hashCode();
+				if (requestCode < 0)
+					requestCode = -requestCode;
 				// Permission is revoked
 				ActivityCompat.requestPermissions(activity, new String[]{
-						Manifest.permission.WRITE_EXTERNAL_STORAGE
-				}, 1);
+						permission
+				}, requestCode);
 				return false;
 			}
 		} else { //permission is automatically granted on sdk<23 upon installation
@@ -41,6 +52,7 @@ public class PermissionService {
 			return true;
 		}
 	}
+	
 	
 	private void onPermissionGranted(String permission) {
 		logger.info("permission " + permission + " has been granted");
