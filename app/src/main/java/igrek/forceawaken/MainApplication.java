@@ -19,13 +19,17 @@ public class MainApplication extends Application {
 		
 		registerActivityLifecycleCallbacks(currentActivityListener);
 		
-		// Dagger Container init
-		DaggerIOC.init(this);
+		try {
+			// Dagger Container init
+			DaggerIOC.init(this);
+		} catch (Throwable t) {
+			logger.fatal(currentActivityListener.getCurrentActivity(), t);
+		}
 		
 		// catch all uncaught exceptions
 		Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler((thread, th) -> {
-			logger.errorUncaught(th);
+			logger.fatal(currentActivityListener.getCurrentActivity(), th);
 			//pass further to OS
 			defaultUEH.uncaughtException(thread, th);
 		});

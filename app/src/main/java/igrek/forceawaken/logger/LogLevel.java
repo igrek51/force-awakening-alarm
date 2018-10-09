@@ -2,7 +2,7 @@ package igrek.forceawaken.logger;
 
 public enum LogLevel {
 	
-	OFF(0), //only for settings
+	OFF(0), // for settings only
 	
 	FATAL(10),
 	
@@ -16,7 +16,7 @@ public enum LogLevel {
 	
 	TRACE(60),
 	
-	ALL(1000); //only for settings
+	ALL(1000); // for settings only
 	
 	/** lower number - higher priority (more important) */
 	private int levelNumber;
@@ -25,12 +25,12 @@ public enum LogLevel {
 		this.levelNumber = levelNumber;
 	}
 	
-	public boolean moreOrEqualImportantThan(LogLevel level2) {
-		return levelNumber <= level2.levelNumber;
+	public boolean moreOrEqualImportant(LogLevel than) {
+		return levelNumber <= than.levelNumber;
 	}
 	
-	public boolean lessOrEqualImportantThan(LogLevel level2) {
-		return levelNumber >= level2.levelNumber;
+	public boolean lessOrEqualImportant(LogLevel than) {
+		return levelNumber >= than.levelNumber;
 	}
 	
 }

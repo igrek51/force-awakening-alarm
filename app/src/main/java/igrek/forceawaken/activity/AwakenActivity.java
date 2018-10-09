@@ -82,16 +82,22 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		logger.info("creating " + this.getClass().getSimpleName());
-		
-		DaggerIOC.getFactoryComponent().inject(this);
-		
-		windowManagerService.setFullscreen();
-		setContentView(R.layout.awaken_main);
-		fakeTimeLabel = findViewById(R.id.fakeTime);
-		wakeUpLabel = findViewById(R.id.wakeUpLabel);
-		
-		bootstrapAlarm();
+		try {
+			
+			logger.info("creating " + this.getClass().getSimpleName());
+			
+			DaggerIOC.getFactoryComponent().inject(this);
+			
+			windowManagerService.setFullscreen();
+			setContentView(R.layout.awaken_main);
+			fakeTimeLabel = findViewById(R.id.fakeTime);
+			wakeUpLabel = findViewById(R.id.wakeUpLabel);
+			
+			bootstrapAlarm();
+			
+		} catch (Throwable t) {
+			logger.fatal(this, t);
+		}
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
