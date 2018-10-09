@@ -18,14 +18,16 @@ public class AlarmReceiver extends BroadcastReceiver {
 			wakeLock.acquire();
 			
 			Intent intent2 = new Intent(context, AwakenActivity.class);
+			intent2.setAction(Intent.ACTION_MAIN);
+			intent2.addCategory(Intent.CATEGORY_LAUNCHER);
 			intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			context.startActivity(intent2);
 			
-			new Handler().post(() -> {
+			new Handler().postDelayed(() -> {
 				if (wakeLock != null) {
 					wakeLock.release();
 				}
-			});
+			}, 1000);
 		}
 		
 	}

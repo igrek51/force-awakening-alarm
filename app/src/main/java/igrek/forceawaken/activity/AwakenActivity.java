@@ -100,6 +100,12 @@ public class AwakenActivity extends AppCompatActivity {
 		}
 	}
 	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		windowManagerService.setFullscreen();
+	}
+	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private void bootstrapAlarm() {
 		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");

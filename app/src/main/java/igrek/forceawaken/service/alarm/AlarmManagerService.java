@@ -31,7 +31,6 @@ public class AlarmManagerService {
 	public void setAlarmOnTime(DateTime triggerTime) {
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");
-		intent.putExtra("message", "Hello world!");
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
 		
@@ -50,11 +49,10 @@ public class AlarmManagerService {
 		logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"));
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");
-		intent.putExtra("message", "Hello world!");
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
 		
-		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, 0);
+		PendingIntent p1 = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT);
 		alarmManager.cancel(p1);
 		
 		if (pendingIntent != null) {
@@ -66,7 +64,6 @@ public class AlarmManagerService {
 		// WTF? returning true even after cancelling
 		Intent intent = new Intent(activity.getApplicationContext(), AlarmReceiver.class);
 		intent.addCategory("android.intent.category.DEFAULT");
-		intent.putExtra("message", "Hello world!");
 		long millis = triggerTime.getMillis();
 		int id = (int) millis; // unique to enable multiple alarms
 		return PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_NO_CREATE) != null;
