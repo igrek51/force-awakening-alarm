@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -103,7 +104,9 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		windowManagerService.setFullscreen();
+		new Handler().postDelayed(() -> {
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		}, 100);
 	}
 	
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
