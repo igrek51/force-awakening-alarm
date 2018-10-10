@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 		// multiple alarms at once
 		int repeats = getAlarmRepeatsCount();
 		for (int r = 0; r < repeats; r++) {
-			DateTime triggerTime2 = triggerTime.plusSeconds(r * 40);
+			DateTime triggerTime2 = triggerTime.plusSeconds(r * 60);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
 			logger.info("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
 		}

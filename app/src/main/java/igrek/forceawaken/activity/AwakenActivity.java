@@ -150,30 +150,30 @@ public class AwakenActivity extends AppCompatActivity {
 				alarmPlayer.setVolume(newVol);
 				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
 			}
-		}, 90 * 1000);
-		
-		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
-				double newVol = alarmPlayer.getVolume() * 2;
-				alarmPlayer.setVolume(newVol);
-				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
-			}
-		}, 100 * 1000);
-		
-		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
-				double newVol = alarmPlayer.getVolume() * 2;
-				alarmPlayer.setVolume(newVol);
-				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
-			}
 		}, 110 * 1000);
+		
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
+				double newVol = alarmPlayer.getVolume() * 2;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
+			}
+		}, 120 * 1000);
+		
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
+				double newVol = alarmPlayer.getVolume() * 2;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
+			}
+		}, 130 * 1000);
 		
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
 				alarmPlayer.setVolume(1.0);
 				logger.info("Alarm is still playing - volume level boosted to " + 1.0);
 			}
-		}, 120 * 1000);
+		}, 140 * 1000);
 		
 		Runnable vibrationsBooster = new Runnable() {
 			@Override
@@ -185,7 +185,7 @@ public class AwakenActivity extends AppCompatActivity {
 				}
 			}
 		};
-		new Handler().postDelayed(vibrationsBooster, 150 * 1000);
+		new Handler().postDelayed(vibrationsBooster, 160 * 1000);
 		
 		try {
 			currentRingtone = ringtoneManager.getRandomRingtone();
