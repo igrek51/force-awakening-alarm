@@ -27,21 +27,27 @@ public class NoiseDetectorService {
 			mediaRecorder.prepare();
 			mediaRecorder.start();
 			mediaRecorder.getMaxAmplitude(); // initialize measurement
-		} catch (IOException e) {
+			
+			new Handler().postDelayed(() -> {
+				
+				try {
+					int amplitude = mediaRecorder.getMaxAmplitude();
+					double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
+					logger.info("Surrounding noise amplitude: " + amplitudeDb + " dB");
+					mediaRecorder.stop();
+					mediaRecorder.release();
+					completeCallback.onComplete(amplitudeDb);
+				} catch (Exception e) {
+					logger.error(e);
+					completeCallback.onComplete(0);
+				}
+				
+			}, millis);
+			
+		} catch (IOException | IllegalStateException e) {
 			logger.error(e);
+			completeCallback.onComplete(0);
 		}
-		
-		new Handler().postDelayed(() -> {
-			
-			int amplitude = mediaRecorder.getMaxAmplitude();
-			double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude));
-			logger.info("Surrounding noise amplitude: " + amplitudeDb + " dB");
-			mediaRecorder.stop();
-			mediaRecorder.release();
-			
-			completeCallback.onComplete(amplitudeDb);
-			
-		}, millis);
 	}
 	
 	public interface NoiseLevelMeasureCallback {
