@@ -79,7 +79,6 @@ public class AwakenActivity extends AppCompatActivity {
 	private TextView fakeTimeLabel;
 	private TextView wakeUpLabel;
 	
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -129,13 +128,24 @@ public class AwakenActivity extends AppCompatActivity {
 		super.onNewIntent(intent);
 		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
+			
 			logger.info("Alarm already playing - postponing by 30 s");
 			// postpone alarm - create new
 			DateTime triggerTime2 = DateTime.now().plusSeconds(30);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
 			
 		} else {
-			bootstrapAlarm();
+			
+			Bundle extras = intent.getExtras();
+			Intent restartIntent = new Intent(this, AwakenActivity.class);
+			if (extras != null)
+				restartIntent.putExtras(extras);
+			restartIntent.setAction(Intent.ACTION_MAIN);
+			restartIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			startActivity(restartIntent);
+			finish();
+			
 		}
 	}
 	
