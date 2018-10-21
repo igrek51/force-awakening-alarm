@@ -1,11 +1,10 @@
 package igrek.forceawaken.activity;
 
-import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
@@ -89,6 +88,11 @@ public class AwakenActivity extends AppCompatActivity {
 			DaggerIOC.getFactoryComponent().inject(this);
 			
 			windowManagerService.setFullscreen();
+			setShowWhenLocked(true);
+			setTurnScreenOn(true);
+			KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+			keyguardManager.requestDismissKeyguard(this, null);
+			
 			setContentView(R.layout.awaken_main);
 			fakeTimeLabel = findViewById(R.id.fakeTime);
 			wakeUpLabel = findViewById(R.id.wakeUpLabel);
@@ -108,7 +112,6 @@ public class AwakenActivity extends AppCompatActivity {
 		}, 100);
 	}
 	
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	private void bootstrapAlarm() {
 		String fakeTimeStr = alarmTimeService.getFakeCurrentTime().toString("HH:mm");
 		fakeTimeLabel.setText(fakeTimeStr);
@@ -122,20 +125,20 @@ public class AwakenActivity extends AppCompatActivity {
 		});
 	}
 	
-	@SuppressLint("NewApi")
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
 			
-			logger.info("Alarm already playing - postponing by 30 s");
+			logger.info("Alarm already playing - postponing by 40 s");
 			// postpone alarm - create new
-			DateTime triggerTime2 = DateTime.now().plusSeconds(30);
+			DateTime triggerTime2 = DateTime.now().plusSeconds(40);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
 			
 		} else {
 			
+			logger.info("Recreating new activity...");
 			Bundle extras = intent.getExtras();
 			Intent restartIntent = new Intent(this, AwakenActivity.class);
 			if (extras != null)
@@ -149,7 +152,6 @@ public class AwakenActivity extends AppCompatActivity {
 		}
 	}
 	
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public void startAlarmPlaying(double noiseLevel, final long alarmId) {
 		// stop the previous alarm
 		alarmPlayer.stopAlarm();
@@ -234,6 +236,8 @@ public class AwakenActivity extends AppCompatActivity {
 	private void correctAnswer() {
 		alarmPlayer.stopAlarm();
 		userInfoService.showToast("Congratulations! You have woken up.");
+		
+		finish();
 		
 		if (awakeTask == null) { // only once
 			awakeTask = awakeTaskService.getRandomTask();
