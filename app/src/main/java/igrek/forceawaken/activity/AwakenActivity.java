@@ -174,29 +174,13 @@ public class AwakenActivity extends AppCompatActivity {
 		// stop the previous alarm
 		alarmPlayer.stopAlarm();
 		
-		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
-				double newVol = alarmPlayer.getVolume() * 2;
-				alarmPlayer.setVolume(newVol);
-				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
-			}
-		}, 150 * 1000);
+		scheduleVolumeBoost(alarmId, 120 * 1000, 1.2);
+		scheduleVolumeBoost(alarmId, 130 * 1000, 1.2);
+		scheduleVolumeBoost(alarmId, 140 * 1000, 1.2);
 		
-		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
-				double newVol = alarmPlayer.getVolume() * 2;
-				alarmPlayer.setVolume(newVol);
-				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
-			}
-		}, 160 * 1000);
-		
-		new Handler().postDelayed(() -> {
-			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
-				double newVol = alarmPlayer.getVolume() * 2;
-				alarmPlayer.setVolume(newVol);
-				logger.info("Alarm is still playing - volume level slightly boosted to " + newVol);
-			}
-		}, 170 * 1000);
+		scheduleVolumeBoost(alarmId, 150 * 1000, 1.5);
+		scheduleVolumeBoost(alarmId, 160 * 1000, 1.5);
+		scheduleVolumeBoost(alarmId, 170 * 1000, 1.5);
 		
 		new Handler().postDelayed(() -> {
 			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
@@ -241,6 +225,16 @@ public class AwakenActivity extends AppCompatActivity {
 			Ringtone selected = (Ringtone) adapter1.getItemAtPosition(position);
 			onRingtoneAnswer(selected);
 		});
+	}
+	
+	private void scheduleVolumeBoost(long alarmId, long whenMs, double volMultiplier) {
+		new Handler().postDelayed(() -> {
+			if (alarmPlayer.isPlaying() && alarmPlayer.getAlarmId() == alarmId) {
+				double newVol = alarmPlayer.getVolume() * volMultiplier;
+				alarmPlayer.setVolume(newVol);
+				logger.info("Alarm is still playing - volume level boosted to " + newVol);
+			}
+		}, whenMs);
 	}
 	
 	private void onRingtoneAnswer(Ringtone selected) {
