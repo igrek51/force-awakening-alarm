@@ -78,12 +78,15 @@ public class AwakenActivity extends AppCompatActivity {
 	private TextView fakeTimeLabel;
 	private TextView wakeUpLabel;
 	
+	private static DateTime activateAlarmTime;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
 			
 			logger.info("creating " + this.getClass().getSimpleName());
+			activateAlarmTime = DateTime.now();
 			
 			DaggerIOC.getFactoryComponent().inject(this);
 			
@@ -130,12 +133,23 @@ public class AwakenActivity extends AppCompatActivity {
 		});
 	}
 	
+	/**
+	 * @return is alarm playing or is intended to be playing
+	 */
+	private boolean isAlarmActivating() {
+		if (alarmPlayer.isPlaying())
+			return true;
+		if (activateAlarmTime == null)
+			return false;
+		return activateAlarmTime.isAfter(DateTime.now().minusSeconds(10));
+	}
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		if (alarmPlayer.isPlaying()) {
+		if (isAlarmActivating()) {
 			
-			logger.info("Alarm already playing - postponing by 40 s");
+			logger.info("Alarm already activated - postponing by 40 s");
 			// postpone alarm - create new
 			DateTime triggerTime2 = DateTime.now().plusSeconds(40);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
@@ -239,6 +253,7 @@ public class AwakenActivity extends AppCompatActivity {
 	
 	private void correctAnswer() {
 		alarmPlayer.stopAlarm();
+		activateAlarmTime = null;
 		userInfoService.showToast("Congratulations! You have woken up.");
 		
 		finish();
@@ -267,6 +282,7 @@ public class AwakenActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		alarmPlayer.stopAlarm();
+		activateAlarmTime = null;
 	}
 	
 	@Override
