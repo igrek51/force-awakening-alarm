@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 	private TextView nowDateTime;
 	private EditText earlyMarginInput;
 	private EditText alarmRepeatsInput;
+	private EditText alarmRepeatsIntervalInput;
 	private ListView alramTriggerList;
 	private ArrayAdapter<AlarmTrigger> alramTriggerListAdapter;
 	
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 		alarmTimeInput = findViewById(R.id.alarmTimeInput);
 		earlyMarginInput = findViewById(R.id.earlyMarginInput);
 		alarmRepeatsInput = findViewById(R.id.alarmRepeatsInput);
+		alarmRepeatsIntervalInput = findViewById(R.id.alarmRepeatsIntervalInput);
 		nowDateTime = findViewById(R.id.nowDateTime);
 		
 		btnSet.setOnClickListener(v -> {
@@ -94,9 +96,7 @@ public class MainActivity extends AppCompatActivity {
 			List<AlarmTrigger> inactive = alarmTriggers.stream().filter(a -> {
 				// inactive or from the past
 				//!alarmManagerService.isAlarmActive(a.getTriggerTime()) ||
-				return a
-						.getTriggerTime()
-						.isBefore(DateTime.now());
+				return a.getTriggerTime().isBefore(DateTime.now());
 			}).collect(Collectors.toList());
 			for (AlarmTrigger inactiveAlarmTrigger : inactive) {
 				alarmsConfig = alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger);
@@ -161,11 +161,19 @@ public class MainActivity extends AppCompatActivity {
 		return Integer.parseInt(input);
 	}
 	
+	private int getAlarmRepeatsInterval() {
+		String input = alarmRepeatsIntervalInput.getText().toString();
+		if (input.isEmpty())
+			return 60;
+		return Integer.parseInt(input);
+	}
+	
 	private void setAlarmOnTime(DateTime triggerTime) {
 		// multiple alarms at once
 		int repeats = getAlarmRepeatsCount();
+		int repeatsInterval = getAlarmRepeatsInterval();
 		for (int r = 0; r < repeats; r++) {
-			DateTime triggerTime2 = triggerTime.plusSeconds(r * 40);
+			DateTime triggerTime2 = triggerTime.plusSeconds(r * repeatsInterval);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
 			logger.info("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
 		}

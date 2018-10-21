@@ -81,7 +81,20 @@
                 android:ems="10"
                 android:hint="alarms count"
                 android:inputType="number"
-                android:text="3"
+                android:text="5"
+                android:textAlignment="center"/>
+
+            <EditText
+                android:id="@+id/alarmRepeatsIntervalInput"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="alarms interval [s]"
+                android:inputType="number"
+                android:text="40"
                 android:textAlignment="center"/>
 
             <Button
@@ -91,7 +104,7 @@
                 android:layout_below="@+id/alarmRepeatsInput"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:text="Set Alarm"/>
 
             <ListView

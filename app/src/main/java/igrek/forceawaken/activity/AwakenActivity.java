@@ -87,11 +87,7 @@ public class AwakenActivity extends AppCompatActivity {
 			
 			DaggerIOC.getFactoryComponent().inject(this);
 			
-			windowManagerService.setFullscreen();
-			setShowWhenLocked(true);
-			setTurnScreenOn(true);
-			KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-			keyguardManager.requestDismissKeyguard(this, null);
+			showFullscreenWhenLocked();
 			
 			setContentView(R.layout.awaken_main);
 			fakeTimeLabel = findViewById(R.id.fakeTime);
@@ -102,6 +98,14 @@ public class AwakenActivity extends AppCompatActivity {
 		} catch (Throwable t) {
 			logger.fatal(this, t);
 		}
+	}
+	
+	private void showFullscreenWhenLocked() {
+		windowManagerService.setFullscreen();
+		setShowWhenLocked(true);
+		setTurnScreenOn(true);
+		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+		keyguardManager.requestDismissKeyguard(this, null);
 	}
 	
 	@Override
@@ -238,7 +242,9 @@ public class AwakenActivity extends AppCompatActivity {
 		userInfoService.showToast("Congratulations! You have woken up.");
 		
 		finish();
-		
+	}
+	
+	private void runAwakeTask() {
 		if (awakeTask == null) { // only once
 			awakeTask = awakeTaskService.getRandomTask();
 			logger.debug("Random task: " + awakeTask.getClass().getSimpleName());
