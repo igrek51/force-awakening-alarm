@@ -132,7 +132,6 @@ public class AwakenActivity extends AppCompatActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		logger.debug("AwakenActivity.onNewIntent");
 		if (alarmPlayer.isPlaying()) {
 			
 			logger.info("Alarm already playing - postponing by 40 s");
