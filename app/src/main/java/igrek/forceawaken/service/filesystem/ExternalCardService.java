@@ -23,7 +23,7 @@ public class ExternalCardService {
 	
 	public ExternalCardService() {
 		externalSDPath = findExternalSDPath();
-		logger.debug("External SD Card path detected: " + externalSDPath);
+		//logger.debug("External SD Card path detected: " + externalSDPath);
 		//logger.debug("DEVICE = " + android.os.Build.DEVICE);
 		//logger.debug("MANUFACTURER = " + android.os.Build.MANUFACTURER);
 	}
