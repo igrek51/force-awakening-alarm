@@ -48,16 +48,12 @@ public class MainActivity extends AppCompatActivity {
 	
 	@Inject
 	AlarmManagerService alarmManagerService;
-	
 	@Inject
 	UserInfoService userInfoService;
-	
 	@Inject
 	AlarmTimeService alarmTimeService;
-	
 	@Inject
 	AlarmsPersistenceService alarmsPersistenceService;
-	
 	@Inject
 	PermissionService permissionService;
 	
@@ -175,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
 		for (int r = 0; r < repeats; r++) {
 			DateTime triggerTime2 = triggerTime.plusSeconds(r * repeatsInterval);
 			alarmManagerService.setAlarmOnTime(triggerTime2);
-			logger.info("Alarm set at " + triggerTime2.toString("HH:mm:ss, yyyy-MM-dd"));
 		}
 		
 		userInfoService.showToast(Integer.toString(repeats) + " Alarm set on " + triggerTime.toString("yyyy-MM-dd"));

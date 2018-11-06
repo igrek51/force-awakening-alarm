@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -23,12 +25,15 @@ import javax.inject.Inject;
 
 import igrek.forceawaken.R;
 import igrek.forceawaken.dagger.DaggerIOC;
+import igrek.forceawaken.domain.alarm.AlarmTrigger;
+import igrek.forceawaken.domain.alarm.AlarmsConfig;
 import igrek.forceawaken.domain.ringtone.Ringtone;
 import igrek.forceawaken.domain.task.AwakeTask;
 import igrek.forceawaken.logger.Logger;
 import igrek.forceawaken.logger.LoggerFactory;
 import igrek.forceawaken.service.alarm.AlarmManagerService;
 import igrek.forceawaken.service.alarm.VibratorService;
+import igrek.forceawaken.service.persistence.AlarmsPersistenceService;
 import igrek.forceawaken.service.ringtone.AlarmPlayerService;
 import igrek.forceawaken.service.ringtone.RingtoneManagerService;
 import igrek.forceawaken.service.task.AwakeTaskService;
@@ -66,6 +71,8 @@ public class AwakenActivity extends AppCompatActivity {
 	AwakeTaskService awakeTaskService;
 	@Inject
 	AlarmManagerService alarmManagerService;
+	@Inject
+	AlarmsPersistenceService alarmsPersistenceService;
 	
 	private final long ALARM_VIBRATION_PERIOD = 1000;
 	private final double ALARM_VIBRATION_PWM = 0.5;
@@ -250,7 +257,29 @@ public class AwakenActivity extends AppCompatActivity {
 		activateAlarmTime = null;
 		userInfoService.showToast("Congratulations! You have woken up.");
 		
-		finish();
+		if (isThisAlarmLast()) {
+			logger.debug("Last alarm stopped");
+			showLastAlarmDialog();
+		} else {
+			finish();
+		}
+	}
+	
+	public void showLastAlarmDialog() {
+		String title = "ATTENTION!";
+		String message = "This was the last alarm. WAKE UP!!!";
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AwakenActivity.this);
+		alertBuilder.setMessage(message);
+		alertBuilder.setTitle(title);
+		alertBuilder.setPositiveButton("OK, I have woken up", (dialog, which) -> {
+		});
+		alertBuilder.setCancelable(true);
+		
+		AlertDialog alert = alertBuilder.create();
+		
+		alert.setOnShowListener(arg0 -> alert.getButton(AlertDialog.BUTTON_POSITIVE)
+				.setTextColor(0xffffffff));
+		alert.show();
 	}
 	
 	private void runAwakeTask() {
@@ -270,6 +299,21 @@ public class AwakenActivity extends AppCompatActivity {
 		ringtoneListAdapter.clear();
 		ringtoneListAdapter.addAll(ringtones);
 		ringtoneListAdapter.notifyDataSetChanged();
+	}
+	
+	private boolean isThisAlarmLast() {
+		AlarmsConfig alarmsConfig = alarmsPersistenceService.readAlarmsConfig();
+		if (alarmsConfig != null) {
+			ArrayList<AlarmTrigger> alarmTriggers = alarmsConfig.getAlarmTriggers();
+			// alarms from near future (now < alarm time < next hour)
+			long nearAlarms = alarmTriggers.stream()
+					.map(a -> a.getTriggerTime())
+					.filter(t -> t.isAfterNow())
+					.filter(t -> t.isBefore(DateTime.now().plusHours(1)))
+					.count();
+			return nearAlarms == 0;
+		}
+		return true;
 	}
 	
 	@Override

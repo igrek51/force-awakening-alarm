@@ -9,13 +9,13 @@ public class VolumeCalculatorService {
 	private Logger logger = LoggerFactory.getLogger();
 	
 	final double[] noiseVolTransform = new double[]{ // noise dB -> alarm volume
-			35.0, 0.3, // low limit
-			70.0, 1.0, // high limit
+			35.0, 0.4, // low limit
+			70.0, 0.8, // high limit
 	};
 	
 	private final double speakerDownCompensation = 1.2;
 	
-	private final double globalVolume = 0.2;
+	private final double globalVolume = 0.10;
 	
 	private AccelerometerService accelerometerService;
 	
