@@ -280,6 +280,8 @@ public class AwakenActivity extends AppCompatActivity {
 		alert.setOnShowListener(arg0 -> alert.getButton(AlertDialog.BUTTON_POSITIVE)
 				.setTextColor(0xffffffff));
 		alert.show();
+		
+		vibratorService.vibrate(1000);
 	}
 	
 	private void runAwakeTask() {
