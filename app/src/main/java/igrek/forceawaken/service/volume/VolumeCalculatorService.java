@@ -15,7 +15,7 @@ public class VolumeCalculatorService {
 	
 	private final double speakerDownCompensation = 1.2;
 	
-	private final double globalVolume = 0.10;
+	private final double globalVolume = 0.15;
 	
 	private AccelerometerService accelerometerService;
 	
