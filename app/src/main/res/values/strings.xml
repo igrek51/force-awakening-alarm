@@ -2,4 +2,10 @@
     <string name="app_name">Force Awekening Alarm</string>
 
     <string name="action_exit">Exit</string>
+    <string name="error_occurred_s">Error: %s</string>
+    <string name="error_details">Details</string>
+    <string name="error_occurred">Error occurred</string>
+    <string name="action_info_ok">Ok</string>
+    <string name="nav_setup">Setup</string>
+    <string name="nav_exit">Exit</string>
 </resources>
