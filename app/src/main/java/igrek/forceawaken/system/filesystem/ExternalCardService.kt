@@ -106,7 +106,7 @@ class ExternalCardService(
         val externalSD = File(externalSDPath)
         val appDataDir = File(externalSD, "Android/data/" + activity.packageName)
         if (!appDataDir.exists()) {
-            logger.info(activity.getExternalFilesDir("data")?.absolutePath)
+            activity.getExternalFilesDir("data")?.absolutePath
             if (appDataDir.mkdirs() && appDataDir.exists()) {
                 logger.debug("Android/data/package directory has been created")
             } else {

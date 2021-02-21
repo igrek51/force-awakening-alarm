@@ -1,5 +1,6 @@
 package igrek.forceawaken.ringtone
 
+import android.app.Activity
 import igrek.forceawaken.info.logger.Logger
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -11,8 +12,10 @@ import java.util.*
 
 class RingtoneManagerService(
         externalCardService: LazyInject<ExternalCardService> = appFactory.externalCardService,
+        activity: LazyInject<Activity> = appFactory.activity,
 ) {
     private val externalCardService by LazyExtractor(externalCardService)
+    private val activity by LazyExtractor(activity)
 
     private val logger: Logger = LoggerFactory.logger
 
@@ -22,19 +25,21 @@ class RingtoneManagerService(
         get() {
             val ringtones = allRingtones
             return ringtones[random.nextInt(ringtones.size)]
-
         }
 
     val allRingtones: List<Ringtone>
         get() {
-            val ringtonesPath = "$externalStorageDirectory/Android/data/igrek.forceawaken/ringtones"
+            val appDataDir = activity.getExternalFilesDir("data")?.absolutePath
+            val ringtonesPath = "$appDataDir/ringtones"
             val ringtonesDir = File(ringtonesPath)
             if (!ringtonesDir.exists()) {
-                logger.warn("ringtones dir does not exist")
+                logger.warn("ringtones dir does not exist: $ringtonesPath")
                 ringtonesDir.mkdirs()
             }
             val ringtones: MutableList<Ringtone> = ArrayList()
-            for (file in ringtonesDir.listFiles()) {
+            val files = ringtonesDir.listFiles()
+                    ?: throw RuntimeException("Listing files got null: $ringtonesPath")
+            for (file in files) {
                 val name = getRingtoneName(file)
                 ringtones.add(Ringtone(file, name))
             }
