@@ -4,6 +4,10 @@ import android.app.Activity
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import igrek.forceawaken.activity.*
+import igrek.forceawaken.activity.list.ListActivityData
+import igrek.forceawaken.activity.list.ListActivityLayout
+import igrek.forceawaken.activity.schedule.ScheduleActivityData
+import igrek.forceawaken.activity.schedule.ScheduleActivityLayout
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.alarm.VibratorService
 import igrek.forceawaken.info.UiInfoService
@@ -39,9 +43,13 @@ class AppFactory(
 
     /* Services */
     val activityData = SingletonInject { MainActivityData() }
+    val listActivityData = SingletonInject { ListActivityData() }
+    val scheduleActivityData = SingletonInject { ScheduleActivityData() }
     val awakenActivityData = SingletonInject { AwakenActivityData() }
     val activityController = SingletonInject { ActivityController() }
     val mainActivityLayout = SingletonInject { MainActivityLayout() }
+    val listActivityLayout = SingletonInject { ListActivityLayout() }
+    val scheduleActivityLayout = SingletonInject { ScheduleActivityLayout() }
     val awakenActivityLayout = SingletonInject { AwakenActivityLayout() }
     val optionSelectDispatcher = SingletonInject { OptionSelectDispatcher() }
     val systemKeyDispatcher = SingletonInject { SystemKeyDispatcher() }

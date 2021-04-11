@@ -10,6 +10,8 @@ import com.google.android.material.navigation.NavigationView
 import igrek.forceawaken.R
 import igrek.forceawaken.activity.ActivityController
 import igrek.forceawaken.activity.MainActivity
+import igrek.forceawaken.activity.list.ListActivity
+import igrek.forceawaken.activity.schedule.ScheduleActivity
 import igrek.forceawaken.info.errorcheck.SafeExecutor
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -42,6 +44,14 @@ class NavigationMenuController(
     private fun initOptionActionsMap() {
         actionsMap[R.id.nav_setup] = {
             val intent = Intent(activity, MainActivity::class.java)
+            activity.startActivity(intent)
+        }
+        actionsMap[R.id.nav_list_alarms] = {
+            val intent = Intent(activity, ListActivity::class.java)
+            activity.startActivity(intent)
+        }
+        actionsMap[R.id.nav_schedule] = {
+            val intent = Intent(activity, ScheduleActivity::class.java)
             activity.startActivity(intent)
         }
         actionsMap[R.id.nav_exit] = { activityController.quit() }

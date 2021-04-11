@@ -8,4 +8,6 @@
     <string name="action_info_ok">Ok</string>
     <string name="nav_setup">Setup</string>
     <string name="nav_exit">Exit</string>
+    <string name="nav_list_scheduled_alarms">Alarms list</string>
+    <string name="nav_schedule_alarm">Schedule</string>
 </resources>

@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import igrek.forceawaken.activity.AlarmReceiver
 import igrek.forceawaken.info.logger.Logger
 import igrek.forceawaken.info.logger.LoggerFactory
@@ -30,12 +29,8 @@ class AlarmManagerService(
         intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
-        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
-        }
+        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(activity.applicationContext, id, intent, PendingIntent.FLAG_ONE_SHOT)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
 
         // save creation information in external place
         alarmsPersistenceService.addAlarmTrigger(AlarmTrigger(triggerTime, true, null))
