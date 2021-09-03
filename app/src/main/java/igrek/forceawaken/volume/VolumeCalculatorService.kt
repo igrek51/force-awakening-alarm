@@ -15,9 +15,10 @@ class VolumeCalculatorService(
     private val logger: Logger = LoggerFactory.logger
 
     val noiseVolTransform = doubleArrayOf( // noise dB -> alarm volume
-            35.0, 0.4,  // low limit
-            70.0, 0.8)
-    private val speakerDownCompensation = 1.2
+        35.0, 0.4,  // low limit
+        70.0, 0.8
+    )
+    private val speakerDownCompensation = 1.1
     private val globalVolume = 0.15
 
     fun calcVolumeByNoise(noiseLevel: Double): Double {

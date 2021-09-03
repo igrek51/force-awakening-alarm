@@ -29,7 +29,12 @@ class AlarmManagerService(
         intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
-        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(activity.applicationContext, id, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            activity.applicationContext,
+            id,
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
 
         // save creation information in external place
@@ -40,9 +45,14 @@ class AlarmManagerService(
         logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"))
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
         intent.addCategory("android.intent.category.DEFAULT")
-        val millis: Long = triggerTime.getMillis()
+        val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
-        val p1: PendingIntent = PendingIntent.getBroadcast(activity.getApplicationContext(), id, intent, PendingIntent.FLAG_ONE_SHOT)
+        val p1: PendingIntent = PendingIntent.getBroadcast(
+            activity.applicationContext,
+            id,
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
         alarmManager.cancel(p1)
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
