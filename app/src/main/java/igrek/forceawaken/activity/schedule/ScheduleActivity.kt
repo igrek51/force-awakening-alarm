@@ -26,6 +26,7 @@ open class ScheduleActivity(
             recreateFields() // Workaround for reusing finished activities by Android
             super.onCreate(savedInstanceState)
             activityData.scheduleActivityLayout.init()
+            activityData.inflate()
         } catch (t: Throwable) {
             logger.fatal(t)
             throw t

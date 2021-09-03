@@ -25,7 +25,9 @@ open class ListActivity(
             AppContextFactory.createAppContext(this)
             recreateFields() // Workaround for reusing finished activities by Android
             super.onCreate(savedInstanceState)
+
             activityData.listActivityLayout.init()
+            activityData.inflate()
         } catch (t: Throwable) {
             logger.fatal(t)
             throw t

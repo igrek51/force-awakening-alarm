@@ -12,17 +12,26 @@ import igrek.forceawaken.system.SystemKeyDispatcher
     Workaround for reusing finished activities by Android
  */
 class MainActivityData(
-        mainActivityLayout: LazyInject<MainActivityLayout> = appFactory.mainActivityLayout,
-        activityController: LazyInject<ActivityController> = appFactory.activityController,
-        optionSelectDispatcher: LazyInject<OptionSelectDispatcher> = appFactory.optionSelectDispatcher,
-        systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
-        permissionService: LazyInject<PermissionService> = appFactory.permissionService,
-        activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
+    private val _mainActivityLayout: LazyInject<MainActivityLayout> = appFactory.mainActivityLayout,
+    private val _activityController: LazyInject<ActivityController> = appFactory.activityController,
+    private val _optionSelectDispatcher: LazyInject<OptionSelectDispatcher> = appFactory.optionSelectDispatcher,
+    private val _systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
+    private val _permissionService: LazyInject<PermissionService> = appFactory.permissionService,
+    private val _activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
 ) : AppCompatActivity() {
-    val mainActivityLayout by LazyExtractor(mainActivityLayout)
-    val activityController by LazyExtractor(activityController)
-    val optionSelectDispatcher by LazyExtractor(optionSelectDispatcher)
-    val systemKeyDispatcher by LazyExtractor(systemKeyDispatcher)
-    val permissionService by LazyExtractor(permissionService)
-    val activityResultDispatcher by LazyExtractor(activityResultDispatcher)
+    val mainActivityLayout by LazyExtractor(_mainActivityLayout)
+    val activityController by LazyExtractor(_activityController)
+    val optionSelectDispatcher by LazyExtractor(_optionSelectDispatcher)
+    val systemKeyDispatcher by LazyExtractor(_systemKeyDispatcher)
+    val permissionService by LazyExtractor(_permissionService)
+    val activityResultDispatcher by LazyExtractor(_activityResultDispatcher)
+
+    fun inflate() {
+        _mainActivityLayout.get()
+        _activityController.get()
+        _optionSelectDispatcher.get()
+        _systemKeyDispatcher.get()
+        _permissionService.get()
+        _activityResultDispatcher.get()
+    }
 }

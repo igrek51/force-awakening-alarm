@@ -31,6 +31,7 @@ open class MainActivity(
             recreateFields() // Workaround for reusing finished activities by Android
             super.onCreate(savedInstanceState)
             activityData.mainActivityLayout.init()
+            activityData.inflate()
         } catch (t: Throwable) {
             logger.fatal(t)
             throw t

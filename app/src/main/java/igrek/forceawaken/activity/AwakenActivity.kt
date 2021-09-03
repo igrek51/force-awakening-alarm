@@ -28,9 +28,8 @@ class AwakenActivity(
             AppContextFactory.createAppContext(this)
             recreateFields() // Workaround for reusing finished activities by Android
             super.onCreate(savedInstanceState)
-
             activityData.awakenActivityLayout.init()
-
+            activityData.inflate()
         } catch (t: Throwable) {
             logger.fatal(t)
             throw t

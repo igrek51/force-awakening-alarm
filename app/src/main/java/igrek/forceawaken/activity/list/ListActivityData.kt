@@ -8,11 +8,17 @@ import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.system.SystemKeyDispatcher
 
 class ListActivityData(
-        listActivityLayout: LazyInject<ListActivityLayout> = appFactory.listActivityLayout,
-        systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
-        activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
+    private val _listActivityLayout: LazyInject<ListActivityLayout> = appFactory.listActivityLayout,
+    private val _systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
+    private val _activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
 ) : AppCompatActivity() {
-    val listActivityLayout by LazyExtractor(listActivityLayout)
-    val systemKeyDispatcher by LazyExtractor(systemKeyDispatcher)
-    val activityResultDispatcher by LazyExtractor(activityResultDispatcher)
+    val listActivityLayout by LazyExtractor(_listActivityLayout)
+    val systemKeyDispatcher by LazyExtractor(_systemKeyDispatcher)
+    val activityResultDispatcher by LazyExtractor(_activityResultDispatcher)
+
+    fun inflate() {
+        _listActivityLayout.get()
+        _systemKeyDispatcher.get()
+        _activityResultDispatcher.get()
+    }
 }

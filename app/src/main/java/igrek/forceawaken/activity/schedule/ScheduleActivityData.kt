@@ -8,11 +8,17 @@ import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.system.SystemKeyDispatcher
 
 class ScheduleActivityData(
-        scheduleActivityLayout: LazyInject<ScheduleActivityLayout> = appFactory.scheduleActivityLayout,
-        systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
-        activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
+    private val _scheduleActivityLayout: LazyInject<ScheduleActivityLayout> = appFactory.scheduleActivityLayout,
+    private val _systemKeyDispatcher: LazyInject<SystemKeyDispatcher> = appFactory.systemKeyDispatcher,
+    private val _activityResultDispatcher: LazyInject<ActivityResultDispatcher> = appFactory.activityResultDispatcher,
 ) : AppCompatActivity() {
-    val scheduleActivityLayout by LazyExtractor(scheduleActivityLayout)
-    val systemKeyDispatcher by LazyExtractor(systemKeyDispatcher)
-    val activityResultDispatcher by LazyExtractor(activityResultDispatcher)
+    val scheduleActivityLayout by LazyExtractor(_scheduleActivityLayout)
+    val systemKeyDispatcher by LazyExtractor(_systemKeyDispatcher)
+    val activityResultDispatcher by LazyExtractor(_activityResultDispatcher)
+
+    fun inflate() {
+        _scheduleActivityLayout.get()
+        _systemKeyDispatcher.get()
+        _activityResultDispatcher.get()
+    }
 }
