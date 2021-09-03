@@ -98,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
-                        android:text="alarms count:" />
+                        android:text="snooze count:" />
 
                     <EditText
                         android:id="@+id/alarmRepeatsInput"
@@ -108,7 +108,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:hint="alarms count"
+                        android:hint="snooze count"
                         android:inputType="number"
                         android:text="3"
                         android:textAlignment="center" />
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
-                        android:text="alarms interval [s]:" />
+                        android:text="snooze interval [s]:" />
 
                     <EditText
                         android:id="@+id/alarmRepeatsIntervalInput"
@@ -128,9 +128,9 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:hint="alarms interval [s]"
+                        android:hint="snooze interval [s]"
                         android:inputType="number"
-                        android:text="60"
+                        android:text="120"
                         android:textAlignment="center" />
 
                     <Button
