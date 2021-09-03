@@ -25,7 +25,6 @@ import igrek.forceawaken.ringtone.AlarmPlayerService
 import igrek.forceawaken.ringtone.Ringtone
 import igrek.forceawaken.ringtone.RingtoneManagerService
 import igrek.forceawaken.system.WindowManagerService
-import igrek.forceawaken.task.AwakeTask
 import igrek.forceawaken.time.AlarmTimeService
 import igrek.forceawaken.volume.NoiseDetectorService
 import igrek.forceawaken.volume.VolumeCalculatorService
@@ -38,18 +37,18 @@ import java.io.IOException
 import java.util.*
 
 class AwakenActivityLayout(
-        activity: LazyInject<Activity> = appFactory.activity,
-        windowManagerService: LazyInject<WindowManagerService> = appFactory.windowManagerService,
-        navigationMenuController: LazyInject<NavigationMenuController> = appFactory.navigationMenuController,
-        uiInfoService: LazyInject<UiInfoService> = appFactory.uiInfoService,
-        alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
-        commonLayout: LazyInject<CommonLayout> = appFactory.commonLayout,
-        alarmTimeService: LazyInject<AlarmTimeService> = appFactory.alarmTimeService,
-        noiseDetectorService: LazyInject<NoiseDetectorService> = appFactory.noiseDetectorService,
-        alarmPlayerService: LazyInject<AlarmPlayerService> = appFactory.alarmPlayerService,
-        vibratorService: LazyInject<VibratorService> = appFactory.vibratorService,
-        ringtoneManagerService: LazyInject<RingtoneManagerService> = appFactory.ringtoneManagerService,
-        volumeCalculatorService: LazyInject<VolumeCalculatorService> = appFactory.volumeCalculatorService,
+    activity: LazyInject<Activity> = appFactory.activity,
+    windowManagerService: LazyInject<WindowManagerService> = appFactory.windowManagerService,
+    navigationMenuController: LazyInject<NavigationMenuController> = appFactory.navigationMenuController,
+    uiInfoService: LazyInject<UiInfoService> = appFactory.uiInfoService,
+    alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
+    commonLayout: LazyInject<CommonLayout> = appFactory.commonLayout,
+    alarmTimeService: LazyInject<AlarmTimeService> = appFactory.alarmTimeService,
+    noiseDetectorService: LazyInject<NoiseDetectorService> = appFactory.noiseDetectorService,
+    alarmPlayerService: LazyInject<AlarmPlayerService> = appFactory.alarmPlayerService,
+    vibratorService: LazyInject<VibratorService> = appFactory.vibratorService,
+    ringtoneManagerService: LazyInject<RingtoneManagerService> = appFactory.ringtoneManagerService,
+    volumeCalculatorService: LazyInject<VolumeCalculatorService> = appFactory.volumeCalculatorService,
 ) {
     private val activity by LazyExtractor(activity)
     private val windowManagerService by LazyExtractor(windowManagerService)
@@ -68,8 +67,10 @@ class AwakenActivityLayout(
     private val random = Random()
 
     private val wakeUpInfos = arrayOf(
-            "RISE AND SHINE, YOU MOTHERFUCKER!!!", "Kill Zombie process!!!",
-            "Wstawaj, Nie Pierdol!")
+        "RISE AND SHINE, YOU MOTHERFUCKER!!!",
+        "Kill Zombie process!!!",
+        "Wstawaj, Nie Pierdol!",
+    )
     private var fakeTimeLabel: TextView? = null
     private var wakeUpLabel: TextView? = null
 
@@ -78,7 +79,6 @@ class AwakenActivityLayout(
 
     private var currentRingtone: Ringtone? = null
     private var ringtoneListAdapter: ArrayAdapter<Ringtone>? = null
-    private var awakeTask: AwakeTask? = null
     var activateAlarmTime: DateTime? = null
 
     fun init() {
@@ -112,7 +112,8 @@ class AwakenActivityLayout(
         windowManagerService.setFullscreen(true)
         activity.setShowWhenLocked(true)
         activity.setTurnScreenOn(true)
-        val keyguardManager: KeyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardManager: KeyguardManager =
+            activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         keyguardManager.requestDismissKeyguard(activity, null)
     }
 
@@ -122,11 +123,13 @@ class AwakenActivityLayout(
         val alarmId = System.currentTimeMillis()
         wakeUpLabel?.text = wakeUpInfos[random.nextInt(wakeUpInfos.size)]
         // measure surrounding loudness level
-        noiseDetectorService.measureNoiseLevel(1000, object : NoiseDetectorService.NoiseLevelMeasureCallback {
-            override fun onComplete(amplitudeDb: Double) {
-                startAlarmPlaying(amplitudeDb, alarmId)
-            }
-        })
+        noiseDetectorService.measureNoiseLevel(
+            1000,
+            object : NoiseDetectorService.NoiseLevelMeasureCallback {
+                override fun onComplete(amplitudeDb: Double) {
+                    startAlarmPlaying(amplitudeDb, alarmId)
+                }
+            })
     }
 
 
@@ -157,7 +160,7 @@ class AwakenActivityLayout(
         Handler().postDelayed(vibrationsBooster, (200 * 1000).toLong())
         try {
             currentRingtone = ringtoneManager.randomRingtone
-            logger.info("Current Ringtone: " + currentRingtone!!.name)
+            logger.info("Current Ringtone: ${currentRingtone?.name} (${currentRingtone?.file?.absolutePath})")
             val volume: Double = volumeCalculatorService.calcFinalVolume(noiseLevel)
             logger.info("Alarm volume level: $volume")
 
@@ -172,10 +175,11 @@ class AwakenActivityLayout(
         ringtoneListAdapter = ArrayAdapter<Ringtone>(activity, R.layout.list_item, ringtones)
         val listView: ListView = activity.findViewById(R.id.ringtones_answer_list)
         listView.adapter = ringtoneListAdapter
-        listView.onItemClickListener = AdapterView.OnItemClickListener { adapter1: AdapterView<*>, v: View?, position: Int, id: Long ->
-            val selected = adapter1.getItemAtPosition(position) as Ringtone
-            onRingtoneAnswer(selected)
-        }
+        listView.onItemClickListener =
+            AdapterView.OnItemClickListener { adapter1: AdapterView<*>, v: View?, position: Int, id: Long ->
+                val selected = adapter1.getItemAtPosition(position) as Ringtone
+                onRingtoneAnswer(selected)
+            }
     }
 
     private fun scheduleVolumeBoost(alarmId: Long, whenMs: Long, volMultiplier: Double) {
@@ -208,25 +212,27 @@ class AwakenActivityLayout(
         }
     }
 
-    fun showLastAlarmDialog() {
+    private fun showLastAlarmDialog() {
         val title = "ATTENTION!"
         val message = "This was the last alarm. WAKE UP!!!"
         val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(activity)
         alertBuilder.setMessage(message)
         alertBuilder.setTitle(title)
-        alertBuilder.setPositiveButton("OK, I have woken up") { dialog, which -> }
-        alertBuilder.setCancelable(true)
+        alertBuilder.setPositiveButton("OK, I have woken up") { _, _ ->
+            activity.finish()
+        }
+        alertBuilder.setCancelable(false)
         val alert: AlertDialog = alertBuilder.create()
         alert.setOnShowListener { arg0 ->
             alert.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .setTextColor(-0x1)
+                .setTextColor(-0x1)
         }
         alert.show()
         vibratorService.vibrate(1000)
     }
 
     private fun wrongAnswer() {
-        uiInfoService.showToast("Wrong answer, you morron!")
+        uiInfoService.showToast("Wrong answer, you moron!")
         vibratorService.vibrate(1000)
         val ringtones: List<Ringtone?> = ringtoneManager.allRingtones.shuffled()
         ringtoneListAdapter?.clear()
@@ -242,10 +248,10 @@ class AwakenActivityLayout(
             val alarmTriggers = alarmsConfig.alarmTriggers
             // alarms from near future (now < alarm time < next hour)
             val nearAlarms = alarmTriggers
-                    .map { it.triggerTime }
-                    .filter { it.isAfterNow }
-                    .filter { it.isBefore(DateTime.now().plusHours(1)) }
-                    .count()
+                .map { it.triggerTime }
+                .filter { it.isAfterNow }
+                .filter { it.isBefore(DateTime.now().plusHours(1)) }
+                .count()
             return nearAlarms == 0
         }
 

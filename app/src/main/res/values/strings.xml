@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Force Awekening Alarm</string>
+    <string name="app_name">Force Awakening Alarm</string>
 
     <string name="action_exit">Exit</string>
     <string name="error_occurred_s">Error: %s</string>
@@ -10,4 +10,5 @@
     <string name="nav_exit">Exit</string>
     <string name="nav_list_scheduled_alarms">Alarms list</string>
     <string name="nav_schedule_alarm">Schedule</string>
+    <string name="alarm_trigger_remove">Remove</string>
 </resources>

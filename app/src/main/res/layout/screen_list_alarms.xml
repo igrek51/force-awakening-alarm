@@ -15,6 +15,7 @@
 
 
         <LinearLayout
+            android:id="@+id/main_snackbar_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -37,6 +38,16 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/nowDateTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:text=""
+                        android:textAlignment="center" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -45,13 +56,21 @@
                         android:text="List of scheduled alarms:"
                         android:textAlignment="center" />
 
-                    <ListView
+                    <igrek.forceawaken.layout.listview.AlarmTriggersListView
                         android:id="@+id/alramTriggerList"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_below="@id/btnSetAlarm"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"></ListView>
+                        android:layout_marginTop="20dp" />
+
+                    <Button
+                        android:id="@+id/refreshAlarmsButton"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="30dp"
+                        android:text="Refresh"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </ScrollView>

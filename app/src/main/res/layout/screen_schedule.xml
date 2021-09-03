@@ -15,6 +15,7 @@
 
 
         <LinearLayout
+            android:id="@+id/main_snackbar_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -44,7 +45,17 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp"
-                        android:text="Test (3s)" />
+                        android:text="Test (+3s + 3 x 5s)" />
+
+                    <Button
+                        android:id="@+id/btnTestAlarm1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/alramTriggerList"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:text="Test (+1s)" />
 
                 </LinearLayout>
             </ScrollView>

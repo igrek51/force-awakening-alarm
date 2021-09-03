@@ -36,6 +36,7 @@ class ActivityController(
     }
 
     fun quit() {
+        logger.debug("closing activity ${activity.javaClass.simpleName}...")
         windowManagerService.keepScreenOn(false)
         activity.finish()
     }

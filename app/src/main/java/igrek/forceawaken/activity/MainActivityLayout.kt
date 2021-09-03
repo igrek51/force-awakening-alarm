@@ -2,13 +2,13 @@ package igrek.forceawaken.activity
 
 import android.app.Activity
 import android.os.Handler
-import android.view.View
+import android.os.Looper
 import android.view.WindowManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
-import igrek.forceawaken.alarm.AlarmTrigger
-import igrek.forceawaken.alarm.AlarmsConfig
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.errorcheck.UiErrorHandler
 import igrek.forceawaken.info.logger.LoggerFactory
@@ -20,6 +20,7 @@ import igrek.forceawaken.layout.input.TriggerTimeInput
 import igrek.forceawaken.layout.navigation.NavigationMenuController
 import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.system.PermissionService
+import igrek.forceawaken.system.SoftKeyboardService
 import igrek.forceawaken.system.WindowManagerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,14 +30,15 @@ import org.joda.time.DateTime
 import java.util.*
 
 class MainActivityLayout(
-        activity: LazyInject<Activity> = appFactory.activity,
-        windowManagerService: LazyInject<WindowManagerService> = appFactory.windowManagerService,
-        navigationMenuController: LazyInject<NavigationMenuController> = appFactory.navigationMenuController,
-        alarmManagerService: LazyInject<AlarmManagerService> = appFactory.alarmManagerService,
-        uiInfoService: LazyInject<UiInfoService> = appFactory.uiInfoService,
-        alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
-        permissionService: LazyInject<PermissionService> = appFactory.permissionService,
-        commonLayout: LazyInject<CommonLayout> = appFactory.commonLayout,
+    activity: LazyInject<Activity> = appFactory.activity,
+    windowManagerService: LazyInject<WindowManagerService> = appFactory.windowManagerService,
+    navigationMenuController: LazyInject<NavigationMenuController> = appFactory.navigationMenuController,
+    alarmManagerService: LazyInject<AlarmManagerService> = appFactory.alarmManagerService,
+    uiInfoService: LazyInject<UiInfoService> = appFactory.uiInfoService,
+    alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
+    permissionService: LazyInject<PermissionService> = appFactory.permissionService,
+    commonLayout: LazyInject<CommonLayout> = appFactory.commonLayout,
+    softKeyboardService: LazyInject<SoftKeyboardService> = appFactory.softKeyboardService,
 ) {
     private val activity by LazyExtractor(activity)
     private val windowManagerService by LazyExtractor(windowManagerService)
@@ -46,19 +48,17 @@ class MainActivityLayout(
     private val alarmsPersistenceService by LazyExtractor(alarmsPersistenceService)
     private val permissionService by LazyExtractor(permissionService)
     private val commonLayout by LazyExtractor(commonLayout)
+    private val softKeyboardService by LazyExtractor(softKeyboardService)
 
     private val logger = LoggerFactory.logger
 
     private val random = Random()
     private var btnSet: Button? = null
-    private var btnTestAlarm: Button? = null
     private var alarmTimeInput: TriggerTimeInput? = null
     private var nowDateTime: TextView? = null
     private var earlyMarginInput: EditText? = null
     private var alarmRepeatsInput: EditText? = null
     private var alarmRepeatsIntervalInput: EditText? = null
-    private var alramTriggerList: ListView? = null
-    private var alramTriggerListAdapter: ArrayAdapter<AlarmTrigger>? = null
 
     fun init() {
         logger.info("Initializing application...")
@@ -79,13 +79,12 @@ class MainActivityLayout(
         navigationMenuController.init()
 
         btnSet = activity.findViewById(R.id.btnSetAlarm)
-        btnTestAlarm = activity.findViewById(R.id.btnTestAlarm)
         alarmTimeInput = activity.findViewById(R.id.alarmTimeInput)
         earlyMarginInput = activity.findViewById(R.id.earlyMarginInput)
         alarmRepeatsInput = activity.findViewById(R.id.alarmRepeatsInput)
         alarmRepeatsIntervalInput = activity.findViewById(R.id.alarmRepeatsIntervalInput)
         nowDateTime = activity.findViewById(R.id.nowDateTime)
-        btnSet?.setOnClickListener { v: View? ->
+        btnSet?.setOnClickListener { _ ->
             try {
                 val triggerTime: DateTime = buildFinalTriggerTime()
                 setAlarmOnTime(triggerTime)
@@ -93,28 +92,13 @@ class MainActivityLayout(
                 UiErrorHandler().handleError(t)
             }
         }
-        btnTestAlarm!!.setOnClickListener { v: View? -> setAlarmOnTime(DateTime.now().plusSeconds(3)) }
 
-        var alarmsConfig = alarmsPersistenceService.readAlarmsConfig()
-        var alarmTriggers = alarmsConfig.alarmTriggers
-
+        val alarmsConfig = alarmsPersistenceService.readAlarmsConfig()
+        val alarmTriggers = alarmsConfig.alarmTriggers
         // check alarm triggers are still valid
         val inactive = alarmTriggers.filter { it.triggerTime.isBefore(DateTime.now()) }
         for (inactiveAlarmTrigger in inactive) {
-            alarmsConfig = alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger)
-        }
-        alarmTriggers = alarmsConfig.alarmTriggers
-        alramTriggerListAdapter = ArrayAdapter<AlarmTrigger>(activity, R.layout.list_item, alarmTriggers)
-        alramTriggerList = activity.findViewById(R.id.alramTriggerList)
-        alramTriggerList!!.adapter = alramTriggerListAdapter
-        alramTriggerList!!.onItemClickListener = AdapterView.OnItemClickListener { adapter1: AdapterView<*>, v: View?, position: Int, id: Long ->
-            val selected: AlarmTrigger = adapter1.getItemAtPosition(position) as AlarmTrigger
-            selected.isActive = false
-            alarmManagerService.cancelAlarm(selected.triggerTime, selected.pendingIntent)
-            val alarmsConfig2: AlarmsConfig = alarmsPersistenceService.removeAlarmTrigger(selected)
-            alramTriggerListAdapter?.clear()
-            alramTriggerListAdapter?.addAll(alarmsConfig2.alarmTriggers)
-            alramTriggerListAdapter?.notifyDataSetChanged()
+            alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger)
         }
 
         // refreshing current time
@@ -128,6 +112,10 @@ class MainActivityLayout(
         alarmTimeInput?.requestFocus()
         // show keyboard
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        Handler(Looper.getMainLooper()).postDelayed({
+            softKeyboardService.showSoftKeyboard(alarmTimeInput)
+        }, 200)
+
         permissionService.isMicrophonePermissionGranted
         permissionService.isStoragePermissionGranted
         logger.info(activity.javaClass.simpleName + " has been created")
@@ -140,7 +128,8 @@ class MainActivityLayout(
         if (earlyMarginInput?.length() ?: 0 > 0) {
             val earlyMarginMin: Int = earlyMarginInput?.text.toString().toInt()
             if (earlyMarginMin > 0) {
-                val newTriggerTime: DateTime = triggerTime.minusMinutes(random.nextInt(earlyMarginMin + 1))
+                val newTriggerTime: DateTime =
+                    triggerTime.minusMinutes(random.nextInt(earlyMarginMin + 1))
                 if (newTriggerTime.isAfterNow) { // check validity
                     triggerTime = newTriggerTime
                 }

@@ -1,20 +1,20 @@
 package igrek.forceawaken.activity.list
 
 import android.app.Activity
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.os.Handler
+import android.widget.Button
+import android.widget.TextView
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.alarm.AlarmTrigger
-import igrek.forceawaken.alarm.AlarmsConfig
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
 import igrek.forceawaken.inject.LazyInject
 import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.layout.CommonLayout
+import igrek.forceawaken.layout.contextmenu.ContextMenuBuilder
+import igrek.forceawaken.layout.listview.AlarmTriggersListView
 import igrek.forceawaken.layout.navigation.NavigationMenuController
 import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.system.WindowManagerService
@@ -43,8 +43,7 @@ class ListActivityLayout(
 
     private val logger = LoggerFactory.logger
 
-    private var alramTriggerList: ListView? = null
-    private var alramTriggerListAdapter: ArrayAdapter<AlarmTrigger>? = null
+    private var alramTriggerList: AlarmTriggersListView? = null
 
     fun init() {
         logger.info("Initializing application...")
@@ -64,6 +63,38 @@ class ListActivityLayout(
         commonLayout.init()
         navigationMenuController.init()
 
+        alramTriggerList = activity.findViewById(R.id.alramTriggerList)
+        alramTriggerList?.init(
+            activity,
+            onClick = this::onAlarmClicked,
+            onLongClick = this::onAlarmClicked,
+            onMore = this::onAlarmMoreMenu
+        )
+        updateAlarmsList()
+
+        val nowDateTimeText = activity.findViewById<TextView>(R.id.nowDateTime)
+        val someHandler = Handler(activity.mainLooper)
+        someHandler.postDelayed(object : Runnable {
+            override fun run() {
+                nowDateTimeText?.text = DateTime.now().toString("HH:mm:ss, yyyy-MM-dd")
+                someHandler.postDelayed(this, 1000)
+            }
+        }, 10)
+
+        val refreshAlarmsButton = activity.findViewById<Button>(R.id.refreshAlarmsButton)
+        refreshAlarmsButton?.setOnClickListener { _ ->
+            updateAlarmsList()
+        }
+
+        logger.info(activity.javaClass.simpleName + " has been created")
+    }
+
+    private fun updateAlarmsList() {
+        val alarmTriggers = getAlarmTriggers()
+        alramTriggerList?.setItems(alarmTriggers)
+    }
+
+    private fun getAlarmTriggers(): List<AlarmTrigger> {
         var alarmsConfig = alarmsPersistenceService.readAlarmsConfig()
         var alarmTriggers = alarmsConfig.alarmTriggers
 
@@ -72,22 +103,28 @@ class ListActivityLayout(
         for (inactiveAlarmTrigger in inactive) {
             alarmsConfig = alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger)
         }
-        alarmTriggers = alarmsConfig.alarmTriggers
+        return alarmsConfig.alarmTriggers
+    }
 
-        alramTriggerListAdapter = ArrayAdapter<AlarmTrigger>(activity, R.layout.list_item, alarmTriggers)
-        alramTriggerList = activity.findViewById(R.id.alramTriggerList)
-        alramTriggerList!!.adapter = alramTriggerListAdapter
-        alramTriggerList!!.onItemClickListener = AdapterView.OnItemClickListener { adapter1: AdapterView<*>, v: View?, position: Int, id: Long ->
-            val selected: AlarmTrigger = adapter1.getItemAtPosition(position) as AlarmTrigger
-            selected.isActive = false
-            alarmManagerService.cancelAlarm(selected.triggerTime, selected.pendingIntent)
-            val alarmsConfig2: AlarmsConfig = alarmsPersistenceService.removeAlarmTrigger(selected)
-            alramTriggerListAdapter?.clear()
-            alramTriggerListAdapter?.addAll(alarmsConfig2.alarmTriggers)
-            alramTriggerListAdapter?.notifyDataSetChanged()
-        }
+    private fun onAlarmClicked(alarmTrigger: AlarmTrigger) {
+        removeAlarmTrigger(alarmTrigger)
+    }
 
-        logger.info(activity.javaClass.simpleName + " has been created")
+    private fun removeAlarmTrigger(alarmTrigger: AlarmTrigger) {
+        alarmTrigger.isActive = false
+        alarmManagerService.cancelAlarm(alarmTrigger.triggerTime, alarmTrigger.pendingIntent)
+        alarmsPersistenceService.removeAlarmTrigger(alarmTrigger)
+        updateAlarmsList()
+    }
+
+    private fun onAlarmMoreMenu(alarmTrigger: AlarmTrigger) {
+        ContextMenuBuilder().showContextMenu(
+            listOf(
+                ContextMenuBuilder.Action(R.string.alarm_trigger_remove) {
+                    removeAlarmTrigger(alarmTrigger)
+                },
+            )
+        )
     }
 
 }

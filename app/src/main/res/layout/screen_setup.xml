@@ -14,10 +14,10 @@
         android:layout_height="match_parent">
 
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
+            android:id="@+id/main_snackbar_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -64,39 +64,61 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
                         android:ems="10"
                         android:hint="HH:MM"
                         android:inputType="time"
                         android:text=""
+                        android:textSize="24sp"
                         android:textAlignment="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="early wakeup [min]:" />
 
                     <EditText
                         android:id="@+id/earlyMarginInput"
                         android:layout_width="300dp"
                         android:layout_height="60dp"
-                        android:layout_below="@+id/alarmTimeInput"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:ems="10"
                         android:hint="early wakeup [min]"
                         android:inputType="time"
-                        android:text=""
+                        android:text="20"
                         android:textAlignment="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="alarms count:" />
 
                     <EditText
                         android:id="@+id/alarmRepeatsInput"
                         android:layout_width="300dp"
                         android:layout_height="50dp"
-                        android:layout_below="@+id/earlyMarginInput"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:ems="10"
                         android:hint="alarms count"
                         android:inputType="number"
-                        android:text="5"
+                        android:text="3"
                         android:textAlignment="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="alarms interval [s]:" />
 
                     <EditText
                         android:id="@+id/alarmRepeatsIntervalInput"
@@ -108,7 +130,7 @@
                         android:ems="10"
                         android:hint="alarms interval [s]"
                         android:inputType="number"
-                        android:text="40"
+                        android:text="60"
                         android:textAlignment="center" />
 
                     <Button
@@ -119,24 +141,6 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="30dp"
                         android:text="Set Alarm" />
-
-                    <ListView
-                        android:id="@+id/alramTriggerList"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_below="@id/btnSetAlarm"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"></ListView>
-
-                    <Button
-                        android:id="@+id/btnTestAlarm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/alramTriggerList"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="20dp"
-                        android:text="Test (3s)" />
 
                 </LinearLayout>
             </ScrollView>

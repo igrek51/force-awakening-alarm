@@ -9,7 +9,10 @@ import android.os.PowerManager
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE, "forceawaken:FORCEAWEKENINGALARM")
+        val wakeLock = pm.newWakeLock(
+            PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
+            "forceawaken:FORCEAWAKENINGALARM"
+        )
         wakeLock.acquire()
         val intent2 = Intent(context, AwakenActivity::class.java)
         intent2.action = Intent.ACTION_MAIN

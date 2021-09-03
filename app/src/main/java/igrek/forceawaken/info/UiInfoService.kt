@@ -42,7 +42,7 @@ open class UiInfoService(
             val infoV = info.takeIf { it.isNotEmpty() } ?: uiResourceService.resString(infoResId)
 
             // dont create new snackbars if one is already shown
-            val view: View = activity.findViewById(R.id.main_content)
+            val view: View = getMainView()
             var snackbar: Snackbar? = infobars[view]
             if (snackbar == null || !snackbar.isShown) { // a new one
                 snackbar = Snackbar.make(view, infoV, snackbarLength)
@@ -67,14 +67,25 @@ open class UiInfoService(
         logger.debug("UI: snackbar: $info")
     }
 
-    fun showInfo(infoResId: Int, vararg args: String?,
-                 indefinite: Boolean = false) {
+    private fun getMainView(): View {
+        return activity.findViewById(R.id.main_snackbar_view)
+            ?: activity.findViewById(R.id.activity_main)
+            ?: activity.findViewById(R.id.drawer_layout)
+            ?: activity.window.decorView.rootView
+    }
+
+    fun showInfo(
+        infoResId: Int, vararg args: String?,
+        indefinite: Boolean = false
+    ) {
         val info = uiResourceService.resString(infoResId, *args)
         showSnackbar(info = info, actionResId = R.string.action_info_ok, indefinite = indefinite)
     }
 
-    fun showInfoAction(infoResId: Int, vararg args: String,
-                       indefinite: Boolean = false, actionResId: Int, action: () -> Unit) {
+    fun showInfoAction(
+        infoResId: Int, vararg args: String,
+        indefinite: Boolean = false, actionResId: Int, action: () -> Unit
+    ) {
         val info = uiResourceService.resString(infoResId, *args)
         showSnackbar(info = info, actionResId = actionResId, action = action, indefinite = indefinite)
     }
