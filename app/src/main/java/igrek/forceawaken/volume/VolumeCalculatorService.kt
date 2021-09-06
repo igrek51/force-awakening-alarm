@@ -6,11 +6,14 @@ import igrek.forceawaken.inject.LazyExtractor
 import igrek.forceawaken.inject.LazyInject
 import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.sensors.AccelerometerService
+import igrek.forceawaken.settings.preferences.PreferencesState
 
 class VolumeCalculatorService(
-        accelerometerService: LazyInject<AccelerometerService> = appFactory.accelerometerService,
+    accelerometerService: LazyInject<AccelerometerService> = appFactory.accelerometerService,
+    preferencesState: LazyInject<PreferencesState> = appFactory.preferencesState,
 ) {
     private val accelerometerService by LazyExtractor(accelerometerService)
+    private val preferencesState by LazyExtractor(preferencesState)
 
     private val logger: Logger = LoggerFactory.logger
 
@@ -37,6 +40,6 @@ class VolumeCalculatorService(
             if (vol1 > 1.0) // cut off
                 vol1 = 1.0
         }
-        return vol1 * globalVolume
+        return vol1 * globalVolume * preferencesState.ringtoneGlobalVolume
     }
 }

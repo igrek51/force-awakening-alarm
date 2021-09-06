@@ -13,10 +13,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/fragment_content"
+
+        <LinearLayout
+            android:id="@+id/main_snackbar_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <igrek.forceawaken.layout.navigation.TitleBarView
+                android:id="@+id/titleBarFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/nav_settings" />
+
+            <FrameLayout
+                android:id="@+id/fragment_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
