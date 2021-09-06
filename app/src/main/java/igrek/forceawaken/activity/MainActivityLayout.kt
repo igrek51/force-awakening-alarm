@@ -140,8 +140,8 @@ class MainActivityLayout(
 
     private val alarmRepeatsCount: Int
         get() {
-            val input: String = alarmRepeatsInput?.text.toString()
-            return if (input.isEmpty()) 1 else input.toInt()
+            val input: String? = alarmRepeatsInput?.text?.toString()
+            return input.takeIf { !it.isNullOrBlank() }?.toInt()?.takeIf { it >= 1 } ?: 1
         }
     private val alarmRepeatsInterval: Int
         get() {

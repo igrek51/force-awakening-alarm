@@ -11,7 +11,6 @@ import igrek.forceawaken.inject.LazyInject
 import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.layout.CommonLayout
 import igrek.forceawaken.layout.navigation.NavigationMenuController
-import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.system.WindowManagerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -25,7 +24,6 @@ class ScheduleActivityLayout(
         navigationMenuController: LazyInject<NavigationMenuController> = appFactory.navigationMenuController,
         alarmManagerService: LazyInject<AlarmManagerService> = appFactory.alarmManagerService,
         uiInfoService: LazyInject<UiInfoService> = appFactory.uiInfoService,
-        alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
         commonLayout: LazyInject<CommonLayout> = appFactory.commonLayout,
 ) {
     private val activity by LazyExtractor(activity)
@@ -33,13 +31,9 @@ class ScheduleActivityLayout(
     private val navigationMenuController by LazyExtractor(navigationMenuController)
     private val alarmManagerService by LazyExtractor(alarmManagerService)
     private val uiInfoService by LazyExtractor(uiInfoService)
-    private val alarmsPersistenceService by LazyExtractor(alarmsPersistenceService)
     private val commonLayout by LazyExtractor(commonLayout)
 
     private val logger = LoggerFactory.logger
-
-    private var btnTestAlarm: Button? = null
-    private var btnTestAlarm1: Button? = null
 
     fun init() {
         logger.info("Initializing application...")
@@ -64,13 +58,17 @@ class ScheduleActivityLayout(
         }
 
         activity.findViewById<Button>(R.id.btnTestAlarm1)?.setOnClickListener { _ ->
-            setAlarmOnTime(DateTime.now().plusSeconds(1), repeats = 1, repeatsInterval = 0)
+            setAlarmOnTime(DateTime.now().plusSeconds(1))
+        }
+
+        activity.findViewById<Button>(R.id.btnSetNap25)?.setOnClickListener { _ ->
+            setAlarmOnTime(DateTime.now().plusMinutes(25))
         }
 
         logger.info(activity.javaClass.simpleName + " has been created")
     }
 
-    private fun setAlarmOnTime(triggerTime: DateTime, repeats: Int = 3, repeatsInterval: Int = 5) {
+    private fun setAlarmOnTime(triggerTime: DateTime, repeats: Int = 1, repeatsInterval: Int = 0) {
         // multiple alarms at once
         for (r in 0 until repeats) {
             val triggerTime2: DateTime = triggerTime.plusSeconds(r * repeatsInterval)
