@@ -11,4 +11,6 @@
     <string name="nav_list_scheduled_alarms">Alarms list</string>
     <string name="nav_schedule_alarm">Schedule</string>
     <string name="alarm_trigger_remove">Remove</string>
+    <string name="settings_ringtoneGlobalVolume">Volume: %s</string>
+    <string name="nav_settings">Settings</string>
 </resources>

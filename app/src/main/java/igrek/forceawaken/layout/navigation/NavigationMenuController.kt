@@ -12,6 +12,7 @@ import igrek.forceawaken.activity.ActivityController
 import igrek.forceawaken.activity.MainActivity
 import igrek.forceawaken.activity.list.ListActivity
 import igrek.forceawaken.activity.schedule.ScheduleActivity
+import igrek.forceawaken.activity.settings.SettingsActivity
 import igrek.forceawaken.info.errorcheck.SafeExecutor
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -52,6 +53,10 @@ class NavigationMenuController(
         }
         actionsMap[R.id.nav_schedule] = {
             val intent = Intent(activity, ScheduleActivity::class.java)
+            activity.startActivity(intent)
+        }
+        actionsMap[R.id.nav_settings] = {
+            val intent = Intent(activity, SettingsActivity::class.java)
             activity.startActivity(intent)
         }
         actionsMap[R.id.nav_exit] = { activityController.quit() }
