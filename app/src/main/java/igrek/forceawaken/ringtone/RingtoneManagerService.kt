@@ -46,10 +46,6 @@ class RingtoneManagerService(
             return ringtones
         }
 
-    init {
-        externalCardService.get().ensureAppDataDirExists()
-    }
-
     private val externalStorageDirectory: String?
         get() = externalCardService.externalSDPath
 

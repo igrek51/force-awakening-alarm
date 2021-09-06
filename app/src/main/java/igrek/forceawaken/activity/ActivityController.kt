@@ -3,6 +3,7 @@ package igrek.forceawaken.activity
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
+import igrek.forceawaken.MainApplication
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
 import igrek.forceawaken.inject.LazyInject
@@ -36,9 +37,17 @@ class ActivityController(
     }
 
     fun quit() {
-        logger.debug("closing activity ${activity.javaClass.simpleName}...")
         windowManagerService.keepScreenOn(false)
-        activity.finish()
+        var currentActivity = activity
+        if (activity.application is MainApplication) {
+            val mainApplication = activity.application as MainApplication
+            mainApplication.currentActivityListener.currentActivity?.let {
+                currentActivity = it
+                logger.debug("current activity set to ${currentActivity.javaClass.simpleName}")
+            }
+        }
+        logger.debug("closing activity ${currentActivity.javaClass.simpleName}...")
+        currentActivity.finish()
     }
 
     fun onStart() {

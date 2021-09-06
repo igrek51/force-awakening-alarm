@@ -96,6 +96,7 @@ class AwakenActivityLayout(
 
     private fun initLayout() {
         activateAlarmTime = DateTime.now()
+        showFullscreenWhenLocked()
 
         activity.setContentView(R.layout.awaken_main)
         commonLayout.init()
