@@ -2,6 +2,7 @@ package igrek.forceawaken.activity
 
 import android.app.Activity
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -65,9 +66,9 @@ class AwakenActivityLayout(
     private val random = Random()
 
     private val wakeUpInfos = arrayOf(
-        "RISE AND SHINE, YOU MOTHERFUCKER!!!",
         "Kill Zombie process!!!",
-        "Wstawaj, Nie Pierdol!",
+//        "RISE AND SHINE, YOU MOTHERFUCKER!!!",
+//        "Wstawaj, Nie Pierdol!",
     )
     private var fakeTimeLabel: TextView? = null
     private var wakeUpLabel: TextView? = null
@@ -142,7 +143,7 @@ class AwakenActivityLayout(
         scheduleVolumeBoost(alarmId, (150 * 1000).toLong(), 1.5)
         scheduleVolumeBoost(alarmId, (160 * 1000).toLong(), 1.5)
         scheduleVolumeBoost(alarmId, (170 * 1000).toLong(), 1.5)
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             if (alarmPlayer.isPlaying && alarmPlayer.alarmId == alarmId) {
                 alarmPlayer.volume = 1.0
                 logger.info("Alarm is still playing - volume level boosted to " + 1.0)
@@ -153,11 +154,11 @@ class AwakenActivityLayout(
                 if (alarmPlayer.isPlaying && alarmPlayer.alarmId == alarmId) {
                     logger.info("Alarm is still playing - turning on vibrations")
                     vibratorService.vibrate((ALARM_VIBRATION_PWM * ALARM_VIBRATION_PERIOD).toLong())
-                    Handler().postDelayed(this, ALARM_VIBRATION_PERIOD)
+                    Handler(Looper.getMainLooper()).postDelayed(this, ALARM_VIBRATION_PERIOD)
                 }
             }
         }
-        Handler().postDelayed(vibrationsBooster, (200 * 1000).toLong())
+        Handler(Looper.getMainLooper()).postDelayed(vibrationsBooster, (200 * 1000).toLong())
         try {
             currentRingtone = ringtoneManager.randomRingtone
             logger.info("Current Ringtone: ${currentRingtone?.name} (${currentRingtone?.file?.absolutePath})")
@@ -183,7 +184,7 @@ class AwakenActivityLayout(
     }
 
     private fun scheduleVolumeBoost(alarmId: Long, whenMs: Long, volMultiplier: Double) {
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             if (alarmPlayer.isPlaying && alarmPlayer.alarmId == alarmId) {
                 val newVol: Double = alarmPlayer.volume * volMultiplier
                 alarmPlayer.volume = newVol

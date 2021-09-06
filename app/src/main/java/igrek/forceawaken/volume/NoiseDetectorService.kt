@@ -2,6 +2,7 @@ package igrek.forceawaken.volume
 
 import android.media.MediaRecorder
 import android.os.Handler
+import android.os.Looper
 import igrek.forceawaken.info.logger.Logger
 import igrek.forceawaken.info.logger.LoggerFactory
 import java.io.IOException
@@ -23,7 +24,7 @@ class NoiseDetectorService() {
             mediaRecorder.prepare()
             mediaRecorder.start()
             mediaRecorder.maxAmplitude // initialize measurement
-            Handler().postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 try {
                     val amplitude: Int = mediaRecorder.maxAmplitude
                     val amplitudeDb = 20 * log10(abs(amplitude).toDouble())

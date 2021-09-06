@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import igrek.forceawaken.info.logger.LoggerFactory.logger
 
@@ -21,7 +22,7 @@ class AlarmReceiver : BroadcastReceiver() {
         intent2.addCategory(Intent.CATEGORY_LAUNCHER)
         intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
         context.startActivity(intent2)
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             wakeLock.release()
         }, 10000)
 
