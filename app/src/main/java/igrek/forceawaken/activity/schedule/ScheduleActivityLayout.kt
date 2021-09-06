@@ -53,16 +53,20 @@ class ScheduleActivityLayout(
         commonLayout.init()
         navigationMenuController.init()
 
+        activity.findViewById<Button>(R.id.btnSetNap25)?.setOnClickListener { _ ->
+            setAlarmOnTime(DateTime.now().plusMinutes(25))
+        }
+
         activity.findViewById<Button>(R.id.btnTestAlarm)?.setOnClickListener { _ ->
             setAlarmOnTime(DateTime.now().plusSeconds(3), repeats = 3, repeatsInterval = 5)
         }
 
         activity.findViewById<Button>(R.id.btnTestAlarm1)?.setOnClickListener { _ ->
-            setAlarmOnTime(DateTime.now().plusSeconds(1))
+            setAlarmOnTime(DateTime.now().plusSeconds(3))
         }
 
-        activity.findViewById<Button>(R.id.btnSetNap25)?.setOnClickListener { _ ->
-            setAlarmOnTime(DateTime.now().plusMinutes(25))
+        activity.findViewById<Button>(R.id.btnTestAlarm2)?.setOnClickListener { _ ->
+            setAlarmOnTime(DateTime.now().plusMinutes(1))
         }
 
         logger.info(activity.javaClass.simpleName + " has been created")

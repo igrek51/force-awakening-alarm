@@ -109,12 +109,13 @@ class AwakenActivityLayout(
     }
 
     private fun showFullscreenWhenLocked() {
-        windowManagerService.setFullscreen(true)
-        activity.setShowWhenLocked(true)
-        activity.setTurnScreenOn(true)
         val keyguardManager: KeyguardManager =
             activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         keyguardManager.requestDismissKeyguard(activity, null)
+        windowManagerService.setFullscreen(true)
+        activity.setShowWhenLocked(true)
+        activity.setTurnScreenOn(true)
+        windowManagerService.showAppWhenLocked()
     }
 
     private fun bootstrapAlarm() {

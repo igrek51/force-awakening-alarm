@@ -38,6 +38,16 @@
                     android:orientation="vertical">
 
                     <Button
+                        android:id="@+id/btnSetNap25"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/alramTriggerList"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:text="Ultimate Nap (+25m x 1)" />
+
+                    <Button
                         android:id="@+id/btnTestAlarm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -55,18 +65,17 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp"
-                        android:text="Test (+1s)" />
-
+                        android:text="Test (+3s)" />
 
                     <Button
-                        android:id="@+id/btnSetNap25"
+                        android:id="@+id/btnTestAlarm2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/alramTriggerList"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp"
-                        android:text="Ultimate Nap (+25min x 1)" />
+                        android:text="Test (+1m)" />
 
                 </LinearLayout>
             </ScrollView>
