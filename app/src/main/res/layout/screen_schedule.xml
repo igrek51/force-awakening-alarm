@@ -55,7 +55,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp"
-                        android:text="Test: +3s + 3 x 5s" />
+                        android:text="Test: +3s + 2 x 5s" />
 
                     <Button
                         android:id="@+id/btnTestAlarm3s"

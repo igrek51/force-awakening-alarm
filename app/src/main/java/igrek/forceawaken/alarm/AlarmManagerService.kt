@@ -41,7 +41,9 @@ class AlarmManagerService(
         alarmsPersistenceService.addAlarmTrigger(AlarmTrigger(triggerTime, true, null))
     }
 
-    fun cancelAlarm(triggerTime: DateTime, pendingIntent: PendingIntent?) {
+    fun cancelAlarm(alarmTrigger: AlarmTrigger) {
+        val triggerTime = alarmTrigger.triggerTime
+        val pendingIntent = alarmTrigger.pendingIntent
         logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"))
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
         intent.addCategory("android.intent.category.DEFAULT")
@@ -57,6 +59,7 @@ class AlarmManagerService(
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
         }
+        alarmsPersistenceService.removeAlarmTrigger(alarmTrigger)
     }
 
     fun isAlarmActive(triggerTime: DateTime): Boolean {

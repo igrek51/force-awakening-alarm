@@ -112,8 +112,7 @@ class ListActivityLayout(
 
     private fun removeAlarmTrigger(alarmTrigger: AlarmTrigger) {
         alarmTrigger.isActive = false
-        alarmManagerService.cancelAlarm(alarmTrigger.triggerTime, alarmTrigger.pendingIntent)
-        alarmsPersistenceService.removeAlarmTrigger(alarmTrigger)
+        alarmManagerService.cancelAlarm(alarmTrigger)
         updateAlarmsList()
     }
 

@@ -10,6 +10,8 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import igrek.forceawaken.R
+import igrek.forceawaken.alarm.AlarmManagerService
+import igrek.forceawaken.alarm.AlarmTrigger
 import igrek.forceawaken.alarm.AlarmsConfig
 import igrek.forceawaken.alarm.VibratorService
 import igrek.forceawaken.info.UiInfoService
@@ -48,6 +50,7 @@ class AwakenActivityLayout(
     vibratorService: LazyInject<VibratorService> = appFactory.vibratorService,
     ringtoneManagerService: LazyInject<RingtoneManagerService> = appFactory.ringtoneManagerService,
     volumeCalculatorService: LazyInject<VolumeCalculatorService> = appFactory.volumeCalculatorService,
+    alarmManagerService: LazyInject<AlarmManagerService> = appFactory.alarmManagerService,
 ) {
     private val activity by LazyExtractor(activity)
     private val windowManagerService by LazyExtractor(windowManagerService)
@@ -61,6 +64,7 @@ class AwakenActivityLayout(
     private val vibratorService by LazyExtractor(vibratorService)
     private val ringtoneManager by LazyExtractor(ringtoneManagerService)
     private val volumeCalculatorService by LazyExtractor(volumeCalculatorService)
+    private val alarmManagerService by LazyExtractor(alarmManagerService)
 
     private val logger = LoggerFactory.logger
     private val random = Random()
@@ -205,12 +209,13 @@ class AwakenActivityLayout(
     private fun correctAnswer() {
         alarmPlayer.stopAlarm()
         activateAlarmTime = null
-        uiInfoService.showToast("Congratulations! You have woken up.")
-        if (isThisAlarmLast) {
+        uiInfoService.showToast("Good, now get up!")
+        val nearAlarms = getUpcomingAlarms()
+        if (nearAlarms.isEmpty()) {
             logger.debug("Last alarm stopped")
             showLastAlarmDialog()
         } else {
-            activity.finish()
+            showSnoozeAlarmsDialog(nearAlarms)
         }
     }
 
@@ -220,17 +225,37 @@ class AwakenActivityLayout(
         val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(activity)
         alertBuilder.setMessage(message)
         alertBuilder.setTitle(title)
-        alertBuilder.setPositiveButton("OK, I have woken up") { _, _ ->
+        alertBuilder.setNeutralButton("Sure, I'm aware") { _, _ ->
             activity.finish()
         }
         alertBuilder.setCancelable(false)
         val alert: AlertDialog = alertBuilder.create()
-        alert.setOnShowListener { arg0 ->
-            alert.getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(-0x1)
+        alert.setOnShowListener {
+            alert.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(-0x1)
         }
         alert.show()
         vibratorService.vibrate(1000)
+    }
+
+    private fun showSnoozeAlarmsDialog(upcomingAlarms: List<AlarmTrigger>) {
+        val title = "Upcoming Snooze"
+        val message = when (upcomingAlarms.size) {
+            1 -> "There is 1 upcoming snooze. You can fall asleep or cancel them"
+            else -> "There are ${upcomingAlarms.size} upcoming snoozes. You can fall asleep or cancel them."
+        }
+        val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        alertBuilder.setMessage(message)
+        alertBuilder.setTitle(title)
+        alertBuilder.setPositiveButton("Fall asleep") { _, _ ->
+            activity.finish()
+        }
+        alertBuilder.setNeutralButton("Cancel") { _, _ ->
+            cancelUpcomingSnoozes(upcomingAlarms)
+            activity.finish()
+        }
+        alertBuilder.setCancelable(false)
+        val alert: AlertDialog = alertBuilder.create()
+        alert.show()
     }
 
     private fun wrongAnswer() {
@@ -244,17 +269,26 @@ class AwakenActivityLayout(
 
 
     // alarms from near future (now < alarm time < next hour)
-    private val isThisAlarmLast: Boolean
-        get() {
-            val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
-            val alarmTriggers = alarmsConfig.alarmTriggers
-            // alarms from near future (now < alarm time < next hour)
-            val nearAlarms = alarmTriggers
-                .map { it.triggerTime }
-                .filter { it.isAfterNow }
-                .filter { it.isBefore(DateTime.now().plusHours(1)) }
-                .count()
-            return nearAlarms == 0
-        }
+    private fun getUpcomingAlarms(): List<AlarmTrigger> {
+        val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
+        val alarmTriggers = alarmsConfig.alarmTriggers
+        // alarms from near future (now < alarm time < next hour)
+        return alarmTriggers
+            .filter { it.triggerTime.isAfterNow }
+            .filter { it.triggerTime.isBefore(DateTime.now().plusHours(1)) }
+            .toList()
+    }
 
+    private fun cancelUpcomingSnoozes(upcomingAlarms: List<AlarmTrigger>) {
+        upcomingAlarms.forEach { alarmTrigger ->
+            alarmTrigger.isActive = false
+            alarmManagerService.cancelAlarm(alarmTrigger)
+        }
+        val message = when (upcomingAlarms.size) {
+            1 -> "Cancelled 1 upcoming alarm."
+            else -> "Cancelled ${upcomingAlarms.size} upcoming alarms."
+        }
+        uiInfoService.showToast(message)
+        vibratorService.vibrate(1000)
+    }
 }
