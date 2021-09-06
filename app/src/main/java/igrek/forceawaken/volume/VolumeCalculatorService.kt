@@ -19,7 +19,7 @@ class VolumeCalculatorService(
         70.0, 0.8
     )
     private val speakerDownCompensation = 1.1
-    private val globalVolume = 0.15
+    private val globalVolume = 0.12
 
     fun calcVolumeByNoise(noiseLevel: Double): Double {
         if (noiseLevel <= noiseVolTransform[0]) return noiseVolTransform[1]
