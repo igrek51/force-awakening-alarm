@@ -55,6 +55,7 @@ class MainActivityLayout(
     private val random = Random()
     private var btnSet: Button? = null
     private var alarmTimeInput: TriggerTimeInput? = null
+    private var alarmSlumberLengthInput: EditText? = null
     private var nowDateTime: TextView? = null
     private var earlyMarginInput: EditText? = null
     private var alarmRepeatsInput: EditText? = null
@@ -80,6 +81,7 @@ class MainActivityLayout(
 
         btnSet = activity.findViewById(R.id.btnSetAlarm)
         alarmTimeInput = activity.findViewById(R.id.alarmTimeInput)
+        alarmSlumberLengthInput = activity.findViewById(R.id.alarmSlumberLengthInput)
         earlyMarginInput = activity.findViewById(R.id.earlyMarginInput)
         alarmRepeatsInput = activity.findViewById(R.id.alarmRepeatsInput)
         alarmRepeatsIntervalInput = activity.findViewById(R.id.alarmRepeatsIntervalInput)
@@ -123,7 +125,7 @@ class MainActivityLayout(
 
 
     private fun buildFinalTriggerTime(): DateTime {
-        var triggerTime: DateTime = alarmTimeInput!!.triggerTime
+        var triggerTime = readTriggerTime()
         // subtract random minutes
         if (earlyMarginInput?.length() ?: 0 > 0) {
             val earlyMarginMin: Int = earlyMarginInput?.text.toString().toInt()
@@ -136,6 +138,18 @@ class MainActivityLayout(
             }
         }
         return triggerTime
+    }
+
+    private fun readTriggerTime(): DateTime {
+        if (alarmTimeInput!!.isNotEmpty()) {
+            return alarmTimeInput!!.triggerTime
+        }
+
+        require(
+            !alarmSlumberLengthInput?.text?.toString().isNullOrBlank()
+        ) { "no time or minutes set" }
+        val minutes = alarmSlumberLengthInput!!.text.toString().toInt()
+        return DateTime.now().plusMinutes(minutes)
     }
 
     private val alarmRepeatsCount: Int

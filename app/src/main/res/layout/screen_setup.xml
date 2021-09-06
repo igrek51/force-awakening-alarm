@@ -59,7 +59,7 @@
                     <igrek.forceawaken.layout.input.TriggerTimeInput
                         android:id="@+id/alarmTimeInput"
                         android:layout_width="300dp"
-                        android:layout_height="67dp"
+                        android:layout_height="50dp"
                         android:layout_below="@+id/textView"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
@@ -71,6 +71,19 @@
                         android:inputType="time"
                         android:text=""
                         android:textSize="24sp"
+                        android:textAlignment="center" />
+
+                    <EditText
+                        android:id="@+id/alarmSlumberLengthInput"
+                        android:layout_width="300dp"
+                        android:layout_height="40dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:ems="10"
+                        android:hint="Slumber length [min]"
+                        android:inputType="time"
+                        android:text=""
                         android:textAlignment="center" />
 
                     <TextView
@@ -86,11 +99,10 @@
                         android:layout_height="60dp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
                         android:ems="10"
                         android:hint="early wakeup [min]"
                         android:inputType="time"
-                        android:text="20"
+                        android:text=""
                         android:textAlignment="center" />
 
                     <TextView
@@ -98,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"
-                        android:text="snooze count:" />
+                        android:text="alarms count:" />
 
                     <EditText
                         android:id="@+id/alarmRepeatsInput"
@@ -106,11 +118,10 @@
                         android:layout_height="50dp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:hint="snooze count"
+                        android:hint="alarms count"
                         android:inputType="number"
-                        android:text="3"
+                        android:text=""
                         android:textAlignment="center" />
 
                     <TextView
@@ -126,11 +137,10 @@
                         android:layout_height="50dp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
                         android:ems="10"
                         android:hint="snooze interval [s]"
                         android:inputType="number"
-                        android:text="120"
+                        android:text="100"
                         android:textAlignment="center" />
 
                     <Button
@@ -139,7 +149,7 @@
                         android:layout_height="68dp"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="20dp"
                         android:text="Set Alarm" />
 
                 </LinearLayout>

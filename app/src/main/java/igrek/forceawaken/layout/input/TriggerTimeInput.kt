@@ -60,11 +60,13 @@ class TriggerTimeInput(
             // todays time or tomorrow
             val now: DateTime = DateTime.now()
             val todayTriggerTime: DateTime = now.withHourOfDay(hours)
-                    .withMinuteOfHour(mins)
-                    .withSecondOfMinute(0)
+                .withMinuteOfHour(mins)
+                .withSecondOfMinute(0)
             val tomorrowTriggerTime: DateTime = todayTriggerTime.plusDays(1)
             return if (now.isBefore(todayTriggerTime)) todayTriggerTime else tomorrowTriggerTime
         }
+
+    fun isNotEmpty(): Boolean = !text.isNullOrBlank()
 
     init {
         initialize()
