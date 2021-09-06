@@ -61,12 +61,16 @@ class ScheduleActivityLayout(
             setAlarmOnTime(DateTime.now().plusSeconds(3), repeats = 3, repeatsInterval = 5)
         }
 
-        activity.findViewById<Button>(R.id.btnTestAlarm1)?.setOnClickListener { _ ->
+        activity.findViewById<Button>(R.id.btnTestAlarm3s)?.setOnClickListener { _ ->
             setAlarmOnTime(DateTime.now().plusSeconds(3))
         }
 
-        activity.findViewById<Button>(R.id.btnTestAlarm2)?.setOnClickListener { _ ->
+        activity.findViewById<Button>(R.id.btnTestAlarm1m)?.setOnClickListener { _ ->
             setAlarmOnTime(DateTime.now().plusMinutes(1))
+        }
+
+        activity.findViewById<Button>(R.id.btnTestAlarm5m)?.setOnClickListener { _ ->
+            setAlarmOnTime(DateTime.now().plusMinutes(5))
         }
 
         logger.info(activity.javaClass.simpleName + " has been created")

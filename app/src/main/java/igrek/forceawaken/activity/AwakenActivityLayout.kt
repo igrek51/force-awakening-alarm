@@ -66,7 +66,8 @@ class AwakenActivityLayout(
     private val random = Random()
 
     private val wakeUpInfos = arrayOf(
-        "Kill Zombie process!!!",
+        "Kill Zombie process!",
+        "WAKE UP!",
 //        "RISE AND SHINE, YOU MOTHERFUCKER!!!",
 //        "Wstawaj, Nie Pierdol!",
     )
