@@ -1,8 +1,6 @@
 package igrek.forceawaken.activity
 
 import android.app.Activity
-import android.app.KeyguardManager
-import android.content.Context
 import android.os.Handler
 import android.view.View
 import android.widget.AdapterView
@@ -110,9 +108,9 @@ class AwakenActivityLayout(
     }
 
     private fun showFullscreenWhenLocked() {
-        val keyguardManager: KeyguardManager =
-            activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        keyguardManager.requestDismissKeyguard(activity, null)
+//        val keyguardManager: KeyguardManager =
+//            activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+//        keyguardManager.requestDismissKeyguard(activity, null)
         windowManagerService.setFullscreen(true)
         activity.setShowWhenLocked(true)
         activity.setTurnScreenOn(true)
