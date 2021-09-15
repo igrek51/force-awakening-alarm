@@ -39,7 +39,7 @@ class RingtoneManagerService(
             val ringtones: MutableList<Ringtone> = ArrayList()
             val files = ringtonesDir.listFiles()
                     ?: throw RuntimeException("Listing files got null: $ringtonesPath")
-            for (file in files) {
+            files.filter { it.isFile }.forEach { file ->
                 val name = getRingtoneName(file)
                 ringtones.add(Ringtone(file, name))
             }

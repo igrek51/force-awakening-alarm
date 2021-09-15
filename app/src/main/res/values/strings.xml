@@ -13,4 +13,10 @@
     <string name="alarm_trigger_remove">Remove</string>
     <string name="settings_ringtoneGlobalVolume">Volume: %s</string>
     <string name="nav_settings">Settings</string>
+
+    <string-array name="alarm_type">
+        <item>Ring at HH:MM</item>
+        <item>Ring until HH:MM</item>
+        <item>Ring in MM minutes</item>
+    </string-array>
 </resources>

@@ -3,10 +3,9 @@ package igrek.forceawaken.activity
 import android.app.Activity
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.info.UiInfoService
@@ -60,6 +59,7 @@ class MainActivityLayout(
     private var earlyMarginInput: EditText? = null
     private var alarmRepeatsInput: EditText? = null
     private var alarmRepeatsIntervalInput: EditText? = null
+    private var currentAlarmType: Int = 0
 
     fun init() {
         logger.info("Initializing application...")
@@ -111,6 +111,31 @@ class MainActivityLayout(
                 someHandler.postDelayed(this, 1000)
             }
         }, 10)
+
+        val spinner: Spinner = activity.findViewById(R.id.spinnerAlarmType)
+        ArrayAdapter.createFromResource(
+            activity,
+            R.array.alarm_type,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+        }
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectAlarmType(position)
+                logger.debug("selected: $position, $id")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        selectAlarmType(0)
+
         alarmTimeInput?.requestFocus()
         // show keyboard
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
@@ -121,6 +146,20 @@ class MainActivityLayout(
         permissionService.isMicrophonePermissionGranted
         permissionService.isStoragePermissionGranted
         logger.info(activity.javaClass.simpleName + " has been created")
+    }
+
+    private fun selectAlarmType(option: Int) {
+        currentAlarmType = option
+        when (option) {
+            0, 1 -> {
+                alarmTimeInput?.visibility = View.VISIBLE
+                alarmSlumberLengthInput?.visibility = View.GONE
+            }
+            2 -> {
+                alarmTimeInput?.visibility = View.GONE
+                alarmSlumberLengthInput?.visibility = View.VISIBLE
+            }
+        }
     }
 
 
@@ -141,15 +180,26 @@ class MainActivityLayout(
     }
 
     private fun readTriggerTime(): DateTime {
-        if (alarmTimeInput!!.isNotEmpty()) {
-            return alarmTimeInput!!.triggerTime
+        when (currentAlarmType) {
+            0 -> { // ring at
+                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
+                return alarmTimeInput!!.triggerTime
+            }
+            1 -> { // ring until
+                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
+                val endTime = alarmTimeInput!!.triggerTime
+                val ringingDurationS = (alarmRepeatsCount - 1) * alarmRepeatsInterval
+                return endTime.minusSeconds(ringingDurationS)
+            }
+            2 -> { // ring in minutes
+                require(
+                    !alarmSlumberLengthInput?.text?.toString().isNullOrBlank()
+                ) { "minutes not given" }
+                val minutes = alarmSlumberLengthInput!!.text.toString().toInt()
+                return DateTime.now().plusMinutes(minutes)
+            }
+            else -> throw RuntimeException("unexpected alarm type")
         }
-
-        require(
-            !alarmSlumberLengthInput?.text?.toString().isNullOrBlank()
-        ) { "no time or minutes set" }
-        val minutes = alarmSlumberLengthInput!!.text.toString().toInt()
-        return DateTime.now().plusMinutes(minutes)
     }
 
     private val alarmRepeatsCount: Int
