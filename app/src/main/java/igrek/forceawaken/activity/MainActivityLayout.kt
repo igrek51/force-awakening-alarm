@@ -26,6 +26,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
+import org.joda.time.Minutes
 import java.util.*
 
 class MainActivityLayout(
@@ -221,7 +222,13 @@ class MainActivityLayout(
             val triggerTime2: DateTime = triggerTime.plusSeconds(r * repeatsInterval)
             alarmManagerService.setAlarmOnTime(triggerTime2)
         }
-        uiInfoService.showToast(repeats.toString() + " Alarm set on " + triggerTime.toString("yyyy-MM-dd"))
+        val minutesTo = Minutes.minutesBetween(DateTime.now(), triggerTime).minutes
+        val timeTo = when {
+            minutesTo < 60 -> "$minutesTo minutes"
+            minutesTo < 120 -> "1 hour"
+            else -> "${minutesTo / 60} hours"
+        }
+        uiInfoService.showToast("$repeats Alarm will go off in $timeTo")
     }
 
 }
