@@ -77,6 +77,7 @@ class ListActivityLayout(
         repetitiveAlarmList = activity.findViewById(R.id.repetitiveAlarmList)
         repetitiveAlarmList?.init(
             activity,
+            onClick = this::onRepetitiveAlarmClicked,
             onLongClick = this::onRepetitiveAlarmClicked,
             onMore = this::onRepetitiveAlarmMoreMenu,
         )
@@ -137,7 +138,8 @@ class ListActivityLayout(
     }
 
     private fun onRepetitiveAlarmClicked(repetitiveAlarm: RepetitiveAlarm) {
-        removeRepetitiveAlarm(repetitiveAlarm)
+        alarmManagerService.replenishOneRepetitiveAlarm(repetitiveAlarm)
+        updateAlarmsList()
     }
 
     private fun removeRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
