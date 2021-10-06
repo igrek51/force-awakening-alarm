@@ -7,6 +7,7 @@ import android.widget.TextView
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.alarm.AlarmTrigger
+import igrek.forceawaken.alarm.AlarmsConfig
 import igrek.forceawaken.alarm.RepetitiveAlarm
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.logger.LoggerFactory
@@ -100,11 +101,12 @@ class ListActivityLayout(
     }
 
     private fun updateAlarmsList() {
-        val alarmTriggers = getAlarmTriggers()
-        alramTriggerList?.setItems(alarmTriggers)
+        val alarmsConfig = getAlarmsConfig()
+        alramTriggerList?.setItems(alarmsConfig.alarmTriggers)
+        repetitiveAlarmList?.setItems(alarmsConfig.repetitiveAlarms)
     }
 
-    private fun getAlarmTriggers(): List<AlarmTrigger> {
+    private fun getAlarmsConfig(): AlarmsConfig {
         var alarmsConfig = alarmsPersistenceService.readAlarmsConfig()
         var alarmTriggers = alarmsConfig.alarmTriggers
 
@@ -113,7 +115,7 @@ class ListActivityLayout(
         for (inactiveAlarmTrigger in inactive) {
             alarmsConfig = alarmsPersistenceService.removeAlarmTrigger(inactiveAlarmTrigger)
         }
-        return alarmsConfig.alarmTriggers
+        return alarmsConfig
     }
 
     private fun onAlarmClicked(alarmTrigger: AlarmTrigger) {

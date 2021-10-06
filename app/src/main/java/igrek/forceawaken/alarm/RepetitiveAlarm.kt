@@ -17,7 +17,7 @@ data class RepetitiveAlarm(
 
     override fun toString(): String {
         val triggerTimeStr = triggerTime.toString("HH:mm:ss")
-        val startFromTimeStr = triggerTime.toString("HH:mm:ss, yyyy-MM-dd")
+        val startFromTimeStr = startFromTime.toString("HH:mm, yyyy-MM-dd")
         val daysOfWeekStr = daysOfWeek.joinToString(separator = ",")
         return "at $triggerTimeStr every $daysOfWeekStr, from $startFromTimeStr" +
                 " (-${earlyMinutes}min, ${snoozes}x${snoozeInterval}s)"
