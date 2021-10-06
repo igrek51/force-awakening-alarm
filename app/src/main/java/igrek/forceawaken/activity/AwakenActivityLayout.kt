@@ -217,6 +217,7 @@ class AwakenActivityLayout(
         } else {
             showSnoozeAlarmsDialog(nearAlarms)
         }
+        postExit()
     }
 
     private fun showLastAlarmDialog() {
@@ -256,6 +257,10 @@ class AwakenActivityLayout(
         alertBuilder.setCancelable(false)
         val alert: AlertDialog = alertBuilder.create()
         alert.show()
+    }
+
+    private fun postExit() {
+        alarmManagerService.replenishAllRepetitiveAlarms()
     }
 
     private fun wrongAnswer() {
