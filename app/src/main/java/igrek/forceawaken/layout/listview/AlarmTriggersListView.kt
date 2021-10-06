@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ListView
 import igrek.forceawaken.alarm.AlarmTrigger
 
+
 class AlarmTriggersListView : ListView, AdapterView.OnItemClickListener,
     AdapterView.OnItemLongClickListener {
 
@@ -58,6 +59,37 @@ class AlarmTriggersListView : ListView, AdapterView.OnItemClickListener,
 
     fun setItems(items: List<AlarmTrigger>) {
         itemAdapter!!.setDataSource(items)
+        setListViewHeightBasedOnItems()
         invalidate()
+    }
+
+    private fun setListViewHeightBasedOnItems() {
+        itemAdapter?.let { itemAdapter ->
+            val numberOfItems: Int = itemAdapter.count
+
+            // Get total height of all items.
+            var totalItemsHeight = 0
+            for (itemPos in 0 until numberOfItems) {
+                val item: View = itemAdapter.getView(itemPos, null, this)
+                val px = 500 * this.resources.displayMetrics.density
+                item.measure(
+                    MeasureSpec.makeMeasureSpec(px.toInt(), MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+                )
+                totalItemsHeight += item.measuredHeight
+            }
+
+            // Get total height of all item dividers.
+            val totalDividersHeight = this.dividerHeight *
+                    (numberOfItems - 1)
+            // Get padding
+            val totalPadding = this.paddingTop + this.paddingBottom
+
+            // Set list height.
+            val params = this.layoutParams
+            params.height = totalItemsHeight + totalDividersHeight + totalPadding
+            this.layoutParams = params
+            this.requestLayout()
+        }
     }
 }
