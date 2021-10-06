@@ -8,6 +8,7 @@ import android.view.WindowManager
 import android.widget.*
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
+import igrek.forceawaken.alarm.RepetitiveAlarm
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.errorcheck.UiErrorHandler
 import igrek.forceawaken.info.logger.LoggerFactory
@@ -89,8 +90,7 @@ class MainActivityLayout(
         nowDateTime = activity.findViewById(R.id.nowDateTime)
         btnSet?.setOnClickListener { _ ->
             try {
-                val triggerTime: DateTime = buildFinalTriggerTime()
-                setAlarmOnTime(triggerTime)
+                setAlarm()
             } catch (t: Throwable) {
                 UiErrorHandler().handleError(t)
             }
@@ -149,6 +149,88 @@ class MainActivityLayout(
         logger.info(activity.javaClass.simpleName + " has been created")
     }
 
+    private fun setAlarm() {
+        when (currentAlarmType) {
+            0, 1, 2 -> {
+                setSingleAlarmOnTime()
+            }
+            3 -> {
+                setRepetitiveAlarm()
+            }
+        }
+    }
+
+    private fun setSingleAlarmOnTime() {
+        val triggerTime = readTriggerTime()
+        setSingleAlarmSnoozed(triggerTime, snoozesCount, snoozeInterval, earlyMinutes)
+
+        val minutesTo = Minutes.minutesBetween(DateTime.now(), triggerTime).minutes
+        val timeTo = when {
+            minutesTo < 60 -> "$minutesTo minutes"
+            minutesTo < 120 -> "1 hour"
+            else -> "${minutesTo / 60} hours"
+        }
+        uiInfoService.showToast("$snoozesCount Alarm will go off in $timeTo")
+    }
+
+    private fun setSingleAlarmSnoozed(
+        _triggerTime: DateTime,
+        snoozes: Int,
+        repeatsInterval: Int,
+        earlyMinutes: Int
+    ) {
+        var triggerTime = _triggerTime
+        // subtract random minutes
+        if (earlyMinutes > 0) {
+            val newTriggerTime: DateTime =
+                triggerTime.minusMinutes(random.nextInt(earlyMinutes + 1))
+            if (newTriggerTime.isAfterNow) { // check validity
+                triggerTime = newTriggerTime
+            }
+        }
+        for (r in 0 until snoozes) {
+            val triggerTime2: DateTime = triggerTime.plusSeconds(r * repeatsInterval)
+            alarmManagerService.setAlarmOnTime(triggerTime2)
+        }
+    }
+
+    private fun readTriggerTime(): DateTime {
+        when (currentAlarmType) {
+            0, 3 -> { // ring at
+                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
+                return alarmTimeInput!!.triggerTime
+            }
+            1 -> { // ring until
+                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
+                val endTime = alarmTimeInput!!.triggerTime
+                val ringingDurationS = (snoozesCount - 1) * snoozeInterval
+                return endTime.minusSeconds(ringingDurationS)
+            }
+            2 -> { // ring in minutes
+                require(
+                    !alarmSlumberLengthInput?.text?.toString().isNullOrBlank()
+                ) { "minutes not given" }
+                val minutes = alarmSlumberLengthInput!!.text.toString().toInt()
+                return DateTime.now().plusMinutes(minutes)
+            }
+            else -> throw RuntimeException("unexpected alarm type")
+        }
+    }
+
+    private fun setRepetitiveAlarm() {
+        val triggerTime = readTriggerTime()
+        val repetitiveAlarm = RepetitiveAlarm(
+            triggerTime = triggerTime.toLocalTime(),
+            daysOfWeek = mutableListOf(1, 2, 3, 4, 5), // Monday - Friday
+            startFromTime = DateTime.now(),
+            earlyMinutes = earlyMinutes,
+            snoozes = snoozesCount,
+            snoozeInterval = snoozeInterval,
+        )
+        alarmsPersistenceService.addRepetitiveAlarm(repetitiveAlarm)
+        uiInfoService.showToast("Repetitive alarm scheduled: $repetitiveAlarm")
+    }
+
     private fun selectAlarmType(option: Int) {
         currentAlarmType = option
         when (option) {
@@ -163,72 +245,20 @@ class MainActivityLayout(
         }
     }
 
-
-    private fun buildFinalTriggerTime(): DateTime {
-        var triggerTime = readTriggerTime()
-        // subtract random minutes
-        if (earlyMarginInput?.length() ?: 0 > 0) {
-            val earlyMarginMin: Int = earlyMarginInput?.text.toString().toInt()
-            if (earlyMarginMin > 0) {
-                val newTriggerTime: DateTime =
-                    triggerTime.minusMinutes(random.nextInt(earlyMarginMin + 1))
-                if (newTriggerTime.isAfterNow) { // check validity
-                    triggerTime = newTriggerTime
-                }
-            }
-        }
-        return triggerTime
-    }
-
-    private fun readTriggerTime(): DateTime {
-        when (currentAlarmType) {
-            0 -> { // ring at
-                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
-                return alarmTimeInput!!.triggerTime
-            }
-            1 -> { // ring until
-                require(alarmTimeInput!!.isNotEmpty()) { "trigger time not given" }
-                val endTime = alarmTimeInput!!.triggerTime
-                val ringingDurationS = (alarmRepeatsCount - 1) * alarmRepeatsInterval
-                return endTime.minusSeconds(ringingDurationS)
-            }
-            2 -> { // ring in minutes
-                require(
-                    !alarmSlumberLengthInput?.text?.toString().isNullOrBlank()
-                ) { "minutes not given" }
-                val minutes = alarmSlumberLengthInput!!.text.toString().toInt()
-                return DateTime.now().plusMinutes(minutes)
-            }
-            else -> throw RuntimeException("unexpected alarm type")
-        }
-    }
-
-    private val alarmRepeatsCount: Int
+    private val snoozesCount: Int
         get() {
             val input: String? = alarmRepeatsInput?.text?.toString()
             return input.takeIf { !it.isNullOrBlank() }?.toInt()?.takeIf { it >= 1 } ?: 1
         }
-    private val alarmRepeatsInterval: Int
+    private val snoozeInterval: Int
         get() {
             val input: String = alarmRepeatsIntervalInput?.text.toString()
             return if (input.isEmpty()) 60 else input.toInt()
         }
+    private val earlyMinutes: Int
+        get() {
+            return earlyMarginInput?.text?.toString()?.takeIf { it.isNotBlank() }?.toInt() ?: 0
+        }
 
-    private fun setAlarmOnTime(triggerTime: DateTime) {
-        // multiple alarms at once
-        val repeats = alarmRepeatsCount
-        val repeatsInterval = alarmRepeatsInterval
-        for (r in 0 until repeats) {
-            val triggerTime2: DateTime = triggerTime.plusSeconds(r * repeatsInterval)
-            alarmManagerService.setAlarmOnTime(triggerTime2)
-        }
-        val minutesTo = Minutes.minutesBetween(DateTime.now(), triggerTime).minutes
-        val timeTo = when {
-            minutesTo < 60 -> "$minutesTo minutes"
-            minutesTo < 120 -> "1 hour"
-            else -> "${minutesTo / 60} hours"
-        }
-        uiInfoService.showToast("$repeats Alarm will go off in $timeTo")
-    }
 
 }

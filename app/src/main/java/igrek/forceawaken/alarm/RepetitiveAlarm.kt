@@ -10,9 +10,9 @@ data class RepetitiveAlarm(
     var triggerTime: LocalTime,
     var daysOfWeek: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5),
     var startFromTime: DateTime,
-    var earlyMarginMin: Int = 0,
-    var snoozeRepeats: Int = 0,
-    var snoozeRepeatsInterval: Int,
+    var earlyMinutes: Int = 0,
+    var snoozes: Int = 0,
+    var snoozeInterval: Int,
 ) : Parcelable {
 
     override fun toString(): String {
@@ -20,7 +20,7 @@ data class RepetitiveAlarm(
         val startFromTimeStr = triggerTime.toString("HH:mm:ss, yyyy-MM-dd")
         val daysOfWeekStr = daysOfWeek.joinToString(separator = ",")
         return "at $triggerTimeStr every $daysOfWeekStr, from $startFromTimeStr" +
-                " (-${earlyMarginMin}min, ${snoozeRepeats}x${snoozeRepeatsInterval}s)"
+                " (-${earlyMinutes}min, ${snoozes}x${snoozeInterval}s)"
 //        startFromTime.dayOfWeek().get()
     }
 
@@ -28,9 +28,9 @@ data class RepetitiveAlarm(
         return obj is RepetitiveAlarm
                 && triggerTime == obj.triggerTime
                 && daysOfWeek == obj.daysOfWeek
-                && earlyMarginMin == obj.earlyMarginMin
-                && snoozeRepeats == obj.snoozeRepeats
-                && snoozeRepeatsInterval == obj.snoozeRepeatsInterval
+                && earlyMinutes == obj.earlyMinutes
+                && snoozes == obj.snoozes
+                && snoozeInterval == obj.snoozeInterval
     }
 
     companion object {
@@ -57,9 +57,9 @@ data class RepetitiveAlarm(
         dest.writeSerializable(triggerTime)
         dest.writeList(daysOfWeek.toList())
         dest.writeSerializable(startFromTime)
-        dest.writeInt(earlyMarginMin)
-        dest.writeInt(snoozeRepeats)
-        dest.writeInt(snoozeRepeatsInterval)
+        dest.writeInt(earlyMinutes)
+        dest.writeInt(snoozes)
+        dest.writeInt(snoozeInterval)
     }
 
     override fun describeContents() = 0

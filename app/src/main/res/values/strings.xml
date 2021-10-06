@@ -18,5 +18,6 @@
         <item>Ring at HH:MM</item>
         <item>Ring until HH:MM</item>
         <item>Ring in MM minutes</item>
+        <item>Ring every Mon-Fri</item>
     </string-array>
 </resources>
