@@ -152,7 +152,7 @@ class MainActivityLayout(
     private fun selectAlarmType(option: Int) {
         currentAlarmType = option
         when (option) {
-            0, 1 -> {
+            0, 1, 3 -> {
                 alarmTimeInput?.visibility = View.VISIBLE
                 alarmSlumberLengthInput?.visibility = View.GONE
             }

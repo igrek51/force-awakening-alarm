@@ -7,6 +7,7 @@ import android.widget.TextView
 import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.alarm.AlarmTrigger
+import igrek.forceawaken.alarm.RepetitiveAlarm
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -15,6 +16,7 @@ import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.layout.CommonLayout
 import igrek.forceawaken.layout.contextmenu.ContextMenuBuilder
 import igrek.forceawaken.layout.listview.AlarmTriggersListView
+import igrek.forceawaken.layout.listview.RepetitiveAlarmListView
 import igrek.forceawaken.layout.navigation.NavigationMenuController
 import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.system.WindowManagerService
@@ -44,6 +46,7 @@ class ListActivityLayout(
     private val logger = LoggerFactory.logger
 
     private var alramTriggerList: AlarmTriggersListView? = null
+    private var repetitiveAlarmList: RepetitiveAlarmListView? = null
 
     fun init() {
         logger.info("Initializing application...")
@@ -68,7 +71,14 @@ class ListActivityLayout(
             activity,
             onClick = this::onAlarmClicked,
             onLongClick = this::onAlarmClicked,
-            onMore = this::onAlarmMoreMenu
+            onMore = this::onAlarmMoreMenu,
+        )
+        repetitiveAlarmList = activity.findViewById(R.id.repetitiveAlarmList)
+        repetitiveAlarmList?.init(
+            activity,
+            onClick = this::onRepetitiveAlarmClicked,
+            onLongClick = this::onRepetitiveAlarmClicked,
+            onMore = this::onRepetitiveAlarmMoreMenu,
         )
         updateAlarmsList()
 
@@ -116,11 +126,30 @@ class ListActivityLayout(
         updateAlarmsList()
     }
 
+    private fun onRepetitiveAlarmClicked(repetitiveAlarm: RepetitiveAlarm) {
+        removeRepetitiveAlarm(repetitiveAlarm)
+    }
+
+    private fun removeRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
+        alarmsPersistenceService.removeRepetitiveAlarm(repetitiveAlarm)
+        updateAlarmsList()
+    }
+
     private fun onAlarmMoreMenu(alarmTrigger: AlarmTrigger) {
         ContextMenuBuilder().showContextMenu(
             listOf(
                 ContextMenuBuilder.Action(R.string.alarm_trigger_remove) {
                     removeAlarmTrigger(alarmTrigger)
+                },
+            )
+        )
+    }
+
+    private fun onRepetitiveAlarmMoreMenu(repetitiveAlarm: RepetitiveAlarm) {
+        ContextMenuBuilder().showContextMenu(
+            listOf(
+                ContextMenuBuilder.Action(R.string.alarm_trigger_remove) {
+                    removeRepetitiveAlarm(repetitiveAlarm)
                 },
             )
         )

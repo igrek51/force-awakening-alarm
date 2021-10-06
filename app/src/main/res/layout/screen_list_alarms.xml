@@ -50,14 +50,26 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:text="List of scheduled alarms:"
                         android:textAlignment="center" />
 
                     <igrek.forceawaken.layout.listview.AlarmTriggersListView
                         android:id="@+id/alramTriggerList"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Repetitive alarms:"
+                        android:textAlignment="center" />
+
+                    <igrek.forceawaken.layout.listview.RepetitiveAlarmListView
+                        android:id="@+id/repetitiveAlarmList"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:layout_gravity="center_horizontal"

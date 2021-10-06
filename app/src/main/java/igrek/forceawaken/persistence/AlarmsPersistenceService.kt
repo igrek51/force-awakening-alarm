@@ -2,6 +2,7 @@ package igrek.forceawaken.persistence
 
 import igrek.forceawaken.alarm.AlarmTrigger
 import igrek.forceawaken.alarm.AlarmsConfig
+import igrek.forceawaken.alarm.RepetitiveAlarm
 import igrek.forceawaken.info.logger.Logger
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -65,6 +66,23 @@ class AlarmsPersistenceService(
         if (alarmsConfig.alarmTriggers.remove(alarmTrigger)) {
             writeAlarmsConfig(alarmsConfig)
             logger.info("Alarm trigger has been removed: $alarmTrigger")
+        }
+        return alarmsConfig
+    }
+
+    fun addRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm): AlarmsConfig {
+        val alarmsConfig: AlarmsConfig = readAlarmsConfig()
+        alarmsConfig.repetitiveAlarms.add(repetitiveAlarm)
+        writeAlarmsConfig(alarmsConfig)
+        logger.info("Repetitive alarm has been added: $repetitiveAlarm")
+        return alarmsConfig
+    }
+
+    fun removeRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm): AlarmsConfig {
+        val alarmsConfig: AlarmsConfig = readAlarmsConfig()
+        if (alarmsConfig.repetitiveAlarms.remove(repetitiveAlarm)) {
+            writeAlarmsConfig(alarmsConfig)
+            logger.info("Repetitive alarm has been removed: $repetitiveAlarm")
         }
         return alarmsConfig
     }
