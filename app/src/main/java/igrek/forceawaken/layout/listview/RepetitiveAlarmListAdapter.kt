@@ -62,7 +62,6 @@ class RepetitiveAlarmListAdapter internal constructor(
 
         itemTitleLabel.text = item.toString()
             .replace(", from", ",\n from")
-            .replace(" (", "\n (")
 
         itemView.findViewById<ImageButton>(R.id.itemAlarmMoreButton).setOnClickListener {
             onMore?.invoke(item)

@@ -162,7 +162,9 @@ class MainActivityLayout(
 
     private fun setSingleAlarmOnTime() {
         val triggerTime = readTriggerTime()
-        setSingleAlarmSnoozed(triggerTime, snoozesCount, snoozeInterval, earlyMinutes)
+        alarmManagerService.setSingleAlarmSnoozed(
+            triggerTime, snoozesCount, snoozeInterval, earlyMinutes
+        )
 
         val minutesTo = Minutes.minutesBetween(DateTime.now(), triggerTime).minutes
         val timeTo = when {
@@ -171,27 +173,6 @@ class MainActivityLayout(
             else -> "${minutesTo / 60} hours"
         }
         uiInfoService.showToast("$snoozesCount Alarm will go off in $timeTo")
-    }
-
-    private fun setSingleAlarmSnoozed(
-        _triggerTime: DateTime,
-        snoozes: Int,
-        repeatsInterval: Int,
-        earlyMinutes: Int
-    ) {
-        var triggerTime = _triggerTime
-        // subtract random minutes
-        if (earlyMinutes > 0) {
-            val newTriggerTime: DateTime =
-                triggerTime.minusMinutes(random.nextInt(earlyMinutes + 1))
-            if (newTriggerTime.isAfterNow) { // check validity
-                triggerTime = newTriggerTime
-            }
-        }
-        for (r in 0 until snoozes) {
-            val triggerTime2: DateTime = triggerTime.plusSeconds(r * repeatsInterval)
-            alarmManagerService.setAlarmOnTime(triggerTime2)
-        }
     }
 
     private fun readTriggerTime(): DateTime {
@@ -227,7 +208,9 @@ class MainActivityLayout(
             snoozes = snoozesCount,
             snoozeInterval = snoozeInterval,
         )
+        repetitiveAlarm.resetNextTriggerTime()
         alarmsPersistenceService.addRepetitiveAlarm(repetitiveAlarm)
+        alarmManagerService.replenishOneRepetitiveAlarm(repetitiveAlarm)
         uiInfoService.showToast("Repetitive alarm scheduled: $repetitiveAlarm")
     }
 

@@ -21,7 +21,6 @@ data class RepetitiveAlarm(
         val daysOfWeekStr = daysOfWeek.joinToString(separator = ",")
         return "at $triggerTimeStr every $daysOfWeekStr, from $startFromTimeStr" +
                 " (-${earlyMinutes}min, ${snoozes}x${snoozeInterval}s)"
-//        startFromTime.dayOfWeek().get()
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -63,4 +62,29 @@ data class RepetitiveAlarm(
     }
 
     override fun describeContents() = 0
+
+    fun getNextTriggerTime(): DateTime {
+        var start = max(startFromTime, DateTime.now()).withTime(triggerTime)
+        while (true) {
+            if (start.dayOfWeek().get() in daysOfWeek) {
+                if (start.isAfterNow && !start.isBefore(startFromTime)) {
+                    return start
+                }
+            }
+            start = start.plusDays(1)
+        }
+    }
+
+    fun resetNextTriggerTime() {
+        startFromTime = DateTime.now()
+        startFromTime = getNextTriggerTime()
+    }
+}
+
+fun max(a: DateTime, b: DateTime): DateTime {
+    return if (a.isBefore(b)) {
+        b
+    } else {
+        a
+    }
 }

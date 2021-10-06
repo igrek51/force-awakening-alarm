@@ -57,7 +57,7 @@
                     <igrek.forceawaken.layout.listview.AlarmTriggersListView
                         android:id="@+id/alramTriggerList"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="250dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp" />
 
@@ -71,16 +71,23 @@
                     <igrek.forceawaken.layout.listview.RepetitiveAlarmListView
                         android:id="@+id/repetitiveAlarmList"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="150dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp" />
 
                     <Button
                         android:id="@+id/refreshAlarmsButton"
-                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="30dp"
                         android:text="Refresh"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/replenishAlarmsButton"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:text="Replenish"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

@@ -77,7 +77,6 @@ class ListActivityLayout(
         repetitiveAlarmList = activity.findViewById(R.id.repetitiveAlarmList)
         repetitiveAlarmList?.init(
             activity,
-            onClick = this::onRepetitiveAlarmClicked,
             onLongClick = this::onRepetitiveAlarmClicked,
             onMore = this::onRepetitiveAlarmMoreMenu,
         )
@@ -96,8 +95,17 @@ class ListActivityLayout(
         refreshAlarmsButton?.setOnClickListener { _ ->
             updateAlarmsList()
         }
+        val replenishAlarmsButton = activity.findViewById<Button>(R.id.replenishAlarmsButton)
+        replenishAlarmsButton?.setOnClickListener { _ ->
+            repelnishRepetitiveAlarms()
+        }
 
         logger.info(activity.javaClass.simpleName + " has been created")
+    }
+
+    private fun repelnishRepetitiveAlarms() {
+        alarmManagerService.replenishAllRepetitiveAlarms()
+        updateAlarmsList()
     }
 
     private fun updateAlarmsList() {
@@ -108,7 +116,7 @@ class ListActivityLayout(
 
     private fun getAlarmsConfig(): AlarmsConfig {
         var alarmsConfig = alarmsPersistenceService.readAlarmsConfig()
-        var alarmTriggers = alarmsConfig.alarmTriggers
+        val alarmTriggers = alarmsConfig.alarmTriggers
 
         // check alarm triggers are still valid
         val inactive = alarmTriggers.filter { it.triggerTime.isBefore(DateTime.now()) }
@@ -137,6 +145,20 @@ class ListActivityLayout(
         updateAlarmsList()
     }
 
+    private fun resetRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
+        alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
+            this.resetNextTriggerTime()
+        }
+        updateAlarmsList()
+    }
+
+    private fun postponeRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
+        alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
+
+        }
+        updateAlarmsList()
+    }
+
     private fun onAlarmMoreMenu(alarmTrigger: AlarmTrigger) {
         ContextMenuBuilder().showContextMenu(
             listOf(
@@ -152,6 +174,12 @@ class ListActivityLayout(
             listOf(
                 ContextMenuBuilder.Action(R.string.alarm_trigger_remove) {
                     removeRepetitiveAlarm(repetitiveAlarm)
+                },
+                ContextMenuBuilder.Action(R.string.alarm_trigger_postpone) {
+                    postponeRepetitiveAlarm(repetitiveAlarm)
+                },
+                ContextMenuBuilder.Action(R.string.alarm_repetitive_reset) {
+                    resetRepetitiveAlarm(repetitiveAlarm)
                 },
             )
         )

@@ -34,7 +34,7 @@ class AlarmsPersistenceService(
         }
     }
 
-    fun writeAlarmsConfig(alarmsConfig: AlarmsConfig) {
+    private fun writeAlarmsConfig(alarmsConfig: AlarmsConfig) {
         try {
             val alarmsConfigFile = alarmsConfigFile
             val fout = FileOutputStream(alarmsConfigFile)
@@ -85,6 +85,21 @@ class AlarmsPersistenceService(
             logger.info("Repetitive alarm has been removed: $repetitiveAlarm")
         }
         return alarmsConfig
+    }
+
+    fun updateRepetitiveAlarm(
+        repetitiveAlarm: RepetitiveAlarm,
+        applyBlock: RepetitiveAlarm.() -> Unit
+    ) {
+        val alarmsConfig: AlarmsConfig = readAlarmsConfig()
+        val configAlarm = alarmsConfig.repetitiveAlarms.find { it == repetitiveAlarm }
+        if (configAlarm == null) {
+            logger.error("Cant find alarm in config")
+            return
+        }
+        configAlarm.applyBlock()
+        writeAlarmsConfig(alarmsConfig)
+        logger.info("Repetitive alarm has been updated: $configAlarm")
     }
 
 }

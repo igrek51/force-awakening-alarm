@@ -13,16 +13,19 @@ import igrek.forceawaken.inject.LazyInject
 import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.persistence.AlarmsPersistenceService
 import org.joda.time.DateTime
+import java.util.*
 
 class AlarmManagerService(
-        activity: LazyInject<Activity> = appFactory.activity,
-        alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
+    activity: LazyInject<Activity> = appFactory.activity,
+    alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
 ) {
     private val activity by LazyExtractor(activity)
     private val alarmsPersistenceService by LazyExtractor(alarmsPersistenceService)
 
-    private val alarmManager = activity.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val alarmManager =
+        activity.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val logger: Logger = LoggerFactory.logger
+    private val random = Random()
 
     fun setAlarmOnTime(triggerTime: DateTime) {
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
@@ -62,22 +65,78 @@ class AlarmManagerService(
         alarmsPersistenceService.removeAlarmTrigger(alarmTrigger)
     }
 
-    fun isAlarmActive(triggerTime: DateTime): Boolean {
-        // WTF? returning true even after cancelling
-        val intent = Intent(activity.getApplicationContext(), AlarmReceiver::class.java)
-        intent.addCategory("android.intent.category.DEFAULT")
-        val millis: Long = triggerTime.getMillis()
-        val id = millis.toInt() // unique to enable multiple alarms
-        return PendingIntent.getBroadcast(
-            activity.getApplicationContext(),
-            id,
-            intent,
-            PendingIntent.FLAG_NO_CREATE
-        ) != null
+    fun setSingleAlarmSnoozed(
+        _triggerTime: DateTime,
+        snoozes: Int,
+        snoozeInterval: Int,
+        earlyMinutes: Int
+    ) {
+        var triggerTime = _triggerTime
+        // subtract random minutes
+        if (earlyMinutes > 0) {
+            val newTriggerTime: DateTime =
+                triggerTime.minusMinutes(random.nextInt(earlyMinutes + 1))
+            if (newTriggerTime.isAfterNow) { // check validity
+                triggerTime = newTriggerTime
+            }
+        }
+        for (r in 0 until snoozes) {
+            val triggerTime2: DateTime = triggerTime.plusSeconds(r * snoozeInterval)
+            setAlarmOnTime(triggerTime2)
+        }
+    }
+
+    fun replenishAllRepetitiveAlarms() {
+        val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
+        alarmsConfig.repetitiveAlarms.forEach {
+            replenishRepetitiveAlarmWithConfig(it, alarmsConfig)
+        }
+    }
+
+    fun replenishOneRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
+        val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
+        replenishRepetitiveAlarmWithConfig(repetitiveAlarm, alarmsConfig)
+    }
+
+    private fun replenishRepetitiveAlarmWithConfig(
+        repetitiveAlarm: RepetitiveAlarm,
+        alarmsConfig: AlarmsConfig
+    ) {
+        val alarmTriggers: MutableList<AlarmTrigger> = alarmsConfig.alarmTriggers
+        if (!isAlarmActive(repetitiveAlarm, alarmTriggers)) {
+            val nextTriggerTime = repetitiveAlarm.getNextTriggerTime()
+            setSingleAlarmSnoozed(
+                nextTriggerTime, repetitiveAlarm.snoozes,
+                repetitiveAlarm.snoozeInterval, repetitiveAlarm.earlyMinutes
+            )
+        }
+    }
+
+    private fun isAlarmActive(
+        repetitiveAlarm: RepetitiveAlarm,
+        alarmTriggers: MutableList<AlarmTrigger>
+    ): Boolean {
+        val maxTriggerTime = repetitiveAlarm.getNextTriggerTime()
+        val minTriggerTime = maxTriggerTime.minusMinutes(repetitiveAlarm.earlyMinutes)
+        return alarmTriggers.any {
+            it.triggerTime.isBetween(minTriggerTime, maxTriggerTime) && it.isActive
+        }
     }
 
     fun nextAlarm(): Long? {
         return alarmManager.nextAlarmClock?.triggerTime
     }
 
+}
+
+fun DateTime.isBeforeOrEqual(d2: DateTime): Boolean {
+    return this.isBefore(d2) || this == d2
+}
+
+fun DateTime.isAfterOrEqual(d2: DateTime): Boolean {
+    return this.isAfter(d2) || this == d2
+}
+
+fun DateTime.isBetween(d1: DateTime, d2: DateTime): Boolean {
+    return this.isAfterOrEqual(d1) && this.isBeforeOrEqual(d2)
 }

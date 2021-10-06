@@ -26,9 +26,9 @@ class RepetitiveAlarmListView : ListView, AdapterView.OnItemClickListener,
 
     fun init(
         context: Context,
-        onClick: (item: RepetitiveAlarm) -> Unit,
-        onLongClick: (item: RepetitiveAlarm) -> Unit,
-        onMore: (item: RepetitiveAlarm) -> Unit
+        onClick: (item: RepetitiveAlarm) -> Unit = {},
+        onLongClick: (item: RepetitiveAlarm) -> Unit = {},
+        onMore: (item: RepetitiveAlarm) -> Unit = {},
     ) {
         this.onClick = onClick
         this.onLongClick = onLongClick
