@@ -28,6 +28,12 @@ class AlarmManagerService(
     private val random = Random()
 
     fun setAlarmOnTime(triggerTime: DateTime) {
+        ensureAlarmIsOn(triggerTime)
+        // save creation information in external place
+        alarmsPersistenceService.addAlarmTrigger(AlarmTrigger(triggerTime, true, null))
+    }
+
+    fun ensureAlarmIsOn(triggerTime: DateTime) {
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
         intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
@@ -39,9 +45,6 @@ class AlarmManagerService(
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
-
-        // save creation information in external place
-        alarmsPersistenceService.addAlarmTrigger(AlarmTrigger(triggerTime, true, null))
     }
 
     fun cancelAlarm(alarmTrigger: AlarmTrigger) {
@@ -88,6 +91,9 @@ class AlarmManagerService(
 
     fun replenishAllRepetitiveAlarms() {
         val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
+        alarmsConfig.alarmTriggers.forEach {
+            ensureAlarmIsOn(it.triggerTime)
+        }
         alarmsConfig.repetitiveAlarms.forEach {
             replenishRepetitiveAlarmWithConfig(it, alarmsConfig)
         }
