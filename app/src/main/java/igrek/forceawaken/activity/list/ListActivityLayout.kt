@@ -146,16 +146,19 @@ class ListActivityLayout(
     }
 
     private fun resetRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
-        alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
+        val configAlarm = alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
             this.resetNextTriggerTime()
         }
+        alarmManagerService.replenishOneRepetitiveAlarm(configAlarm)
         updateAlarmsList()
     }
 
     private fun postponeRepetitiveAlarm(repetitiveAlarm: RepetitiveAlarm) {
-        alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
-
+        val configAlarm = alarmsPersistenceService.updateRepetitiveAlarm(repetitiveAlarm) {
+            this.startFromTime = getNextTriggerTime().plusSeconds(1)
+            this.startFromTime = getNextTriggerTime()
         }
+        alarmManagerService.replenishOneRepetitiveAlarm(configAlarm)
         updateAlarmsList()
     }
 

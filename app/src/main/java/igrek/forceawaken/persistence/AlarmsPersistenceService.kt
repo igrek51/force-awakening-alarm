@@ -30,7 +30,12 @@ class AlarmsPersistenceService(
         FileInputStream(alarmsConfigFile).use { fis ->
             val fileContent = ByteArray(alarmsConfigFile.length().toInt())
             fis.read(fileContent)
-            return ParcelableUtil.unmarshall(fileContent, AlarmsConfig.CREATOR)
+            val config = ParcelableUtil.unmarshall(fileContent, AlarmsConfig.CREATOR)
+
+            config.alarmTriggers.sortBy { it.triggerTime }
+            config.repetitiveAlarms.sortBy { it.triggerTime }
+
+            return config
         }
     }
 
@@ -90,16 +95,17 @@ class AlarmsPersistenceService(
     fun updateRepetitiveAlarm(
         repetitiveAlarm: RepetitiveAlarm,
         applyBlock: RepetitiveAlarm.() -> Unit
-    ) {
+    ): RepetitiveAlarm {
         val alarmsConfig: AlarmsConfig = readAlarmsConfig()
         val configAlarm = alarmsConfig.repetitiveAlarms.find { it == repetitiveAlarm }
         if (configAlarm == null) {
             logger.error("Cant find alarm in config")
-            return
+            return repetitiveAlarm
         }
         configAlarm.applyBlock()
         writeAlarmsConfig(alarmsConfig)
         logger.info("Repetitive alarm has been updated: $configAlarm")
+        return configAlarm
     }
 
 }
