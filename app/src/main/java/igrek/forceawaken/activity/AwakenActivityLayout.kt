@@ -13,7 +13,6 @@ import igrek.forceawaken.R
 import igrek.forceawaken.alarm.AlarmManagerService
 import igrek.forceawaken.alarm.AlarmTrigger
 import igrek.forceawaken.alarm.AlarmsConfig
-import igrek.forceawaken.alarm.VibratorService
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.logger.LoggerFactory
 import igrek.forceawaken.inject.LazyExtractor
@@ -25,6 +24,7 @@ import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.ringtone.AlarmPlayerService
 import igrek.forceawaken.ringtone.Ringtone
 import igrek.forceawaken.ringtone.RingtoneManagerService
+import igrek.forceawaken.sensors.VibratorService
 import igrek.forceawaken.system.WindowManagerService
 import igrek.forceawaken.time.AlarmTimeService
 import igrek.forceawaken.volume.NoiseDetectorService

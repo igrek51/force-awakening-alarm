@@ -25,7 +25,7 @@
                 android:id="@+id/titleBarFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:title="@string/nav_setup" />
+                app:title="@string/nav_list_scheduled_alarms" />
 
             <ScrollView
                 android:layout_width="match_parent"

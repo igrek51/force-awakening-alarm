@@ -130,7 +130,6 @@ class MainActivityLayout(
                 id: Long
             ) {
                 selectAlarmType(position)
-                logger.debug("selected: $position, $id")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}

@@ -67,7 +67,8 @@ data class RepetitiveAlarm(
         var start = max(startFromTime, DateTime.now()).withTime(triggerTime)
         while (true) {
             if (start.dayOfWeek().get() in daysOfWeek) {
-                if (start.isAfterNow && !start.isBefore(startFromTime)) {
+                val minStart = start.minusMinutes(earlyMinutes)
+                if (minStart.isAfterNow && start.isAfterOrEqual(startFromTime)) {
                     return start
                 }
             }

@@ -117,6 +117,7 @@ class AlarmManagerService(
                 nextTriggerTime, repetitiveAlarm.snoozes,
                 repetitiveAlarm.snoozeInterval, repetitiveAlarm.earlyMinutes
             )
+            logger.info("Repetitive alarm ($repetitiveAlarm) rescheduled at $nextTriggerTime")
         }
     }
 
@@ -124,8 +125,10 @@ class AlarmManagerService(
         repetitiveAlarm: RepetitiveAlarm,
         alarmTriggers: MutableList<AlarmTrigger>
     ): Boolean {
-        val maxTriggerTime = repetitiveAlarm.getNextTriggerTime()
-        val minTriggerTime = maxTriggerTime.minusMinutes(repetitiveAlarm.earlyMinutes)
+        val snoozes = (repetitiveAlarm.snoozes - 1).lowCap(0)
+        val baseTime = repetitiveAlarm.getNextTriggerTime()
+        val minTriggerTime = baseTime.minusMinutes(repetitiveAlarm.earlyMinutes)
+        val maxTriggerTime = baseTime.plusSeconds(repetitiveAlarm.snoozeInterval * snoozes)
         return alarmTriggers.any {
             it.triggerTime.isBetween(minTriggerTime, maxTriggerTime) && it.isActive
         }
@@ -147,4 +150,10 @@ fun DateTime.isAfterOrEqual(d2: DateTime): Boolean {
 
 fun DateTime.isBetween(d1: DateTime, d2: DateTime): Boolean {
     return this.isAfterOrEqual(d1) && this.isBeforeOrEqual(d2)
+}
+
+fun Int.lowCap(lowLimit: Int): Int {
+    if (this < lowLimit)
+        return lowLimit
+    return this
 }

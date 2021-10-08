@@ -1,4 +1,4 @@
-package igrek.forceawaken.alarm
+package igrek.forceawaken.sensors
 
 import android.app.Activity
 import android.content.Context

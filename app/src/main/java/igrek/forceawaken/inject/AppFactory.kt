@@ -11,7 +11,6 @@ import igrek.forceawaken.activity.schedule.ScheduleActivityLayout
 import igrek.forceawaken.activity.settings.SettingsActivityData
 import igrek.forceawaken.activity.settings.SettingsActivityLayout
 import igrek.forceawaken.alarm.AlarmManagerService
-import igrek.forceawaken.alarm.VibratorService
 import igrek.forceawaken.info.UiInfoService
 import igrek.forceawaken.info.UiResourceService
 import igrek.forceawaken.info.logger.Logger
@@ -22,6 +21,7 @@ import igrek.forceawaken.persistence.AlarmsPersistenceService
 import igrek.forceawaken.ringtone.AlarmPlayerService
 import igrek.forceawaken.ringtone.RingtoneManagerService
 import igrek.forceawaken.sensors.AccelerometerService
+import igrek.forceawaken.sensors.VibratorService
 import igrek.forceawaken.settings.preferences.PreferencesService
 import igrek.forceawaken.settings.preferences.PreferencesState
 import igrek.forceawaken.system.PermissionService
