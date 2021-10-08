@@ -73,6 +73,9 @@
             android:name=".activity.AlarmReceiver"
             android:enabled="true"
             android:exported="false"></receiver>
+        <service
+            android:name=".activity.service.WakeupService"
+            android:enabled="true"></service>
     </application>
 
 </manifest>
