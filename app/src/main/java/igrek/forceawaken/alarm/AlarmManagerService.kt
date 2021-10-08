@@ -52,14 +52,14 @@ class AlarmManagerService(
         val pendingIntent = alarmTrigger.pendingIntent
         logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"))
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
-        intent.addCategory("android.intent.category.DEFAULT")
+//        intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
         val p1: PendingIntent = PendingIntent.getBroadcast(
             activity.applicationContext,
             id,
             intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(p1)
         if (pendingIntent != null) {
