@@ -23,9 +23,17 @@ class AlarmManagerService(
     private val alarmsPersistenceService by LazyExtractor(alarmsPersistenceService)
 
     private val alarmManager =
-        activity.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            activity.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val logger: Logger = LoggerFactory.logger
     private val random = Random()
+
+    enum class ScheduleMethod {
+        EXACT_IDLE_RTC_WAKEUP,
+        SET_ALARM_CLOCK,
+        ;
+    }
+
+    private val scheduleMethod = ScheduleMethod.SET_ALARM_CLOCK
 
     fun setAlarmOnTime(triggerTime: DateTime) {
         ensureAlarmIsOn(triggerTime)
@@ -34,17 +42,34 @@ class AlarmManagerService(
     }
 
     private fun ensureAlarmIsOn(triggerTime: DateTime) {
-        val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
-        // intent.addCategory("android.intent.category.DEFAULT")
-        val millis: Long = triggerTime.millis
-        val id = millis.toInt() // unique to enable multiple alarms
-        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-            activity.applicationContext,
-            id,
-            intent,
-            0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
+        when (scheduleMethod) {
+            ScheduleMethod.EXACT_IDLE_RTC_WAKEUP -> {
+                val showIntent = Intent(activity.applicationContext, AlarmReceiver::class.java)
+                // intent.addCategory("android.intent.category.DEFAULT")
+                val millis: Long = triggerTime.millis
+                val id = millis.toInt() // unique to enable multiple alarms
+                val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                        activity.applicationContext,
+                        id,
+                        showIntent,
+                        0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                )
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
+            }
+            ScheduleMethod.SET_ALARM_CLOCK -> {
+                val showIntent = Intent(activity.applicationContext, AlarmReceiver::class.java)
+                val millis: Long = triggerTime.millis
+                val id = millis.toInt() // unique to enable multiple alarms
+                val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                        activity.applicationContext,
+                        id,
+                        showIntent,
+                        PendingIntent.FLAG_CANCEL_CURRENT,
+                )
+                val info: AlarmManager.AlarmClockInfo = AlarmManager.AlarmClockInfo(millis, pendingIntent)
+                alarmManager.setAlarmClock(info, pendingIntent)
+            }
+        }
     }
 
     fun cancelAlarm(alarmTrigger: AlarmTrigger) {
@@ -56,10 +81,10 @@ class AlarmManagerService(
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
         val p1: PendingIntent = PendingIntent.getBroadcast(
-            activity.applicationContext,
-            id,
-            intent,
-            0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                activity.applicationContext,
+                id,
+                intent,
+                PendingIntent.FLAG_NO_CREATE,
         )
         alarmManager.cancel(p1)
         if (pendingIntent != null) {

@@ -11,9 +11,15 @@ import kotlin.math.log10
 
 class NoiseDetectorService() {
 
+    private val enabled = false
     private val logger: Logger = LoggerFactory.logger
 
     fun measureNoiseLevel(millis: Long, completeCallback: NoiseLevelMeasureCallback) {
+        if (!enabled) {
+            completeCallback.onComplete(0.0)
+            return
+        }
+
         // measure surrounding loudness level
         try {
             val mediaRecorder = MediaRecorder()
