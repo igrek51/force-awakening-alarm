@@ -222,11 +222,11 @@ class AwakenActivityLayout(
 
     private fun showLastAlarmDialog() {
         val title = "ATTENTION!"
-        val message = "This was the last alarm. WAKE UP!!!"
+        val message = "This was the last alarm. No more snoozes. WAKE UP!!!"
         val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(activity)
         alertBuilder.setMessage(message)
         alertBuilder.setTitle(title)
-        alertBuilder.setNeutralButton("Sure, I'm aware") { _, _ ->
+        alertBuilder.setNeutralButton("OK") { _, _ ->
             activity.finish()
         }
         alertBuilder.setCancelable(false)
@@ -250,7 +250,7 @@ class AwakenActivityLayout(
         alertBuilder.setPositiveButton("Fall asleep") { _, _ ->
             activity.finish()
         }
-        alertBuilder.setNeutralButton("Cancel") { _, _ ->
+        alertBuilder.setNeutralButton("Cancel all") { _, _ ->
             cancelUpcomingSnoozes(upcomingAlarms)
             activity.finish()
         }
