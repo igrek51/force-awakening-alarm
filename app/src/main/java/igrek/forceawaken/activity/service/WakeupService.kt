@@ -3,6 +3,8 @@ package igrek.forceawaken.activity.service
 import android.app.IntentService
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import igrek.forceawaken.activity.AwakenActivity
 import igrek.forceawaken.info.logger.LoggerFactory
@@ -13,10 +15,11 @@ class WakeupService : IntentService("WakeupService") {
         try {
             onAlarm(intent)
         } finally {
-            getLock(this)?.takeIf { it.isHeld }?.release()
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            wakeLock.release()
-//        }, 10000)
+            getLock(this)?.takeIf { it.isHeld }?.let { wakeLock ->
+                Handler(Looper.getMainLooper()).postDelayed({
+                    wakeLock.release()
+                }, 10000)
+            }
         }
     }
 
@@ -41,8 +44,7 @@ class WakeupService : IntentService("WakeupService") {
         private var lockStatic: PowerManager.WakeLock? = null
 
         fun acquireStaticLock(context: Context) {
-//        wakeLock.acquire(3 * 60 * 1000L /*3 minutes*/)
-            getLock(context)?.acquire()
+            getLock(context)?.acquire(3 * 60 * 1000L /*3 minutes*/)
         }
 
         @Synchronized
