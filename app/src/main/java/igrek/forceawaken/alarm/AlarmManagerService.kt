@@ -1,6 +1,5 @@
 package igrek.forceawaken.alarm
 
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -16,14 +15,14 @@ import org.joda.time.DateTime
 import java.util.*
 
 class AlarmManagerService(
-    activity: LazyInject<Activity> = appFactory.activity,
-    alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
+        context: LazyInject<Context> = appFactory.context,
+        alarmsPersistenceService: LazyInject<AlarmsPersistenceService> = appFactory.alarmsPersistenceService,
 ) {
-    private val activity by LazyExtractor(activity)
+    private val context by LazyExtractor(context)
     private val alarmsPersistenceService by LazyExtractor(alarmsPersistenceService)
 
     private val alarmManager =
-            activity.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            context.get().getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val logger: Logger = LoggerFactory.logger
     private val random = Random()
 
@@ -44,12 +43,12 @@ class AlarmManagerService(
     private fun ensureAlarmIsOn(triggerTime: DateTime) {
         when (scheduleMethod) {
             ScheduleMethod.EXACT_IDLE_RTC_WAKEUP -> {
-                val showIntent = Intent(activity.applicationContext, AlarmReceiver::class.java)
+                val showIntent = Intent(context.applicationContext, AlarmReceiver::class.java)
                 // intent.addCategory("android.intent.category.DEFAULT")
                 val millis: Long = triggerTime.millis
                 val id = millis.toInt() // unique to enable multiple alarms
                 val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                        activity.applicationContext,
+                        context.applicationContext,
                         id,
                         showIntent,
                         0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
@@ -57,11 +56,11 @@ class AlarmManagerService(
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
             }
             ScheduleMethod.SET_ALARM_CLOCK -> {
-                val showIntent = Intent(activity.applicationContext, AlarmReceiver::class.java)
+                val showIntent = Intent(context.applicationContext, AlarmReceiver::class.java)
                 val millis: Long = triggerTime.millis
                 val id = millis.toInt() // unique to enable multiple alarms
                 val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                        activity.applicationContext,
+                        context.applicationContext,
                         id,
                         showIntent,
                         PendingIntent.FLAG_CANCEL_CURRENT,
@@ -76,12 +75,12 @@ class AlarmManagerService(
         val triggerTime = alarmTrigger.triggerTime
         val pendingIntent = alarmTrigger.pendingIntent
         logger.debug("cancelling alarm: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"))
-        val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
+        val intent = Intent(context.applicationContext, AlarmReceiver::class.java)
 //        intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
         val p1: PendingIntent = PendingIntent.getBroadcast(
-                activity.applicationContext,
+                context.applicationContext,
                 id,
                 intent,
                 PendingIntent.FLAG_NO_CREATE,
@@ -94,16 +93,16 @@ class AlarmManagerService(
     }
 
     fun setSingleAlarmSnoozed(
-        _triggerTime: DateTime,
-        snoozes: Int,
-        snoozeInterval: Int,
-        earlyMinutes: Int
+            _triggerTime: DateTime,
+            snoozes: Int,
+            snoozeInterval: Int,
+            earlyMinutes: Int
     ) {
         var triggerTime = _triggerTime
         // subtract random minutes
         if (earlyMinutes > 0) {
             val newTriggerTime: DateTime =
-                triggerTime.minusMinutes(random.nextInt(earlyMinutes + 1))
+                    triggerTime.minusMinutes(random.nextInt(earlyMinutes + 1))
             if (newTriggerTime.isAfterNow) { // check validity
                 triggerTime = newTriggerTime
             }
@@ -132,23 +131,23 @@ class AlarmManagerService(
     }
 
     private fun replenishRepetitiveAlarmWithConfig(
-        repetitiveAlarm: RepetitiveAlarm,
-        alarmsConfig: AlarmsConfig
+            repetitiveAlarm: RepetitiveAlarm,
+            alarmsConfig: AlarmsConfig
     ) {
         val alarmTriggers: MutableList<AlarmTrigger> = alarmsConfig.alarmTriggers
         if (!isAlarmActive(repetitiveAlarm, alarmTriggers)) {
             val nextTriggerTime = repetitiveAlarm.getNextTriggerTime()
             setSingleAlarmSnoozed(
-                nextTriggerTime, repetitiveAlarm.snoozes,
-                repetitiveAlarm.snoozeInterval, repetitiveAlarm.earlyMinutes
+                    nextTriggerTime, repetitiveAlarm.snoozes,
+                    repetitiveAlarm.snoozeInterval, repetitiveAlarm.earlyMinutes
             )
             logger.info("Repetitive alarm ($repetitiveAlarm) rescheduled at $nextTriggerTime")
         }
     }
 
     private fun isAlarmActive(
-        repetitiveAlarm: RepetitiveAlarm,
-        alarmTriggers: MutableList<AlarmTrigger>
+            repetitiveAlarm: RepetitiveAlarm,
+            alarmTriggers: MutableList<AlarmTrigger>
     ): Boolean {
         val snoozes = (repetitiveAlarm.snoozes - 1).lowCap(0)
         val baseTime = repetitiveAlarm.getNextTriggerTime()
