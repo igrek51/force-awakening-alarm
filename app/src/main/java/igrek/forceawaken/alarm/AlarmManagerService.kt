@@ -33,16 +33,16 @@ class AlarmManagerService(
         alarmsPersistenceService.addAlarmTrigger(AlarmTrigger(triggerTime, true, null))
     }
 
-    fun ensureAlarmIsOn(triggerTime: DateTime) {
+    private fun ensureAlarmIsOn(triggerTime: DateTime) {
         val intent = Intent(activity.applicationContext, AlarmReceiver::class.java)
-        intent.addCategory("android.intent.category.DEFAULT")
+        // intent.addCategory("android.intent.category.DEFAULT")
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
         val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
             activity.applicationContext,
             id,
             intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
     }
@@ -92,7 +92,9 @@ class AlarmManagerService(
     fun replenishAllRepetitiveAlarms() {
         val alarmsConfig: AlarmsConfig = alarmsPersistenceService.readAlarmsConfig()
         alarmsConfig.alarmTriggers.forEach {
-            ensureAlarmIsOn(it.triggerTime)
+            if (it.triggerTime.isAfterNow) {
+                ensureAlarmIsOn(it.triggerTime)
+            }
         }
         alarmsConfig.repetitiveAlarms.forEach {
             replenishRepetitiveAlarmWithConfig(it, alarmsConfig)
