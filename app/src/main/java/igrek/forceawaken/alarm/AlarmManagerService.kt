@@ -12,7 +12,7 @@ import igrek.forceawaken.inject.LazyInject
 import igrek.forceawaken.inject.appFactory
 import igrek.forceawaken.persistence.AlarmsPersistenceService
 import org.joda.time.DateTime
-import java.util.*
+import java.util.Random
 
 class AlarmManagerService(
         context: LazyInject<Context> = appFactory.context,
@@ -48,10 +48,10 @@ class AlarmManagerService(
                 val millis: Long = triggerTime.millis
                 val id = millis.toInt() // unique to enable multiple alarms
                 val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                        context.applicationContext,
-                        id,
-                        showIntent,
-                        0, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                    context.applicationContext,
+                    id,
+                    showIntent,
+                    PendingIntent.FLAG_IMMUTABLE, // PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
                 )
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent)
             }
@@ -60,10 +60,10 @@ class AlarmManagerService(
                 val millis: Long = triggerTime.millis
                 val id = millis.toInt() // unique to enable multiple alarms
                 val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-                        context.applicationContext,
-                        id,
-                        showIntent,
-                        PendingIntent.FLAG_CANCEL_CURRENT,
+                    context.applicationContext,
+                    id,
+                    showIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT,
                 )
                 val info: AlarmManager.AlarmClockInfo = AlarmManager.AlarmClockInfo(millis, pendingIntent)
                 alarmManager.setAlarmClock(info, pendingIntent)
@@ -80,10 +80,10 @@ class AlarmManagerService(
         val millis: Long = triggerTime.millis
         val id = millis.toInt() // unique to enable multiple alarms
         val p1: PendingIntent = PendingIntent.getBroadcast(
-                context.applicationContext,
-                id,
-                intent,
-                PendingIntent.FLAG_NO_CREATE,
+            context.applicationContext,
+            id,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE,
         )
         alarmManager.cancel(p1)
         if (pendingIntent != null) {
