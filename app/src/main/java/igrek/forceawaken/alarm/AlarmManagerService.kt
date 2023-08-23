@@ -67,6 +67,7 @@ class AlarmManagerService(
                 )
                 val info: AlarmManager.AlarmClockInfo = AlarmManager.AlarmClockInfo(millis, pendingIntent)
                 alarmManager.setAlarmClock(info, pendingIntent)
+                logger.debug("Alarm has been set: " + triggerTime.toString("HH:mm:ss, yyyy-MM-dd"))
             }
         }
     }
